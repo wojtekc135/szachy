@@ -1,9 +1,12 @@
 import pygame
 from utils import message_box
 
+pygame.init()
+
 
 class Card:
-    def __init__(self, screen, front_image, back_image, show_front, location, location_number, highlighted, card_size):
+    def __init__(self, screen, front_image, back_image, show_front, location, location_number, highlighted,
+                 selected_info, card_size):
         self.screen = screen
         self.screen_width, self.screen_height = screen.get_size()
         self.front_image = front_image
@@ -14,6 +17,7 @@ class Card:
         self.highlighted = highlighted
         self.location = location
         self.location_number = location_number
+        self.selected_info = selected_info
 
     def update_position(self):
         """Aktualizuje pozycję karty w zależności od jej lokalizacji i stanu."""
@@ -66,13 +70,22 @@ class Card:
         return 0, 0
 
     def get_updated_rect(self, base_x, base_y, offset_x, offset_y):
-        """Tworzy prostokąt obramowujący kartę."""
+        """Tworzy prostokąt obramowujący kartę, uwzględniając highlight."""
         rect = self.image.get_rect(topleft=(base_x + offset_x, base_y + offset_y))
         if self.highlighted:
             rect = rect.inflate(20, 20)
             rect.move_ip(0, -10)
         return rect
 
+    def display_message_under_card(self, screen, text, font=pygame.font.SysFont("Arial", 24), color="black",
+                                   rect_color="white", padding=10):
+        "Przykład card.selected_info = 'wybrano' wtedy karta bedzie miała informacje pod sobą inaczej trzeba dać False"
+        rect_x = self.rect.centerx - (font.size(text)[0] + 2 * padding) / 2 + 1  # poprawic
+        rect_y = self.rect.centery - (font.size(text)[1] + 2 * padding) + 0.5 * self.card_size[1] + 45
+        message_box(screen, text, font, color, rect_color, rect_x, rect_y, padding)
+
     def draw(self, screen):
         self.update_position()
         screen.blit(self.image, self.rect)
+        if self.selected_info != False:
+            self.display_message_under_card(screen, self.selected_info)
