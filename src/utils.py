@@ -50,3 +50,19 @@ def scale_assets(assets, card_size, background_size):
     scaled_cards = [pygame.transform.scale(card, card_size) for card in assets["cards"]]
     scaled_card_back = pygame.transform.scale(assets["card_back"], card_size)
     return {"cards": scaled_cards, "background": scaled_background, "card_back": scaled_card_back}
+
+
+def get_card_size(screen_height, card_scale=5, card_aspect_ratio=1080 / 1520):
+    """
+        Oblicza rozmiar karty na podstawie wysokości ekranu.
+        Args:
+            screen_height (int): Wysokość ekranu.
+            card_scale (int, optional): Współczynnik skali karty, karta będzie 5 razy mniejsza od screen_height (domyślnie 5).
+            card_aspect_ratio (float, optional): Proporcje karty w folderze assets (domyślnie 1080 / 1520).
+        Returns:
+            tuple: Rozmiar karty (szerokość, wysokość).
+        Example:
+            card_size = get_card_size(screen_height)
+        """
+    card_size = [((screen_height / card_scale) * card_aspect_ratio), (screen_height / card_scale)]
+    return card_size
