@@ -3,7 +3,7 @@ from utils import message_box
 
 
 class Card:
-    def __init__(self, screen, front_image, back_image, show_front, location, location_number, card_size):
+    def __init__(self, screen, front_image, back_image, show_front, location, location_number, highlighted, card_size):
         self.screen = screen
         self.screen_width, self.screen_height = screen.get_size()
         self.front_image = front_image
@@ -11,6 +11,7 @@ class Card:
         self.card_size = card_size
         self.show_front = show_front
         self.image = front_image if show_front else back_image
+        self.highlighted = highlighted
         self.location = location
         self.location_number = location_number
 
@@ -67,6 +68,9 @@ class Card:
     def get_updated_rect(self, base_x, base_y, offset_x, offset_y):
         """Tworzy prostokąt obramowujący kartę."""
         rect = self.image.get_rect(topleft=(base_x + offset_x, base_y + offset_y))
+        if self.highlighted:
+            rect = rect.inflate(20, 20)
+            rect.move_ip(0, -10)
         return rect
 
     def draw(self, screen):
