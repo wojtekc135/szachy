@@ -66,3 +66,31 @@ def get_card_size(screen_height, card_scale=5, card_aspect_ratio=1080 / 1520):
         """
     card_size = [((screen_height / card_scale) * card_aspect_ratio), (screen_height / card_scale)]
     return card_size
+
+
+def message_box(screen, text, font, color, rect_color, x, y, padding=10):
+    """
+    Rysuje prostokąt z wycentrowanym tekstem w zadanej lokalizacji na ekranie.
+    Args:
+        screen (Surface): Ekran Pygame, na którym ma być rysowany tekst.
+        text (str): Tekst do wyświetlenia.
+        font (Font): Czcionka używana do renderowania tekstu.
+        color (str): Kolor tekstu.
+        rect_color (str): Kolor tła prostokąta.
+        x (int): Współrzędna x lewego górnego rogu prostokąta.
+        y (int): Współrzędna y lewego górnego rogu prostokąta.
+        padding (int, opcjonalnie): Odstęp między tekstem a krawędziami prostokąta. Domyślnie 10.
+    Returns:
+        None
+    Example:
+        
+    """
+    text_surface = font.render(text, True, pygame.Color(color))
+    text_width, text_height = text_surface.get_size()
+    # Calculate the rectangle dimensions
+    rect_width = text_width + 2 * padding
+    rect_height = text_height + 2 * padding
+    rect_x = x
+    rect_y = y
+    pygame.draw.rect(screen, pygame.Color(rect_color), (rect_x, rect_y, rect_width, rect_height))
+    screen.blit(text_surface, (rect_x + padding, rect_y + padding))
