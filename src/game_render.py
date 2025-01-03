@@ -13,7 +13,7 @@ class GameRenderer:
         self.assets = assets
         self.font = font
 
-    def draw_state(self, cur_player, state, action_text, round_number):
+    def draw_state(self, cur_player, state, action_text):
         """
         Rysuje bieżący stan gry, w tym tło, karty graczy i tekst akcji.
         Args:
@@ -28,7 +28,6 @@ class GameRenderer:
                 "face_up_pile": []
                 }
             action_text (str): Tekst opisujący akcję wykonywaną przez gracza.
-            round_number (int): Numer rundy w grze.
 
         Returns:
             None
@@ -37,7 +36,7 @@ class GameRenderer:
         """
         self.screen.blit(self.assets["background"], (0, 0))
         player_type = "gracza" if cur_player.isHuman == "human" else "bota"
-        message_box(self.screen, f"Tura {player_type} {round_number}: {action_text}",
+        message_box(self.screen, f"Tura {player_type} {cur_player.player_number}: {action_text}",
                     self.font, "black", "white",
                     x=0.74 * self.screen.get_width(),
                     y=0.028 * self.screen.get_height())
