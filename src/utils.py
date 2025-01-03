@@ -82,8 +82,6 @@ def message_box(screen, text, font, color, rect_color, x, y, padding=10):
         padding (int, opcjonalnie): Odstęp między tekstem a krawędziami prostokąta. Domyślnie 10.
     Returns:
         None
-    Example:
-        
     """
     text_surface = font.render(text, True, pygame.Color(color))
     text_width, text_height = text_surface.get_size()
