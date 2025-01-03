@@ -5,8 +5,8 @@ pygame.init()
 
 
 class Card:
-    def __init__(self, screen, front_image, back_image, show_front, location, location_number, highlighted,
-                 selected_info, card_size):
+    def __init__(self, screen, front_image, back_image, known_for_player, show_front, location, location_number,
+                 highlighted, selected_info, card_size):
         self.screen = screen
         self.screen_width, self.screen_height = screen.get_size()
         self.front_image = front_image
@@ -14,7 +14,9 @@ class Card:
         self.card_size = card_size
         self.show_front = show_front
         self.image = front_image if show_front else back_image
+
         self.highlighted = highlighted
+        self.known_for_player = known_for_player
         self.location = location
         self.location_number = location_number
         self.selected_info = selected_info
@@ -76,6 +78,10 @@ class Card:
             rect = rect.inflate(20, 20)
             rect.move_ip(0, -10)
         return rect
+
+    def check_click(self, mouse_pos, event):
+        if self.rect.collidepoint(mouse_pos) and event.type == pygame.MOUSEBUTTONDOWN:
+            return True
 
     def display_message_under_card(self, screen, text, font=pygame.font.SysFont("Arial", 24), color="black",
                                    rect_color="white", padding=10):
