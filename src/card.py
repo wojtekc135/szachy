@@ -6,7 +6,7 @@ pygame.init()
 
 class Card:
     def __init__(self, screen, front_image, back_image, known_for_player, show_front, location, location_number,
-                 highlighted, selected_info, card_size):
+                 highlighted,selected_info, card_size):
         self.screen = screen
         self.screen_width, self.screen_height = screen.get_size()
         self.front_image = front_image
@@ -20,6 +20,8 @@ class Card:
         self.location = location
         self.location_number = location_number
         self.selected_info = selected_info
+        self.clicked = False
+        self.hovered = False
 
     def update_position(self):
         """Aktualizuje pozycję karty w zależności od jej lokalizacji i stanu."""
@@ -45,6 +47,7 @@ class Card:
         hand_length = gap * self.card_size[0] * 3 + self.card_size[0]
         h13_centerx = (self.screen_width - hand_length) / 2
         h13_centery = ((self.screen_height - self.card_size[1]) * 0.1) / 2
+
         if self.location == "hand1":
             return h13_centerx, self.screen_height - h13_centery - self.card_size[1]
         elif self.location == "hand2":

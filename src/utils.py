@@ -1,22 +1,27 @@
 import os
 import pygame
+from random import shuffle  # importujemy funkcję shuffle
 
 
 def load_assets(folder, card_prefix, background_prefix, card_back_prefix):
     """
     Ładuje zasoby gry (karty, tło, rewers kart) z folderu.
+
     Args:
         folder (str): Ścieżka do folderu z zasobami.
         card_prefix (str): Prefiks dla plików kart.
         background_prefix (str): Prefiks dla plików tła.
         card_back_prefix (str): Prefiks dla plików rewersu kart.
+
     Returns:
         dict: Zasoby gry (karty, tło, rewers kart) w postaci słownika:
             - "cards": Lista załadowanych kart.
             - "background": Załadowane tło.
             - "card_back": Załadowany rewers kart.
-    Example:
-        assets = load_assets(os.path.join(os.pardir, "assets"), "karta", "stół", "rewers")
+
+    Przykład użycia:
+        folder = os.path.join("assets")
+        assets = load_assets(folder, "karta", "stół", "rewers")
     """
     assets = {"cards": [], "background": "", "card_back": ""}
     for filename in os.listdir(folder):
@@ -28,22 +33,25 @@ def load_assets(folder, card_prefix, background_prefix, card_back_prefix):
                 assets["background"] = pygame.image.load(path)
             elif filename.startswith(card_back_prefix):
                 assets["card_back"] = pygame.image.load(path)
+    shuffle(assets["cards"])
     return assets
-
 
 def scale_assets(assets, card_size, background_size):
     """
     Skaluje zasoby gry (karty, tło, rewers kart) do określonych rozmiarów.
+
     Args:
         assets (dict): Słownik z załadowanymi zasobami (karty, tło, rewers kart).
         card_size (tuple): Rozmiar kart (szerokość, wysokość).
         background_size (tuple): Rozmiar tła (szerokość, wysokość).
+
     Returns:
         dict: Przeskalowane zasoby gry w postaci słownika:
             - "cards": Lista przeskalowanych kart.
             - "background": Przeskalowane tło.
             - "card_back": Przeskalowany rewers kart.
-    Example:
+
+    Przykład użycia:
         assets = scale_assets(assets, card_size, (screen_width, screen_height))
     """
     scaled_background = pygame.transform.scale(assets["background"], background_size)
@@ -55,13 +63,16 @@ def scale_assets(assets, card_size, background_size):
 def get_card_size(screen_height, card_scale=5, card_aspect_ratio=1080 / 1520):
     """
         Oblicza rozmiar karty na podstawie wysokości ekranu.
+
         Args:
             screen_height (int): Wysokość ekranu.
             card_scale (int, optional): Współczynnik skali karty, karta będzie 5 razy mniejsza od screen_height (domyślnie 5).
             card_aspect_ratio (float, optional): Proporcje karty w folderze assets (domyślnie 1080 / 1520).
+
         Returns:
             tuple: Rozmiar karty (szerokość, wysokość).
-        Example:
+
+        Przykład użycia:
             card_size = get_card_size(screen_height)
         """
     card_size = [((screen_height / card_scale) * card_aspect_ratio), (screen_height / card_scale)]
@@ -71,6 +82,7 @@ def get_card_size(screen_height, card_scale=5, card_aspect_ratio=1080 / 1520):
 def message_box(screen, text, font, color, rect_color, x, y, padding=10):
     """
     Rysuje prostokąt z wycentrowanym tekstem w zadanej lokalizacji na ekranie.
+
     Args:
         screen (Surface): Ekran Pygame, na którym ma być rysowany tekst.
         text (str): Tekst do wyświetlenia.
@@ -80,15 +92,19 @@ def message_box(screen, text, font, color, rect_color, x, y, padding=10):
         x (int): Współrzędna x lewego górnego rogu prostokąta.
         y (int): Współrzędna y lewego górnego rogu prostokąta.
         padding (int, opcjonalnie): Odstęp między tekstem a krawędziami prostokąta. Domyślnie 10.
-    Returns:
+
+    Zwraca:
         None
     """
     text_surface = font.render(text, True, pygame.Color(color))
     text_width, text_height = text_surface.get_size()
+
     # Calculate the rectangle dimensions
     rect_width = text_width + 2 * padding
     rect_height = text_height + 2 * padding
+
     rect_x = x
     rect_y = y
+
     pygame.draw.rect(screen, pygame.Color(rect_color), (rect_x, rect_y, rect_width, rect_height))
     screen.blit(text_surface, (rect_x + padding, rect_y + padding))

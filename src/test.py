@@ -1,23 +1,25 @@
 import pygame
 from game_render import GameRenderer
 from input_handler import InputHandler
-from src.round import Round
+from round import Round
 from player import Player
 from card import Card
 import os
 from utils import load_assets, scale_assets, get_card_size
-from random import choice
+from random import choice, shuffle
 
 
 def create_example_state(screen, assets, state):
-    for hand in ["hand1", "hand2", "hand3", "hand4"]:
+    t = ["hand1", "hand2", "hand3", "hand4"]
+    shuffle(t)
+    for hand in t:
         for i in range(4):
             state[hand].append(
                 Card(screen, assets["cards"][i], assets["card_back"], False, False, hand, i, False, False, card_size))
-    state["face_up_pile"] = [
-        Card(screen, assets["cards"][i], assets["card_back"], True, True, "face_up_pile", 0, False, False, card_size)]
-    state["face_down_pile"] = [Card(screen, assets["cards"][i], assets["card_back"], False, False, "face_down_pile", 0,
-                                    False, False, card_size)] * 10
+            state["face_up_pile"] = [
+                Card(screen, assets["cards"][i], assets["card_back"], True, True, "face_up_pile", 0, False, False, card_size)]
+            state["face_down_pile"] = [Card(screen, assets["cards"][i], assets["card_back"], False, False, "face_down_pile", 0,
+                                            False, False, card_size)] * 10
     return state
 
 
@@ -57,26 +59,36 @@ def show_2_cards(hand, game_renderer, cur_player, state, action_text, game_round
 
 
 def wes_karte_z_stosu_odkrytego_i_zamien_z_reką(state):
-    # wybranie karty ze stosu odkrytego
+    # Wybranie karty ze stosu odkrytego
     game_renderer.draw_state(cur_player, state, "Wybierz ze stosu odkrytego")
     card1 = InputHandler.choose_from(state["face_up_pile"])
     card1.selected_info = "wybrano"
+    card1.clicked = True  # Ustawiamy flagę clicked na True, aby karta miała czerwoną ramkę
 
-    game_renderer.draw_state(cur_player, state, " Wybierz karte z ręki")
+    # Wyświetlanie stanu po kliknięciu
+    game_renderer.draw_state(cur_player, state, "Wybierz kartę z ręki")
     card2 = InputHandler.choose_from(state[cur_hand])
     card2.selected_info = "wybrano"
+    card2.clicked = True  # Ustawiamy flagę clicked na True dla wybranej karty z ręki
 
+    # Wyświetlanie stanu zamiany
     game_renderer.draw_state(cur_player, state, "Zamienianie miejscami")
     pygame.time.wait(500)
-    state, card1, card2 = cur_player.swap_card(state, card1,
-                                               card2)
+
+    # Zamiana kart
+    state, card1, card2 = cur_player.swap_card(state, card1, card2)
     card2.selected_info = False
     if cur_player.isHuman == "human":
         card1.selected_info = "niewidoczna"
     else:
         card1.selected_info = False
 
+    # Resetowanie flagi clicked na False po wykonaniu akcji
+    card1.clicked = False
+    card2.clicked = False
+
     game_renderer.draw_state(cur_player, state, "Zamieniono miejscami")
+
 
 
 pygame.init()
