@@ -40,8 +40,8 @@ class GameRenderer:
                     self.font, "black", "white",
                     x=0.74 * self.screen.get_width(),
                     y=0.028 * self.screen.get_height())
-        for hand in [state["hand1"], state["hand2"], state["hand3"], state["hand4"],
-                     [state["face_down_pile"][-1]], [state["face_up_pile"]][-1]]:
-            for card in hand:
+        for cards in [state["hand1"], state["hand2"], state["hand3"], state["hand4"],
+                     state["face_down_pile"], state["face_up_pile"]]:
+            for card in cards:
                 card.draw(self.screen)
         pygame.display.flip()
