@@ -51,15 +51,15 @@ def show_2_cards(hand, game_renderer, cur_player, state, action_text, game_round
                 picked_card.show_front = False
                 picked_card.highlighted = True
                 game_renderer.draw_state(cur_player, state, action_text)
-                pygame.time.wait(1000)
+                #pygame.time.wait(1000)
                 picked_card.highlighted = False
         game_renderer.draw_state(cur_player, state, action_text)
 
 
-def wes_karte_z_stosu_odkrytego_i_zamien_z_reką(state):
+def choose_card_from_any_pile(state):
     # wybranie karty ze stosu odkrytego
-    game_renderer.draw_state(cur_player, state, "Wybierz ze stosu odkrytego")
-    card1 = InputHandler.choose_from(state["face_up_pile"])
+    game_renderer.draw_state(cur_player, state, "Wybierz ze stosu dowolnego")
+    card1 = InputHandler.choose_from(state["face_up_pile"] + state["face_down_pile"])
     card1.selected_info = "wybrano"
 
     game_renderer.draw_state(cur_player, state, " Wybierz karte z ręki")
@@ -70,6 +70,9 @@ def wes_karte_z_stosu_odkrytego_i_zamien_z_reką(state):
     pygame.time.wait(500)
     state, card1, card2 = cur_player.swap_card(state, card1,
                                                card2)
+
+    card2 = state[card2.location].pop(0)
+
     card2.selected_info = False
     if cur_player.isHuman == "human":
         card1.selected_info = "niewidoczna"
@@ -129,7 +132,7 @@ while running:
         show_2_cards(state[cur_hand], game_renderer, cur_player, state, action_text, game_round, cur_player.isHuman)
 
     elif game_round.round_number > 4:
-        wes_karte_z_stosu_odkrytego_i_zamien_z_reką(state)
+        choose_card_from_any_pile(state)
 
     game_round.round_number += 1
     pygame.time.wait(200)
