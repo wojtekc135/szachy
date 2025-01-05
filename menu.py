@@ -1,6 +1,5 @@
-#dodać przycisk zasady gry, który przekierowuje do strony internetowej z zasadami gry OK
-#dopasować przyciski z menu głównego wraz z czcionką, rozmiarem i kolorystyką OK
-#https://www.fontsquirrel.com/
+#ustawić tło do ustawień, dodać w ustawieniach napisy dźwięk, rozdzielczość, ekran OK
+#ogarnąć działanie ekranu (fullscreen, windowed) OK
 
 import pygame
 import sys
@@ -10,12 +9,13 @@ import os
 
 pygame.init()
 
-os.environ['SOL_VIDEO_CENTERED'] = '1'
+os.environ['SDL_VIDEO_CENTERED'] = '1'
 info = pygame.display.Info()
 
 # Rozmiary okna gry, oryginalnie otwiera się w fullscreenie:
 SCREEN_WIDTH = info.current_w
 SCREEN_HEIGHT = info.current_h
+fullscreen = True  # Domyślnie tryb pełnoekranowy
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Nazwa okna gry:
@@ -24,6 +24,8 @@ pygame.display.set_caption("Sen")
 # Tło gry:
 BG = pygame.image.load("assets/menu.png")
 BG_SCALED = pygame.transform.scale(BG, (SCREEN_WIDTH, SCREEN_HEIGHT))
+OP = pygame.image.load("assets/menu_rozmazane.png")
+OP_SCALED = pygame.transform.scale(OP, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 def get_font(size):  # Zwraca czcionkę o określonym rozmiarze
     return pygame.font.Font("assets/Berylium/Berylium.ttf", size)
@@ -104,21 +106,48 @@ def play():
         pygame.display.update()
 
 def options():
+    global SCREEN, fullscreen  # Zmienna globalna dla okna gry i trybu fullscreen
     while True:
         OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
 
-        SCREEN.fill("white")
+        SCREEN.blit(OP_SCALED, (0, 0))
 
-        OPTIONS_TEXT = get_font(45).render("This is the OPTIONS screen.", True, "Black")
-        OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(640, 260))
-        SCREEN.blit(OPTIONS_TEXT, OPTIONS_RECT)
+        # Napisy na ustawienia dźwięku, rozdzielczości, ekranu
+        OPTIONS_DZW = get_font(43).render("Dźwięk", True, "#674a29")
+        OPTIONS_ROZ = get_font(43).render("Rozdzielczość", True, "#674a29")
+        OPTIONS_EKR = get_font(43).render("Ekran", True, "#674a29")
 
-        OPTIONS_BACK = Button(image=None, pos=(640, 460),
-                              text_input="BACK", font=get_font(75), base_color="Black", hovering_color="Green", scale=1)
+        OPTIONS_RECT_D = OPTIONS_DZW.get_rect(center=(620, 200))
+        OPTIONS_RECT_R = OPTIONS_ROZ.get_rect(center=(620, 350))
+        OPTIONS_RECT_E = OPTIONS_EKR.get_rect(center=(620, 500))
 
+        SCREEN.blit(OPTIONS_DZW, OPTIONS_RECT_D)
+        SCREEN.blit(OPTIONS_ROZ, OPTIONS_RECT_R)
+        SCREEN.blit(OPTIONS_EKR, OPTIONS_RECT_E)
+
+        # Napisy z informacją o trybie ekranu:
+        if fullscreen:
+            screen_mode_text = get_font(43).render("Pełny ekran", True, "#674a29")
+        else:
+            screen_mode_text = get_font(43).render("Okno", True, "#674a29")
+        screen_mode_rect = screen_mode_text.get_rect(center=(875, 500))
+        SCREEN.blit(screen_mode_text, screen_mode_rect)
+
+        # Przycisk back:
+        OPTIONS_BACK = Button(image=None, pos=(620, 650),
+                              text_input="Powrót", font=get_font(43), base_color="#674a29", hovering_color="White", scale=1)
         OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
         OPTIONS_BACK.update(SCREEN)
 
+        # Przyciski strzałek do zmiany trybu ekranu:
+        OPTIONS_ARROW_L = Button(image=pygame.image.load("assets/strzałka2.png"), pos=(750, 500),
+                                  text_input=None, font=get_font(43), base_color="#674a29", hovering_color="White", scale=0.35)
+        OPTIONS_ARROW_R = Button(image=pygame.image.load("assets/strzałka.png"), pos=(1000, 500),
+                                  text_input=None, font=get_font(43), base_color="#674a29", hovering_color="White", scale=0.35)
+        OPTIONS_ARROW_L.update(SCREEN)
+        OPTIONS_ARROW_R.update(SCREEN)
+
+        # Obsługa zdarzeń
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -126,6 +155,12 @@ def options():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
                     main_menu()
+                if OPTIONS_ARROW_L.checkForInput(OPTIONS_MOUSE_POS) or OPTIONS_ARROW_R.checkForInput(OPTIONS_MOUSE_POS):
+                    fullscreen = not fullscreen
+                    if fullscreen:
+                        SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+                    else:
+                        SCREEN = pygame.display.set_mode((SCREEN_WIDTH - 10, SCREEN_HEIGHT - 50)) # Okno mniejsze
 
         pygame.display.update()
 
