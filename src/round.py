@@ -91,42 +91,38 @@ class Round:
         card = InputHandler.choose_from(state[hand_name])
         return card
 
-    def show_2_cards(self, hand, game_renderer, game_round, state, action_text):
+    def human_show_2_cards(self, hand, game_renderer, game_round, state):
+        action_text = "Podglądnij 2 karty"
         game_renderer.draw_state(game_round, state, action_text)
         while game_round.count_known_for_player(hand) < 2:
-            if game_round.player_type == "human":
-                picked_card = game_round.choose_card_from_hand(state, "hand1")
-                if not picked_card.known_for_player:
-                    picked_card.show_front = True
-                    picked_card.known_for_player = True
-                    picked_card.selected_info = "Niewidoczna"
-
-            if game_round.player_type == "bot":
-                picked_card = choice(hand)
-                if not picked_card.known_for_player:
-                    picked_card.known_for_player = True
-                    picked_card.show_front = False
-                    picked_card.highlighted = True
-                    game_renderer.draw_state(game_round, state, action_text)
-                    picked_card.highlighted = False
-                    pygame.time.wait(125)
+            picked_card = game_round.choose_card_from_hand(state, "hand1")
+            if not picked_card.known_for_player:
+                picked_card.show_front = True
+                picked_card.known_for_player = True
+                picked_card.selected_info = "Niewidoczna"
             game_renderer.draw_state(game_round, state, "Podgladnie...")
 
-        if game_round.player_type == "human":
-            pygame.time.wait(1000)
-            for card in picked_set:
-                card.show_front = False
+    def bot_show_2_cards(self, hand, game_renderer, game_round, state):
+        action_text = "Boty podglądają karty"
+        game_renderer.draw_state(game_round, state, action_text)
+        while game_round.count_known_for_player(hand) < 2:
+            picked_card = choice(hand)
+            if not picked_card.known_for_player:
+                pygame.time.wait(100)
+                picked_card.known_for_player = True
+                picked_card.show_front = False
+                picked_card.highlighted = True
+                game_renderer.draw_state(game_round, state, action_text)
+                picked_card.highlighted = False
 
-    def take_bottom_card_from_any_pile(self, state, game_round, game_renderer):
-        # Żeby była informacja wybrano pod stackiem proponuje zrobić nową metode (ciezko pobrac lokalizacje, trzeba z card z update wziac)
-        # lub nie robić tego wógle i zrobić  animacje poruszania  się karty
-        # lub ustawiać tą informacje na karte na samej górze stacku (tak ja robiłem) i potem ją zdejmować, ponieważ draw_state wyswietla tylko ostanią karte z stacka
-        # albo nic xd
-
-
+    def human_take_bottom_card_from_any_pile(self, state, game_round, game_renderer):
+        #  Być może  karty odkłada się  na  góre!  Trzeba zrobić innego defa! To jest tylko przykład!
+        # wybranie karty z dowolnego stosu i zamienienie dołu stosu  z wybraną kartą z reki
+        # Trzeba uzywać metod typu choose_stack, choose_card_from_stack
+        # choose stack zwraca jaki to stos zakryty czy odkryty, a choose_card_from_stack wybiera np. karte ze spodu jak sie da 0
         game_renderer.draw_state(game_round, state, "Wybierz stos")
         stack_type = game_round.choose_stack_type(state)
-        stack_index_to_choose = -1  # 0 spód stacku, -1 góra
+        stack_index_to_choose = 0  # 0 spód karty, -1 góra
         card_from_stack = game_round.choose_card_from_stack(state, stack_type, stack_index_to_choose)
         game_renderer.draw_state(game_round, state, " Wybierz karte z ręki")
         pygame.time.wait(100)
@@ -147,12 +143,17 @@ class Round:
         elif new_card_from_stack == "face_up_pile":
             new_card_from_stack.show_front = True
 
-        if game_round.player_type == "human":
-            new_card_from_hand.selected_info = "niewidoczna"
-            new_card_from_hand.show_front = True
+        new_card_from_hand.selected_info = "niewidoczna"
+        new_card_from_hand.show_front = True
+        """
         elif game_round.player_type == "bot":
-            new_card_from_hand.selected_info = "niewidoczna"
-            new_card_from_hand.show_front = True
+            new_card_from_hand.selected_info = False
+            new_card_from_hand.show_front = False
+            new_card_from_hand.highlighted = True
+        """
 
         game_round.debug(state)
         game_renderer.draw_state(game_round, state, "Zamieniono miejscami")
+
+    def bot_take_bottom_card_from_any_pile(self, state, game_round, game_renderer):
+        pass

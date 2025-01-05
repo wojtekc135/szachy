@@ -32,14 +32,16 @@ def example_variant(screen):
         cur_hand = "hand" + str(game_round.player_number)
 
         if game_round.round_number <= 4:
-            if game_round.player_type == "bot":
-                action_text = "Boty podglądają karty"
+            if game_round.player_type == "human":
+                game_round.human_show_2_cards(state[cur_hand], game_renderer, game_round, state)
             else:
-                action_text = "Podglądnij 2 karty"
-            game_round.show_2_cards(state[cur_hand], game_renderer, game_round, state, action_text)
+                game_round.bot_show_2_cards(state[cur_hand], game_renderer, game_round, state)
 
         elif game_round.round_number > 4:
-            game_round.take_bottom_card_from_any_pile(state, game_round, game_renderer)
+            if game_round.player_type == "human":
+                game_round.human_take_bottom_card_from_any_pile(state, game_round, game_renderer)
+            else:
+                game_round.human_take_bottom_card_from_any_pile(state, game_round, game_renderer)
 
         # aktualizacja rundy
         game_round.round_number += 1
@@ -54,5 +56,6 @@ def example_variant(screen):
 
         pygame.time.wait(200)
     pygame.quit()
+
 
 example_variant(screen)
