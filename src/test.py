@@ -10,14 +10,18 @@ from random import choice
 
 
 def create_example_state(screen, assets, state):
+    id=0
     for hand in ["hand1", "hand2", "hand3", "hand4"]:
         for i in range(4):
             state[hand].append(
-                Card(screen, assets["cards"][i], assets["card_back"], False, False, hand, i, False, False, card_size))
-    state["face_up_pile"] = [
-        Card(screen, assets["cards"][i], assets["card_back"], True, True, "face_up_pile", 0, False, False, card_size)]
+                Card(screen, assets["cards"][i], assets["card_back"], False, False, hand, i, False, False, card_size,id))
+            id+=1
+    state["face_up_pile"].append(Card(screen, assets["cards"][0], assets["card_back"], True, True, "face_up_pile", 0, False, False, card_size,id))
+    id+=1
+    state["face_up_pile"].append(Card(screen, assets["cards"][1], assets["card_back"], True, True, "face_up_pile", 1, False, False, card_size,id))
+    id+=1
     state["face_down_pile"] = [Card(screen, assets["cards"][i], assets["card_back"], False, False, "face_down_pile", 0,
-                                    False, False, card_size)] * 10
+                                    False, False, card_size,id)] * 10
     return state
 
 
@@ -51,7 +55,6 @@ def show_2_cards(hand, game_renderer, cur_player, state, action_text, game_round
                 picked_card.show_front = False
                 picked_card.highlighted = True
                 game_renderer.draw_state(cur_player, state, action_text)
-                pygame.time.wait(1000)
                 picked_card.highlighted = False
         game_renderer.draw_state(cur_player, state, action_text)
 
@@ -60,6 +63,11 @@ def wes_karte_z_stosu_odkrytego_i_zamien_z_reką(state):
     # wybranie karty ze stosu odkrytego
     game_renderer.draw_state(cur_player, state, "Wybierz ze stosu odkrytego")
     card1 = InputHandler.choose_from(state["face_up_pile"])
+    loc=card1.location
+    print(state[loc])
+    print(card1.location, card1.location_number)
+    card1 = state[loc][1]
+    print(card1.location, card1.location_number)
     card1.selected_info = "wybrano"
 
     game_renderer.draw_state(cur_player, state, " Wybierz karte z ręki")
@@ -75,7 +83,7 @@ def wes_karte_z_stosu_odkrytego_i_zamien_z_reką(state):
         card1.selected_info = "niewidoczna"
     else:
         card1.selected_info = False
-
+    game_round.print_state(state)
     game_renderer.draw_state(cur_player, state, "Zamieniono miejscami")
 
 
@@ -106,7 +114,7 @@ player1 = Player("human", "1")
 player2 = Player("bot", "2")
 player3 = Player("bot", "3")
 player4 = Player("bot", "4")
-
+game_round.print_state(state)
 clock = pygame.time.Clock()
 running = True
 
