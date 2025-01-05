@@ -109,6 +109,7 @@ class Round:
                     picked_card.highlighted = True
                     game_renderer.draw_state(game_round, state, action_text)
                     picked_card.highlighted = False
+                    pygame.time.wait(125)
             game_renderer.draw_state(game_round, state, action_text)
 
     def wes_karte_z_dowolnego_stosu_ze_spodu(self, state, game_round, game_renderer):
