@@ -43,5 +43,7 @@ class GameRenderer:
         for cards in [state["hand1"], state["hand2"], state["hand3"], state["hand4"],
                      state["face_down_pile"], state["face_up_pile"]]:
             for card in cards:
+        for hand in [state["hand1"], state["hand2"], state["hand3"], state["hand4"],
+                     [state["face_down_pile"][-1]], [state["face_up_pile"][-1]]]:
+            for card in hand:
                 card.draw(self.screen)
-        pygame.display.flip()
