@@ -148,9 +148,7 @@ class Round:
             new_card_from_stack.show_front = True
         if game_round.player_type == "human":
             new_card_from_hand.selected_info = "niewidoczna"
-            if stack_type == "face_down_pile":
-                new_card_from_hand.show_front = False
-            else: new_card_from_hand.show_front = True
+            new_card_from_hand.show_front = True
         elif game_round.player_type == "bot":
             new_card_from_hand.selected_info = "niewidoczna"
             new_card_from_hand.show_front = False
