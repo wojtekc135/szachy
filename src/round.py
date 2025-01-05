@@ -115,7 +115,7 @@ class Round:
                 game_renderer.draw_state(game_round, state, action_text)
                 picked_card.highlighted = False
 
-    def human_take_bottom_card_from_any_pile(self, state, game_round, game_renderer):
+    def human_take_bottom_card_from_any_pile_add_it_on_front_to_hand(self, state, game_round, game_renderer):
         #  Być może  karty odkłada się  na  góre!  Trzeba zrobić innego defa! To jest tylko przykład!
         # wybranie karty z dowolnego stosu i zamienienie dołu stosu  z wybraną kartą z reki
         # Trzeba uzywać metod typu choose_stack, choose_card_from_stack
@@ -125,16 +125,12 @@ class Round:
         stack_index_to_choose = 0  # 0 spód karty, -1 góra
         card_from_stack = game_round.choose_card_from_stack(state, stack_type, stack_index_to_choose)
         game_renderer.draw_state(game_round, state, " Wybierz karte z ręki")
-        pygame.time.wait(100)
         card_from_hand = game_round.choose_card_from_hand(state, "hand1")
         card_from_hand.selected_info = "wybrano"
 
         game_renderer.draw_state(game_round, state, "Zamienianie miejscami")
         pygame.time.wait(500)
         state, new_card_from_hand, new_card_from_stack = game_round.swap_card(state, card_from_stack, card_from_hand)
-        new_card_from_hand.selected_info = False
-        state[new_card_from_stack.location].pop()
-        #print(new_card_from_stack.location)
 
         # aktualizacja kard, żeby np niewkładały się obrocone czy coś, moze trzeba cos dodac jeszcze
         new_card_from_stack.selected_info = False
