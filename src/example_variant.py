@@ -18,7 +18,6 @@ state = game_round.create_example_state(screen, assets, card_size)
 
 def example_variant(screen):
     pygame.init()
-
     game_round.debug(state)
     game_renderer = GameRenderer(screen, assets, font)
     running = True
@@ -40,7 +39,7 @@ def example_variant(screen):
             game_round.show_2_cards(state[cur_hand], game_renderer, game_round, state, action_text)
 
         elif game_round.round_number > 4:
-            game_round.wes_karte_z_dowolnego_stosu_ze_spodu(state, game_round, game_renderer)
+            game_round.take_card_from_any_pile(state, game_round, game_renderer)
 
         # aktualizacja rundy
         game_round.round_number += 1

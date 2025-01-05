@@ -40,8 +40,18 @@ class GameRenderer:
                     self.font, "black", "white",
                     x=0.74 * self.screen.get_width(),
                     y=0.028 * self.screen.get_height())
+        if state["face_down_pile"]:
+            face_down_hand = [state["face_down_pile"][-1]]
+        else:
+            face_down_hand = None
+
+        if state["face_down_pile"]:
+            face_up_hand = [state["face_up_pile"][-1]]
+        else:
+            face_up_hand = None
+
         for hand in [state["hand1"], state["hand2"], state["hand3"], state["hand4"],
-                     [state["face_down_pile"][-1]], [state["face_up_pile"]][-1]]:
+                     face_down_hand, face_up_hand]:
             for card in hand:
                 card.draw(self.screen)
                 if card.clicked:

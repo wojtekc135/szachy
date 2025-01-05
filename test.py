@@ -2,7 +2,7 @@ import pygame
 from game_render import GameRenderer
 from input_handler import InputHandler
 from round import Round
-from player import Player
+from src.player import Player
 from card import Card
 import os
 from utils import load_assets, scale_assets, get_card_size
@@ -74,7 +74,7 @@ def wes_karte_z_stosu_odkrytego_i_zamien_z_reką(state):
     # Wyświetlanie stanu po kliknięciu
     game_renderer.draw_state(cur_player, state, "Wybierz kartę z ręki")
     card2 = InputHandler.choose_from(state[cur_hand])
-    # card2.selected_info = "wybrano"
+    card2.selected_info = "wybrano"
     card2.clicked = True  # Ustawiamy flagę clicked na True dla wybranej karty z ręki
 
     # Wyświetlanie stanu zamiany
@@ -84,10 +84,10 @@ def wes_karte_z_stosu_odkrytego_i_zamien_z_reką(state):
     # Zamiana kart
     state, card1, card2 = cur_player.swap_card(state, card1, card2)
     card2.selected_info = False
-    # if cur_player.isHuman == "human":
-    #     card1.selected_info = "niewidoczna"
-    # else:
-    #     card1.selected_info = False
+    if cur_player.isHuman == "human":
+        card1.selected_info = "niewidoczna"
+    else:
+        card1.selected_info = False
 
     # Resetowanie flagi clicked na False po wykonaniu akcji
     card1.clicked = False
