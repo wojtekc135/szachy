@@ -93,15 +93,13 @@ class Round:
 
     def show_2_cards(self, hand, game_renderer, game_round, state, action_text):
         game_renderer.draw_state(game_round, state, action_text)
-        picked_set = set()
         while game_round.count_known_for_player(hand) < 2:
             if game_round.player_type == "human":
-                picked_card = InputHandler.choose_from(hand)
-                picked_set.add(picked_card)
+                picked_card = game_round.choose_card_from_hand(state, "hand1")
                 if not picked_card.known_for_player:
                     picked_card.show_front = True
                     picked_card.known_for_player = True
-                    #picked_card.selected_info = "Niewidoczna"
+                    picked_card.selected_info = "Niewidoczna"
 
             if game_round.player_type == "bot":
                 picked_card = choice(hand)
@@ -119,7 +117,7 @@ class Round:
             for card in picked_set:
                 card.show_front = False
 
-    def take_card_from_any_pile(self, state, game_round, game_renderer):
+    def take_bottom_card_from_any_pile(self, state, game_round, game_renderer):
         # Żeby była informacja wybrano pod stackiem proponuje zrobić nową metode (ciezko pobrac lokalizacje, trzeba z card z update wziac)
         # lub nie robić tego wógle i zrobić  animacje poruszania  się karty
         # lub ustawiać tą informacje na karte na samej górze stacku (tak ja robiłem) i potem ją zdejmować, ponieważ draw_state wyswietla tylko ostanią karte z stacka
@@ -143,6 +141,7 @@ class Round:
         #print(new_card_from_stack.location)
 
         # aktualizacja kard, żeby np niewkładały się obrocone czy coś, moze trzeba cos dodac jeszcze
+        new_card_from_stack.selected_info = False
         if new_card_from_stack.location == "face_down_pile":
             new_card_from_stack.show_front = False
         elif new_card_from_stack == "face_up_pile":
@@ -150,12 +149,10 @@ class Round:
 
         if game_round.player_type == "human":
             new_card_from_hand.selected_info = "niewidoczna"
-            if stack_type == "face_down_pile":
-                new_card_from_hand.show_front = False
-            else: new_card_from_hand.show_front = True
+            new_card_from_hand.show_front = True
         elif game_round.player_type == "bot":
             new_card_from_hand.selected_info = "niewidoczna"
-            new_card_from_hand.show_front = False
+            new_card_from_hand.show_front = True
 
         game_round.debug(state)
         game_renderer.draw_state(game_round, state, "Zamieniono miejscami")

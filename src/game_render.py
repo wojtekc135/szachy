@@ -32,7 +32,7 @@ class GameRenderer:
         Returns:
             None
         Przykład użycia:
-            game_renderer.draw_state(cur_player, state, "Wybierz ze stosu odkrytego", round_number)
+            game_renderer.draw_state(game_round, state, "Wybierz ze stosu odkrytego")
         """
         self.screen.blit(self.assets["background"], (0, 0))
         player_type = "gracza" if game_round.player_type == "human" else "bota"
@@ -40,22 +40,10 @@ class GameRenderer:
                     self.font, "black", "white",
                     x=0.74 * self.screen.get_width(),
                     y=0.028 * self.screen.get_height())
-        # for cards in [state["hand1"], state["hand2"], state["hand3"], state["hand4"],
-        #              state["face_down_pile"], state["face_up_pile"]]:
-        #     for card in cards:
 
-        if state["face_down_pile"]:
-            face_down_hand = [state["face_down_pile"][-1]]
-        else:
-            face_down_hand = []
-
-        if state["face_up_pile"]:
-            face_up_hand = [state["face_up_pile"][-1]]
-        else:
-            face_up_hand = []
-
+        # state["face_down_pile"][-1] wyświetlanie tylko ostatnich kart z stosów
         for hand in [state["hand1"], state["hand2"], state["hand3"], state["hand4"],
-                     face_down_hand, face_up_hand]:
+                     [state["face_down_pile"][-1]], [state["face_up_pile"][-1]]]:
             for card in hand:
                 card.draw(self.screen)
         pygame.display.flip()
