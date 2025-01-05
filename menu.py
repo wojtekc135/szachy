@@ -1,5 +1,4 @@
-#Dodanie dźwięku OK
-
+#Dodanie większej ilości dźwięków i opcja ich zmiany OK
 import pygame
 import sys
 import webbrowser
@@ -28,9 +27,23 @@ OP_SCALED = pygame.transform.scale(OP, (SCREEN_WIDTH, SCREEN_HEIGHT))
 TABLE = pygame.image.load("assets/stół.png")
 TABLE_SCALED = pygame.transform.scale(TABLE, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
-#Music/Sounds:
-music1 = pygame.mixer_music.load('assets/muzyka/Cozy day.mp3')
-pygame.mixer_music.play(-1)
+# Ścieżki muzyczne
+music_tracks = [
+    'assets/muzyka/Cozy day.mp3',
+    'assets/muzyka/Memories.mp3',
+    'assets/muzyka/Coffee.mp3'
+]
+current_track_index = 0  # Aktualny indeks ścieżki
+
+pygame.mixer.music.load(music_tracks[current_track_index])
+pygame.mixer.music.play(-1)
+
+def change_music(direction):
+    global current_track_index
+    pygame.mixer.music.stop()
+    current_track_index = (current_track_index + direction) % len(music_tracks)
+    pygame.mixer.music.load(music_tracks[current_track_index])
+    pygame.mixer.music.play(-1)
 
 def get_font(size):  # Zwraca czcionkę o określonym rozmiarze
     return pygame.font.Font("assets/Berylium/Berylium.ttf", size)
@@ -183,14 +196,14 @@ def show_authors():
 
 
 def options():
-    global SCREEN, fullscreen  # Zmienna globalna dla okna gry i trybu fullscreen
+    global SCREEN, fullscreen, current_track_index  # Dodanie globalnej zmiennej indeksu muzyki
     while True:
         OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
 
         SCREEN.blit(OP_SCALED, (0, 0))
 
         # Napisy na ustawienia dźwięku, rozdzielczości, ekranu
-        OPTIONS_DZW = get_font(43).render("Dźwięk", True, "#674a29")
+        OPTIONS_DZW = get_font(43).render("Muzyka", True, "#674a29")
         OPTIONS_EKR = get_font(43).render("Ekran", True, "#674a29")
 
         OPTIONS_RECT_D = OPTIONS_DZW.get_rect(center=(620, 200))
@@ -198,6 +211,12 @@ def options():
 
         SCREEN.blit(OPTIONS_DZW, OPTIONS_RECT_D)
         SCREEN.blit(OPTIONS_EKR, OPTIONS_RECT_E)
+
+        # Wyświetlanie aktualnie odtwarzanej muzyki
+        current_music_name = os.path.splitext(os.path.basename(music_tracks[current_track_index]))[0]  # Pobiera nazwę pliku bez rozszerzenia
+        current_music_text = get_font(43).render(current_music_name, True, "#674a29")
+        current_music_rect = current_music_text.get_rect(center=(875, 200))
+        SCREEN.blit(current_music_text, current_music_rect)
 
         # Napisy z informacją o trybie ekranu:
         if fullscreen:
@@ -207,20 +226,20 @@ def options():
         screen_mode_rect = screen_mode_text.get_rect(center=(875, 500))
         SCREEN.blit(screen_mode_text, screen_mode_rect)
 
-        # Przycisk back:
+        # Przycisk powrotu
         OPTIONS_BACK = Button(image=None, pos=(620, 650),
                               text_input="Powrót", font=get_font(43), base_color="#674a29", hovering_color="White",
                               scale=1)
         OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
         OPTIONS_BACK.update(SCREEN)
 
-        # Przycisk autorzy:
+        # Przycisk autorzy
         OPTIONS_AUT = Button(image=None, pos=(620, 350), text_input="Autorzy", font=get_font(43), base_color="#674a29",
                              hovering_color="White", scale=1)
         OPTIONS_AUT.changeColor(OPTIONS_MOUSE_POS)
         OPTIONS_AUT.update(SCREEN)
 
-        # Przyciski strzałek do zmiany trybu ekranu:
+        # Przyciski strzałek do zmiany trybu ekranu
         OPTIONS_ARROW_L = Button(image=pygame.image.load("assets/strzałka2.png"), pos=(750, 500),
                                  text_input=None, font=get_font(43), base_color="#674a29", hovering_color="White",
                                  scale=0.35)
@@ -229,6 +248,16 @@ def options():
                                  scale=0.35)
         OPTIONS_ARROW_L.update(SCREEN)
         OPTIONS_ARROW_R.update(SCREEN)
+
+        # Przyciski do zmiany muzyki
+        MUSIC_ARROW_L = Button(image=pygame.image.load("assets/strzałka2.png"), pos=(750, 200),
+                                text_input=None, font=get_font(43), base_color="#674a29", hovering_color="White",
+                                scale=0.35)
+        MUSIC_ARROW_R = Button(image=pygame.image.load("assets/strzałka.png"), pos=(1000, 200),
+                                text_input=None, font=get_font(43), base_color="#674a29", hovering_color="White",
+                                scale=0.35)
+        MUSIC_ARROW_L.update(SCREEN)
+        MUSIC_ARROW_R.update(SCREEN)
 
         # Obsługa zdarzeń
         for event in pygame.event.get():
@@ -240,13 +269,18 @@ def options():
                     main_menu()
                 if OPTIONS_ARROW_L.checkForInput(OPTIONS_MOUSE_POS) or OPTIONS_ARROW_R.checkForInput(OPTIONS_MOUSE_POS):
                     toggle_fullscreen()
-                if OPTIONS_AUT.checkForInput(OPTIONS_MOUSE_POS):  # Przekierowanie do okna autorów
+                if OPTIONS_AUT.checkForInput(OPTIONS_MOUSE_POS):
                     show_authors()
+                if MUSIC_ARROW_L.checkForInput(OPTIONS_MOUSE_POS):
+                    change_music(-1)
+                if MUSIC_ARROW_R.checkForInput(OPTIONS_MOUSE_POS):
+                    change_music(1)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_F11:  # F11 to klawisz skrótu
                     toggle_fullscreen()
 
         pygame.display.update()
+
 
 
 main_menu()
