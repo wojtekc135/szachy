@@ -1,5 +1,4 @@
-#Zrobienie funkcji fullscreen oraz dodanie skrótu klawiszowego f11, który przełącza tryb okna. OK
-#Usunięcie resolution i dodanie autorów OK
+#Dodanie dźwięku OK
 
 import pygame
 import sys
@@ -29,6 +28,9 @@ OP_SCALED = pygame.transform.scale(OP, (SCREEN_WIDTH, SCREEN_HEIGHT))
 TABLE = pygame.image.load("assets/stół.png")
 TABLE_SCALED = pygame.transform.scale(TABLE, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
+#Music/Sounds:
+music1 = pygame.mixer_music.load('assets/muzyka/Cozy day.mp3')
+pygame.mixer_music.play(-1)
 
 def get_font(size):  # Zwraca czcionkę o określonym rozmiarze
     return pygame.font.Font("assets/Berylium/Berylium.ttf", size)
@@ -149,7 +151,7 @@ def show_authors():
             "Maja Skóra - Menu gry",
             "Olga Russell - Boty",
             "Joanna Frączyk - Core logic",
-            "Magdalena Majda, Wiktoria Szczepaniak - Warianty gry"
+            "Wojtek Cieślik, Magdalena Majda, Wiktoria Szczepaniak - Warianty gry"
         ]
 
         y_offset = 250
