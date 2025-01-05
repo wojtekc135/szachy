@@ -13,7 +13,7 @@ class GameRenderer:
         self.assets = assets
         self.font = font
 
-    def draw_state(self, cur_player, state, action_text):
+    def draw_state(self, game_round, state, action_text):
         """
         Rysuje bieżący stan gry, w tym tło, karty graczy i tekst akcji.
         Args:
@@ -32,16 +32,21 @@ class GameRenderer:
         Returns:
             None
         Przykład użycia:
-            game_renderer.draw_state(cur_player, state, "Wybierz ze stosu odkrytego", round_number)
+            game_renderer.draw_state(game_round, state, "Wybierz ze stosu odkrytego")
         """
         self.screen.blit(self.assets["background"], (0, 0))
-        player_type = "gracza" if cur_player.isHuman == "human" else "bota"
-        message_box(self.screen, f"Tura {player_type} {cur_player.player_number}: {action_text}",
+        player_type = "gracza" if game_round.player_type == "human" else "bota"
+        message_box(self.screen, f"Tura {player_type} {str(game_round.player_number)}: {action_text}",
                     self.font, "black", "white",
                     x=0.74 * self.screen.get_width(),
                     y=0.028 * self.screen.get_height())
+
+        # state["face_down_pile"][-1] wyświetlanie tylko ostatnich kart z stosów
         for hand in [state["hand1"], state["hand2"], state["hand3"], state["hand4"],
-                     [state["face_down_pile"][-1]], [state["face_up_pile"]][-1]]:
+                     [state["face_down_pile"][-1]], [state["face_up_pile"][-1]]]:
             for card in hand:
                 card.draw(self.screen)
+                if card.clicked:
+                    pygame.draw.rect(self.screen, (255, 0, 0), card.rect.inflate(10, 10), width=4, border_radius=10)
+
         pygame.display.flip()
