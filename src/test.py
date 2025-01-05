@@ -20,8 +20,14 @@ def create_example_state(screen, assets, state):
     id+=1
     state["face_up_pile"].append(Card(screen, assets["cards"][1], assets["card_back"], True, True, "face_up_pile", 1, False, False, card_size,id))
     id+=1
-    state["face_down_pile"] = [Card(screen, assets["cards"][i], assets["card_back"], False, False, "face_down_pile", 0,
-                                    False, False, card_size,id)] * 10
+    state["face_down_pile"].append(Card(screen, assets["cards"][0], assets["card_back"], False, False, "face_down_pile", 0,
+                                    False, False, card_size,id))
+    id+=1
+    state["face_down_pile"].append(Card(screen, assets["cards"][1], assets["card_back"], False, False, "face_down_pile", 1,
+                                    False, False, card_size, id))
+    for localisation in state:
+        for card in state[localisation]:
+            card.update_position() # zainicjalizowanie kart bardzo  ważne
     return state
 
 
@@ -59,28 +65,28 @@ def show_2_cards(hand, game_renderer, cur_player, state, action_text, game_round
         game_renderer.draw_state(cur_player, state, action_text)
 
 
-def wes_karte_z_stosu_odkrytego_i_zamien_z_reką(state):
-    # wybranie karty ze stosu odkrytego
-    game_renderer.draw_state(cur_player, state, "Wybierz ze stosu odkrytego")
-    card1 = InputHandler.choose_from(state["face_up_pile"])
-    loc=card1.location
-    print(state[loc])
-    print(card1.location, card1.location_number)
-    card1 = state[loc][1]
-    print(card1.location, card1.location_number)
-    card1.selected_info = "wybrano"
+def wes_karte_z_dowolnego_stosu_ze_spodu(state):
+    # Żeby była informacja wybrano pod stackiem proponuje zrobić nową metode (ciezko pobrac lokalizacje, trzeba z card z update wziac)
+    # lub ustawiać tą informacje na karte na samej górze stacku i potem ją zdejmować, ponieważ draw_state wyswietla tylko ostanią karte z stacka
+    # wybranie karty z dowolnego
+    game_renderer.draw_state(cur_player, state, "Wybierz stos")
+    stack_type = player1.choose_stack_type(state)
+    stack_index_to_choose = -1 # spód karty
+    # stack_index_to_choose = -1 góra
+    card_from_stack =  player1.choose_card_from_stack(state, stack_type, stack_index_to_choose)
 
     game_renderer.draw_state(cur_player, state, " Wybierz karte z ręki")
-    card2 = InputHandler.choose_from(state[cur_hand])
+    card2 = player1.choose_card_from_hand(state, "hand1")
     card2.selected_info = "wybrano"
 
     game_renderer.draw_state(cur_player, state, "Zamienianie miejscami")
     pygame.time.wait(500)
-    state, card1, card2 = cur_player.swap_card(state, card1,
+    state, card1, card2 = player1.swap_card(state, card_from_stack,
                                                card2)
     card2.selected_info = False
     if cur_player.isHuman == "human":
         card1.selected_info = "niewidoczna"
+        card1.show_front = True
     else:
         card1.selected_info = False
     game_round.print_state(state)
@@ -137,7 +143,7 @@ while running:
         show_2_cards(state[cur_hand], game_renderer, cur_player, state, action_text, game_round, cur_player.isHuman)
 
     elif game_round.round_number > 4:
-        wes_karte_z_stosu_odkrytego_i_zamien_z_reką(state)
+        wes_karte_z_dowolnego_stosu_ze_spodu(state)
 
     game_round.round_number += 1
     pygame.time.wait(200)
