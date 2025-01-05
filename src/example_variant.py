@@ -39,7 +39,7 @@ def example_variant(screen):
             game_round.show_2_cards(state[cur_hand], game_renderer, game_round, state, action_text)
 
         elif game_round.round_number > 4:
-            game_round.take_card_from_any_pile(state, game_round, game_renderer)
+            game_round.take_bottom_card_from_any_pile(state, game_round, game_renderer)
 
         # aktualizacja rundy
         game_round.round_number += 1
