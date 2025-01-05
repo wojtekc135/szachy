@@ -1,4 +1,5 @@
-#Dodanie większej ilości dźwięków i opcja ich zmiany OK
+#Uzupełnienie okna "graj" - dodanie tła OK
+
 import pygame
 import sys
 import webbrowser
@@ -119,16 +120,17 @@ def open_rules():
 
 def play():
     while True:
+        SCREEN.blit(OP_SCALED, (0, 0))
         PLAY_MOUSE_POS = pygame.mouse.get_pos()
 
-        SCREEN.fill("black")
-
-        PLAY_TEXT = get_font(45).render("This is the PLAY screen.", True, "White")
-        PLAY_RECT = PLAY_TEXT.get_rect(center=(640, 260))
+        #Nagłówek:
+        PLAY_TEXT = get_font(45).render("Wybierz wariant gry:", True, "White")
+        PLAY_RECT = PLAY_TEXT.get_rect(center=(760, 200))
         SCREEN.blit(PLAY_TEXT, PLAY_RECT)
 
-        PLAY_BACK = Button(image=None, pos=(640, 460),
-                           text_input="BACK", font=get_font(75), base_color="White", hovering_color="Green", scale=1)
+        #Przycisk back:
+        PLAY_BACK = Button(image=None, pos=(760, 675),
+                           text_input="Powrót", font=get_font(43), base_color="#674a29", hovering_color="White", scale=1)
 
         PLAY_BACK.changeColor(PLAY_MOUSE_POS)
         PLAY_BACK.update(SCREEN)
@@ -280,8 +282,6 @@ def options():
                     toggle_fullscreen()
 
         pygame.display.update()
-
-
 
 main_menu()
 
