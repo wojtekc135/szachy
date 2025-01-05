@@ -46,6 +46,10 @@ class Card:
         hand_length = gap * self.card_size[0] * 3 + self.card_size[0]
         h13_centerx = (self.screen_width - hand_length) / 2
         h13_centery = ((self.screen_height - self.card_size[1]) * 0.1) / 2
+        if self.location_number == 5:
+            return h13_centerx, self.screen_height - h13_centery - 3 * self.card_size[0]
+        if self.location_number == 6:
+            return h13_centerx + 3 * (self.card_size[0] + gap_12), self.screen_height - h13_centery - 3 * self.card_size[0]
         if self.location == "hand1":
             return h13_centerx, self.screen_height - h13_centery - self.card_size[1]
         elif self.location == "hand2":

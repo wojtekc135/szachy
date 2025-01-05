@@ -115,7 +115,7 @@ class Round:
             game_renderer.draw_state(game_round, state, "Podgladnie...")
 
         if game_round.player_type == "human":
-            pygame.time.wait(2000)
+            pygame.time.wait(1000)
             for card in picked_set:
                 card.show_front = False
 
@@ -125,12 +125,13 @@ class Round:
         # lub ustawiać tą informacje na karte na samej górze stacku (tak ja robiłem) i potem ją zdejmować, ponieważ draw_state wyswietla tylko ostanią karte z stacka
         # albo nic xd
 
-        # wybranie karty z dowolnego stosu i zamienienie dołu  stosu  z wybraną kartą z reki
+
         game_renderer.draw_state(game_round, state, "Wybierz stos")
         stack_type = game_round.choose_stack_type(state)
-        stack_index_to_choose = -1  # 0 spód karty, -1 góra
+        stack_index_to_choose = -1  # 0 spód stacku, -1 góra
         card_from_stack = game_round.choose_card_from_stack(state, stack_type, stack_index_to_choose)
         game_renderer.draw_state(game_round, state, " Wybierz karte z ręki")
+        pygame.time.wait(100)
         card_from_hand = game_round.choose_card_from_hand(state, "hand1")
         card_from_hand.selected_info = "wybrano"
 
@@ -139,13 +140,14 @@ class Round:
         state, new_card_from_hand, new_card_from_stack = game_round.swap_card(state, card_from_stack, card_from_hand)
         new_card_from_hand.selected_info = False
         state[new_card_from_stack.location].pop()
-        print(new_card_from_stack.location)
+        #print(new_card_from_stack.location)
 
         # aktualizacja kard, żeby np niewkładały się obrocone czy coś, moze trzeba cos dodac jeszcze
         if new_card_from_stack.location == "face_down_pile":
             new_card_from_stack.show_front = False
         elif new_card_from_stack == "face_up_pile":
             new_card_from_stack.show_front = True
+
         if game_round.player_type == "human":
             new_card_from_hand.selected_info = "niewidoczna"
             if stack_type == "face_down_pile":
