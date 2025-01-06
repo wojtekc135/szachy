@@ -1,4 +1,4 @@
-#Uzupełnienie okna "graj" - dodanie tła OK
+#Dodano możliwość wyboru wariantów oraz dodanie ikony gry OK
 
 import pygame
 import sys
@@ -7,6 +7,9 @@ from button import Button
 import os
 
 pygame.init()
+# Ustawienie ikony gry
+game_icon = pygame.image.load("assets/ikonka.png")
+pygame.display.set_icon(game_icon)
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 info = pygame.display.Info()
@@ -123,17 +126,27 @@ def play():
         SCREEN.blit(OP_SCALED, (0, 0))
         PLAY_MOUSE_POS = pygame.mouse.get_pos()
 
-        #Nagłówek:
+        # Nagłówek:
         PLAY_TEXT = get_font(45).render("Wybierz wariant gry:", True, "White")
         PLAY_RECT = PLAY_TEXT.get_rect(center=(760, 200))
         SCREEN.blit(PLAY_TEXT, PLAY_RECT)
 
-        #Przycisk back:
+        # Przyciski dla trybów gry:
+        MODE_1 = Button(image=None, pos=(760, 300), text_input="Nie takie kruki straszne", font=get_font(40),
+                        base_color="White", hovering_color="#F4A460", scale=1)
+        MODE_2 = Button(image=None, pos=(760, 400), text_input="Idź na całość", font=get_font(40),
+                        base_color="White", hovering_color="#F4A460", scale=1)
+        MODE_3 = Button(image=None, pos=(760, 500), text_input="Wiem, co mam", font=get_font(40),
+                        base_color="White", hovering_color="#F4A460", scale=1)
+
+        # Przycisk powrotu:
         PLAY_BACK = Button(image=None, pos=(760, 675),
                            text_input="Powrót", font=get_font(43), base_color="#674a29", hovering_color="White", scale=1)
 
-        PLAY_BACK.changeColor(PLAY_MOUSE_POS)
-        PLAY_BACK.update(SCREEN)
+        # Wyświetlenie przycisków:
+        for button in [MODE_1, MODE_2, MODE_3, PLAY_BACK]:
+            button.changeColor(PLAY_MOUSE_POS)
+            button.update(SCREEN)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -142,6 +155,12 @@ def play():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PLAY_BACK.checkForInput(PLAY_MOUSE_POS):
                     main_menu()
+                if MODE_1.checkForInput(PLAY_MOUSE_POS):
+                    print("Wybrano tryb: Nie takie kruki straszne")  # Zastąp odpowiednią funkcją
+                if MODE_2.checkForInput(PLAY_MOUSE_POS):
+                    print("Wybrano tryb: Idź na całość")  # Zastąp odpowiednią funkcją
+                if MODE_3.checkForInput(PLAY_MOUSE_POS):
+                    print("Wybrano tryb: Wiem, co mam")  # Zastąp odpowiednią funkcją
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_F11:  # F11 to klawisz skrótu
                     toggle_fullscreen()
