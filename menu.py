@@ -1,4 +1,5 @@
-#DODANIE IKONY DŹWIĘK CO 10 PROCENT, przerobienie układu opcji.
+#Naprawienie volume level - sprawienie, że nie resetuje się po wyjściu z opcji.
+
 import pygame
 import sys
 import webbrowser
@@ -37,9 +38,10 @@ music_tracks = [
     'assets/muzyka/Coffee.mp3'
 ]
 current_track_index = 0  # Aktualny indeks ścieżki
-
 pygame.mixer.music.load(music_tracks[current_track_index])
 pygame.mixer.music.play(-1)
+
+volume_level = 1.0  # Globalny poziom głośności
 
 def load_gif_frames(folder_path):
     frames = []
@@ -62,7 +64,6 @@ def change_music(direction):
     current_track_index = (current_track_index + direction) % len(music_tracks)
     pygame.mixer.music.load(music_tracks[current_track_index])
     pygame.mixer.music.play(-1)
-
 
 def get_font(size):  # Zwraca czcionkę o określonym rozmiarze
     return pygame.font.Font("assets/Berylium/Berylium.ttf", size)
@@ -240,8 +241,8 @@ def show_authors():
 
 
 def options():
-    global SCREEN, fullscreen, current_track_index  # Dodanie globalnej zmiennej indeksu muzyki
-    volume_level = 1.0  # Początkowy poziom głośności (100%)
+    global SCREEN, fullscreen, current_track_index, volume_level  # Dodanie globalnej zmiennej indeksu muzyki
+
 
     while True:
         OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
