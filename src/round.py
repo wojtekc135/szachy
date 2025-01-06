@@ -60,8 +60,9 @@ class Round:
         swap_card_button = ActionButton(100,200, "swap card", button_img, False)
         do_not_use_card_button = ActionButton(100,300, "do not use card", button_img, False)
         EXAMPLE_SWAP_button = ActionButton(100,400, "swap card chosen_pile_bottom <-> hand", button_img, False)
-        what_card_do_button = ActionButton(100,700, "what card do", button_img, False)
-        action_buttons = [use_card_button, swap_card_button, what_card_do_button, do_not_use_card_button, EXAMPLE_SWAP_button]
+        what_card_do_button = ActionButton(100, 700, "what card do", button_img, False)
+        woke_button= ActionButton(button_width * 8.5, button_height*2, "pobudka", button_img, False) # kontrowersyjne ustawienie, ale takie refactoruje
+        action_buttons = [use_card_button, swap_card_button, what_card_do_button, do_not_use_card_button, EXAMPLE_SWAP_button, woke_button]
         state["action_buttons"] =  action_buttons
         for localisation in state:
             if localisation != "action_buttons":
@@ -103,7 +104,13 @@ class Round:
 
     def choose_card_from_stack(self, state, stack_type, index):
         card = state[stack_type][index]
-        card.clicked = True
+        return card
+
+    def choose_card_from_stack_up(self,state, stack_type):
+        card = state[stack_type][-1]
+        return card
+    def choose_card_from_stack_bottom(self, state, stack_type):
+        card = state[stack_type][0]
         return card
 
     def choose_card_from_hand(self, state, hand_name):
@@ -111,7 +118,9 @@ class Round:
         card.clicked = True
         return card
 
+    # eh
     def add_to_pile(self, state, card, target_pile):
+        # nie widze potrzeby tej funkcji, bo karty nigdzie nie znikają, wystarczy używać tylko swapa chyba
         state[card.location] = target_pile
         card.location = target_pile
 
@@ -125,7 +134,7 @@ class Round:
 
     def human_show_2_cards(self, hand, game_renderer, game_round, state):
         action_text = "Podglądnij 2 karty"
-        picked_set = set()
+        picked_set = set() # znowu niepotrzebna zmiana stabilnej wersji ktora działała,  nie wiem moze to dziala, a moze beda bledy
         game_renderer.draw_state(game_round, state, action_text)
         while game_round.count_known_for_player(hand) < 2:
             picked_card = game_round.choose_card_from_hand(state, "hand1")
@@ -158,15 +167,16 @@ class Round:
         for button in state["action_buttons"]:
             button.show = True
 
-    def hide_all_buttons(self,state):
+
+    def hide_all_action_buttons(self,state):
         for button in state["action_buttons"]:
             button.show = False
 
-    def show_buttons_choose_option_and_hide_buttons(self,state, game_round, game_renderer, action_text):
+    def show_action_buttons_choose_option_and_hide_buttons(self,state, game_round, game_renderer, action_text):
         self.show_all_buttons(state)
         game_renderer.draw_state(game_round, state, action_text)
         chosen_button = InputHandler.choose_from(state["action_buttons"])
-        self.hide_all_buttons(state)
+        self.hide_all_action_buttons(state)
         return chosen_button
 
     def swap_card2(self):
@@ -179,7 +189,26 @@ class Round:
         pygame.time.wait(1000)
         return
 
-    def swap_bottom_chosen_pile_with_hand(self,game_renderer,game_round,state, chosen_stack_type):
+    def do_not_use_card(self,game_renderer, game_round, state):
+        game_renderer.draw_state(game_round, state, "Odkładasz kartę na stos odkryty")
+        # game_round.add_to_pile(state, card_from_stack, "face_up_pile")  # Do poprawy
+        pygame.time.wait(1000)
+        return
+
+    def what_card_do(self,game_renderer, game_round, state, card_from_stack):
+        # nie  wiem czy tu ma byc card from   stack
+        game_renderer.draw_state(game_round, state, "Sprawdzasz działanie karty")
+        pygame.time.wait(1000)
+        # Dodaj logikę wyświetlania opisu działania karty: edit mozna stworzyc funkcje ktora blituje kwadrat z tekstem
+        # po prostu i dodac ja do utils, zmienic ustawienie kart na ekranie zeby bylo wiecej miejsca
+        game_renderer.draw_state(game_round, state, f"Karta: {card_from_stack.get_description()}")
+        pygame.time.wait(2000)
+        return
+
+    def wake_up(self):
+        pass # dodac tu wywołanie wake up co sie dzieje, bo wybieranie przycisku juz poprawilem w examplach
+
+    def swap_bottom_chosen_pile_with_hand(self,game_renderer,game_round,state, chosen_stack_type): #example
         game_renderer.draw_state(game_round, state, " Wybierz karte z ręki")
         card_from_hand = game_round.choose_card_from_hand(state, "hand1")
         card_from_stack = self.choose_card_from_stack_bottom(state,chosen_stack_type)
@@ -203,28 +232,12 @@ class Round:
             new_card_from_hand.highlighted = True
         """
 
-    def do_not_use_card(self,game_renderer, game_round, state):
-        game_renderer.draw_state(game_round, state, "Odkładasz kartę na stos odkryty")
-        # game_round.add_to_pile(state, card_from_stack, "face_up_pile")  # Do poprawy
-        pygame.time.wait(1000)
-        return
-
-    def what_card_do(self,game_renderer, game_round, state, card_from_stack):
-        # nie  wiem czy tu ma byc card from   stack
-        game_renderer.draw_state(game_round, state, "Sprawdzasz działanie karty")
-        pygame.time.wait(1000)
-        # Dodaj logikę wyświetlania opisu działania karty: edit mozna stworzyc funkcje ktora blituje kwadrat z tekstem
-        # po prostu i dodac ja do utils, zmienic ustawienie kart na ekranie zeby bylo wiecej miejsca
-        game_renderer.draw_state(game_round, state, f"Karta: {card_from_stack.get_description()}")
-        pygame.time.wait(2000)
-        return
-
     def human_take_bottom_card_from_any_pile_add_it_on_front_to_hand(self, state, game_round, game_renderer): #example
         game_renderer.draw_state(game_round, state, "Wybierz stos")
         chosen_stack_type = self.choose_stack_type(state) #choose_from_stack  ma w srodu input handler dlatego rozgrywka ,,pausuje" i czeka na wybor karty
         chosen_card_from_stack = self.choose_card_from_stack_bottom(state, chosen_stack_type) # tego tu moze nie byc tylko  trzeba odpowiednio inne opcje zrobic argumenty to jest tylko zeby sie nic narazie nie popsulo bo moja funkcja to przyklad
         # zrobcie moze zamiast create example state, juz poprawne rozdanie kart na poczatku rozgrywki, bo to pisze ze jest example, ta funkcja to tez przyklad tylko
-        chosen_button = self.show_buttons_choose_option_and_hide_buttons(state,game_round,game_renderer,"wybierz opcje")
+        chosen_button = self.show_action_buttons_choose_option_and_hide_buttons(state,game_round,game_renderer,"wybierz opcje")
         chosen_option = chosen_button.text
         if chosen_option == "use card":
             self.use_card(game_round,game_renderer,state,chosen_card_from_stack)
@@ -236,9 +249,12 @@ class Round:
             self.do_not_use_card(game_renderer,game_round,state)
         elif chosen_option == "what card do":  # Co robi karta
             self.what_card_do(game_renderer,game_round,state,chosen_card_from_stack)
+        elif chosen_option == "pobudka":
+            self.wake_up()
+
 
         game_round.debug(state)
-        game_renderer.draw_state(game_round, state, "Zamieniono miejscami")
+        game_renderer.draw_state(game_round, state, f"Wykonano akcje: {chosen_option}")
 
     def bot_take_bottom_card_from_any_pile(self, state, game_round, game_renderer):
         pass
@@ -355,7 +371,10 @@ class Round:
     def bot_take_card_from_any_pile(self, state, game_round, game_renderer):
         print("robot! ᕙ(  •̀ ᗜ •́  )ᕗ") #do zrobienia
 
+
     def wake_up_option(self, state, game_renderer, game_round):
+        # Dodałem wwybranie opcji wake_up_do zrefaktorowanych metod,  wakeup wyswietla sie zazwsze kiedy wybieranie innych opcji jak np. swap
+        # bedzie to pewnie mozna usunac po implementacji do metody wake_up na ktora zrobilem miejsce
         wake_up = False
         button_img = pygame.image.load("../assets/przycisk.png").convert_alpha()
         button_width, button_height = 200, 100
