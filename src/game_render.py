@@ -42,8 +42,19 @@ class GameRenderer:
                     y=0.028 * self.screen.get_height())
 
         # state["face_down_pile"][-1] wyświetlanie tylko ostatnich kart z stosów
+        # żeby nie bybło problemu jak stos pusty
+        if state["face_down_pile"]:
+            face_down_hand = [state["face_down_pile"][-1]]
+        else:
+            face_down_hand = []
+
+        if state["face_up_pile"]:
+            face_up_hand = [state["face_up_pile"][-1]]
+        else:
+            face_up_hand = []
+
         for hand in [state["hand1"], state["hand2"], state["hand3"], state["hand4"],
-                     [state["face_down_pile"][-1]], [state["face_up_pile"][-1]]]:
+                     face_down_hand, face_up_hand]:
             for card in hand:
                 card.draw(self.screen)
         pygame.display.flip()
