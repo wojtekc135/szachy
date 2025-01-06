@@ -1,4 +1,4 @@
-#Dodano możliwość wyboru wariantów oraz dodanie ikony gry OK
+#Dodano gify na tło OK
 
 import pygame
 import sys
@@ -42,6 +42,21 @@ current_track_index = 0  # Aktualny indeks ścieżki
 pygame.mixer.music.load(music_tracks[current_track_index])
 pygame.mixer.music.play(-1)
 
+def load_gif_frames(folder_path):
+    frames = []
+    for filename in sorted(os.listdir(folder_path)):
+        if filename.endswith(".png"):  # Sprawdź rozszerzenie plików
+            frame = pygame.image.load(os.path.join(folder_path, filename))
+            frame = pygame.transform.scale(frame, (SCREEN_WIDTH, SCREEN_HEIGHT))  # Skalowanie do rozmiaru ekranu
+            frames.append(frame)
+    return frames
+
+GIF_FRAMES = load_gif_frames("assets/klatki")
+current_frame = 0  # Indeks aktualnej klatki
+frame_delay = 300  # Opóźnienie między klatkami w milisekundach
+last_frame_update = pygame.time.get_ticks()  # Czas ostatniej zmiany klatki
+
+
 def change_music(direction):
     global current_track_index
     pygame.mixer.music.stop()
@@ -67,8 +82,15 @@ def toggle_fullscreen():
 
 
 def main_menu():
+    global current_frame, last_frame_update
     while True:
-        SCREEN.blit(BG_SCALED, (0, 0))
+        SCREEN.blit(GIF_FRAMES[current_frame], (0, 0))  # Wyświetlenie klatki GIF-a
+
+        # Animacja GIF-a
+        current_time = pygame.time.get_ticks()
+        if current_time - last_frame_update > frame_delay:  # Sprawdzenie opóźnienia
+            current_frame = (current_frame + 1) % len(GIF_FRAMES)  # Przejście do następnej klatki
+            last_frame_update = current_time
 
         MENU_MOUSE_POS = pygame.mouse.get_pos()
 
