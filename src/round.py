@@ -1,7 +1,11 @@
+from inspect import stack
+
 import pygame
 from input_handler import InputHandler
 from card import Card
 from random import choice
+
+from action_button import ActionButton
 
 
 class Round:
@@ -48,9 +52,21 @@ class Round:
         state["face_down_pile"].append(
             Card(screen, assets["cards"][1], assets["card_back"], False, False, "face_down_pile", 1,
                  False, False, card_size, id,1))
+
+        button_img = pygame.image.load("../assets/przycisk.png").convert_alpha()
+        button_width, button_height = 200, 50
+        button_img = pygame.transform.scale(button_img, (button_width, button_height))
+        use_card_button  = ActionButton(100,100, "use card", button_img, False)
+        swap_card_button = ActionButton(100,200, "swap card", button_img, False)
+        do_not_use_card_button = ActionButton(100,300, "do not use card", button_img, False)
+        EXAMPLE_SWAP_button = ActionButton(100,400, "swap card chosen_pile_bottom <-> hand", button_img, False)
+        what_card_do_button = ActionButton(100,700, "what card do", button_img, False)
+        action_buttons = [use_card_button, swap_card_button, what_card_do_button, do_not_use_card_button, EXAMPLE_SWAP_button]
+        state["action_buttons"] =  action_buttons
         for localisation in state:
-            for card in state[localisation]:
-                card.update_position()  # zainicjalizowanie kart bardzo  ważne
+            if localisation != "action_buttons":
+                for card in state[localisation]:
+                    card.update_position()  # zainicjalizowanie kart bardzo  ważne
         return state
 
     def debug(self, state):
@@ -65,11 +81,12 @@ class Round:
         """
         print("card id: ", end="")
         for localization in state:
-            print(localization, end=" ")
-            for card in state[localization]:
-                print(" " + str(card.id), end="")
-            print(" ", end="")
-        print("")
+            if  localization != "action_buttons":
+                print(localization, end=" ")
+                for card in state[localization]:
+                    print(" " + str(card.id), end="")
+                print(" ", end="")
+            print("")
 
     def swap_card(self, state, card1, card2):
         state[card1.location][card1.location_number], state[card2.location][card2.location_number] = \

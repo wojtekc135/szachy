@@ -26,6 +26,7 @@ class GameRenderer:
                 "hand4": [],
                 "face_down_pile": [],
                 "face_up_pile": []
+                "action_buttons": []
                 }
             action_text (str): Tekst opisujący akcję wykonywaną przez gracza.
 
@@ -53,8 +54,8 @@ class GameRenderer:
         else:
             face_up_hand = []
 
-        for hand in [state["hand1"], state["hand2"], state["hand3"], state["hand4"],
-                     face_down_hand, face_up_hand]:
-            for card in hand:
-                card.draw(self.screen)
+        for state_type in [state["hand1"], state["hand2"], state["hand3"], state["hand4"],
+                     face_down_hand, face_up_hand, state["action_buttons"]]:
+            for object in state_type:
+                object.draw(self.screen)
         pygame.display.flip()
