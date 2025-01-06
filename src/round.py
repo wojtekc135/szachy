@@ -224,6 +224,7 @@ class Round:
         # Trzeba to ładnie zrobić i oczywiscie jak bot wybiera to nie ma byc show_front, moze jedynie know for player
         new_card_from_hand.show_front = True
         new_card_from_hand.selected_info = False
+        game_renderer.draw_state(game_round, state, f"Zamieniono miejscami")
 
         """
         elif game_round.player_type == "bot":
@@ -252,9 +253,7 @@ class Round:
         elif chosen_option == "pobudka":
             self.wake_up()
 
-
         game_round.debug(state)
-        game_renderer.draw_state(game_round, state, f"Wykonano akcje: {chosen_option}")
 
     def bot_take_bottom_card_from_any_pile(self, state, game_round, game_renderer):
         pass
