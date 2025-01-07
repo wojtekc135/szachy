@@ -5,6 +5,10 @@ class Player:
         self.crows = 0
     # nowy wariant wyswietla runde na podstawie player, ale nie aktualizuje player_nuber nie tak jak bylo w stabilnej wersji gry,
     # nie wiem czy ta klasa ma sens, bo  robi to co round, ale human_use_ability ma sens, nie znam sie na programowaniu obiektowym xd) - Wojtek
+
+    #szczerze tez się nie znam, ale chciałam mieć zeby mi coś wrony gracza trzymało do wyniku
+    # teoretycznie use ability też można wrzucić do card jakoś ale tam jest już tłoczno to se tutaj miejsce wykorzystałam - Madzia
+
     def human_use_ability(self, state, card, game_round, game_renderer):
         temp_hand = "temp_hand"
         stack_type = "face_down_pile"

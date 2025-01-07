@@ -384,7 +384,7 @@ class Round:
         button_width, button_height = 200, 100
         button_img = pygame.transform.scale(button_img, (button_width, button_height))
         font = pygame.font.Font("../assets/Berylium/Berylium.ttf", 50 )
-        better_button = ActionButton(button_width * 8.5,button_height, "Pokbudka", button_img,True, font, 90, (138, 99, 58))
+        better_button = ActionButton(button_width * 8.5,button_height, "Pobudka", button_img,True, font, 90, (138, 99, 58))
 
         decision_made = False
         while not decision_made:
@@ -398,14 +398,11 @@ class Round:
                 if event.type == pygame.MOUSEBUTTONDOWN: #POPRAWIĆ, żeby mozna nacisnąć przycisk lub karte, a nie że jak nie naciśniemy przyciku to potem ejscze raz tzreba na karte
                     mouse_pos = pygame.mouse.get_pos()
                     if better_button.check_click(mouse_pos, event):#button_rect.collidepoint(event.pos):
-                        print('pobudka')
                         decision_made = True
                         wake_up = True
                         game_renderer.draw_state(game_round, state, "POBUDKA")
-                        pygame.time.wait(1000)
                         return wake_up
                     else:
-                        print('missed')
                         decision_made = True
                         break
 
