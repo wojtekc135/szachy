@@ -3,7 +3,7 @@
 import pygame
 import sys
 import webbrowser
-from button import Button
+from menu_button import Button
 import os
 
 pygame.init()
