@@ -5,7 +5,7 @@ import sys
 import webbrowser
 from menu_button import Button
 import os
-
+from example_variant  import example_variant
 pygame.init()
 # Ustawienie ikony gry
 game_icon = pygame.image.load("../assets/ikonka.png")
@@ -181,7 +181,7 @@ def play():
                 if PLAY_BACK.checkForInput(PLAY_MOUSE_POS):
                     main_menu()
                 if MODE_1.checkForInput(PLAY_MOUSE_POS):
-                    print("Wybrano tryb: Nie takie kruki straszne")  # Zastąp odpowiednią funkcją
+                    example_variant(SCREEN)  # Zastąp odpowiednią funkcją
                 if MODE_2.checkForInput(PLAY_MOUSE_POS):
                     print("Wybrano tryb: Idź na całość")  # Zastąp odpowiednią funkcją
                 if MODE_3.checkForInput(PLAY_MOUSE_POS):

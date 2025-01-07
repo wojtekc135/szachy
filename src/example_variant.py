@@ -58,4 +58,4 @@ def example_variant(screen):
     pygame.quit()
 
 
-example_variant(screen)
+#  example_variant(screen)
