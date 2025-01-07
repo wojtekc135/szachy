@@ -1,6 +1,7 @@
 import pygame
 from pygame.font import get_fonts
 
+from player import Player
 from input_handler import InputHandler
 from card import Card
 from random import choice, randint, shuffle
@@ -209,6 +210,7 @@ class Round:
 
     def use_card(self, game_round, game_renderer, state, card_from_stack):
         # nie wiem czy tu ma byc card from stack
+        Player.human_use_ability(self, state, Card, game_round, game_renderer)
         card_from_stack.show_front = False
         game_renderer.draw_state(game_round, state, "Używasz karty")
         pygame.time.wait(1000)
