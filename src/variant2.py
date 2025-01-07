@@ -141,10 +141,11 @@ def idz_na_calosc(screen):
         elif game_round.round_number > 4:
             if game_round.player_type == "human":
                 wake_up = game_round.wake_up_option(state, game_renderer, game_round, screen)
+                player1.human_use_ability(state, state["hand1"][0], game_round, game_renderer)
                 if(not wake_up):
-                    game_round.human_take_card_from_any_pile(state, game_round, game_renderer)
+                    game_round.human_take_card_from_any_pile_POP(state, game_round, game_renderer)
             else:
-                game_round.bot_take_card_from_any_pile(state, game_round, game_renderer)
+                game_round.bot_take_card_from_any_pile_POP(state, game_round, game_renderer)
 
         #pobudka
         if wake_up:

@@ -27,8 +27,8 @@ class Round:
         return sum
 
     def create_example_state(self, screen, assets, card_size, variant):
-
         state = {
+            "temp_hand": [],
             "hand1": [],
             "hand2": [],
             "hand3": [],
@@ -280,10 +280,10 @@ class Round:
 
         game_round.debug(state)
 
-    def bot_take_bottom_card_from_any_pile(self, state, game_round, game_renderer):
+    def bot_take_bottom_card_from_any_pile_POP(self, state, game_round, game_renderer):
         pass
 
-    def human_take_card_from_any_pile(self, state, game_round, game_renderer):
+    def human_take_card_from_any_pile_POP(self, state, game_round, game_renderer):
         game_renderer.draw_state(game_round, state, "Wybierz stos")
         stack_type = game_round.choose_stack_type(state)
         stack_index_to_choose = -1  # 0 spód karty, -1 góra

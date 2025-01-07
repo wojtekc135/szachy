@@ -20,6 +20,7 @@ class GameRenderer:
             cur_player (Player): Bieżący gracz (człowiek lub bot).
             state (dict): Stan gry, zawierający ręce graczy i stosy kart.
             state = {
+                "temp_hand": [],
                 "hand1": [],
                 "hand2": [],
                 "hand3": [],
@@ -57,7 +58,7 @@ class GameRenderer:
         else:
             face_up_hand = []
 
-        for state_type in [state["hand1"], state["hand2"], state["hand3"], state["hand4"],
+        for state_type in [state["temp_hand"], state["hand1"], state["hand2"], state["hand3"], state["hand4"],
                      face_down_hand, face_up_hand, state["action_buttons"]]:
             for object in state_type:
                 object.draw(self.screen)
