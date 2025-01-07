@@ -65,6 +65,7 @@ def change_music(direction):
     pygame.mixer.music.load(music_tracks[current_track_index])
     pygame.mixer.music.play(-1)
 
+
 def get_font(size):  # Zwraca czcionkę o określonym rozmiarze
     return pygame.font.Font("assets/Berylium/Berylium.ttf", size)
 
@@ -207,7 +208,7 @@ def show_authors():
             "Wojtek Cieślik - Gameplay",
             "Hania Szlęk - Grafika",
             "Maja Skóra - Menu gry",
-            "Olga Russell - Boty",
+            "Olga Chruściel - Boty",
             "Joanna Frączyk - Core logic",
             "Magdalena Majda, Wiktoria Szczepaniak - Warianty gry"
         ]
