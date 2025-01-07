@@ -1,6 +1,8 @@
 from inspect import stack
 
 import pygame
+from pygame.font import get_fonts
+
 from input_handler import InputHandler
 from card import Card
 from random import choice
@@ -371,28 +373,28 @@ class Round:
         print("robot! ᕙ(  •̀ ᗜ •́  )ᕗ") #do zrobienia
 
 
-    def wake_up_option(self, state, game_renderer, game_round):
+    def wake_up_option(self, state, game_renderer, game_round, screen):
         # Dodałem wwybranie opcji wake_up_do zrefaktorowanych metod,  wakeup wyswietla sie zazwsze kiedy wybieranie innych opcji jak np. swap
         # bedzie to pewnie mozna usunac po implementacji do metody wake_up na ktora zrobilem miejsce
         wake_up = False
         button_img = pygame.image.load("../assets/przycisk.png").convert_alpha()
         button_width, button_height = 200, 100
         button_img = pygame.transform.scale(button_img, (button_width, button_height))
-        button_rect = button_img.get_rect(topleft=(button_width * 8.5, button_height))
-
+        font = pygame.font.Font("../assets/Berylium/Berylium.ttf", 50 )
+        better_button = ActionButton(button_width * 8.5,button_height, "Pokbudka", button_img,True, font, 90, (138, 99, 58))
 
         decision_made = False
         while not decision_made:
             game_renderer.draw_state(game_round, state, "Możesz kliknac pobudke lub wybrac karte")
-            game_renderer.screen.blit(button_img, button_rect.topleft)
-            pygame.display.flip()
+            better_button.draw(screen)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     exit()
                 if event.type == pygame.MOUSEBUTTONDOWN: #POPRAWIĆ, żeby mozna nacisnąć przycisk lub karte, a nie że jak nie naciśniemy przyciku to potem ejscze raz tzreba na karte
-                    if button_rect.collidepoint(event.pos):
+                    mouse_pos = pygame.mouse.get_pos()
+                    if better_button.check_click(mouse_pos, event):#button_rect.collidepoint(event.pos):
                         print('pobudka')
                         decision_made = True
                         wake_up = True

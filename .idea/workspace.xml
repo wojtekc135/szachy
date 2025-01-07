@@ -5,10 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b9ddd46d-700d-43e2-8e8a-19f4995a0044" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/gra-karciana-sen.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gra-karciana-sen.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/card.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/card.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/player.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/player.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/action_button.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/action_button.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/round.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/round.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/variant2.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/variant2.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,6 +40,7 @@
     "Python.player.executor": "Run",
     "Python.round.executor": "Run",
     "Python.test.executor": "Run",
+    "Python.variant2.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "gameplay",
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"

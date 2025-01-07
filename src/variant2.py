@@ -1,4 +1,6 @@
 import pygame
+from Tools.scripts.generate_opcode_h import header
+
 from game_render import GameRenderer
 from round import Round
 import os
@@ -15,6 +17,49 @@ card_size = get_card_size(screen_height)
 assets = load_assets(os.path.join(os.pardir, "assets"), "karta", "stół", "rewers")
 assets = scale_assets(assets, card_size, (screen_width, screen_height))
 state = game_round.create_example_state(screen, assets, card_size)
+
+def end_screen(screen, players, winner):
+
+    #"przycisk"
+    screen_width, screen_height = screen.get_size()
+    button_img = pygame.image.load("../assets/przycisk.png").convert_alpha()
+    button_width, button_height = 800, 800
+    button_img = pygame.transform.scale(button_img, (button_width, button_height))
+    button_x = (screen_width - button_width) // 2
+    button_y = (screen_height - button_height) // 2
+    font = pygame.font.Font("../assets/Berylium/Berylium.ttf", 50)
+    screen.blit(button_img, (button_x, button_y))
+
+    #Nagłówek
+    header_text = "Wygrałeś!" if winner == "player1" else "Przegrałeś"
+    header_surface = font.render(header_text, True, (255, 255, 255))  # White color
+
+    header_x = button_x + (button_width - header_surface.get_width()) // 2
+    header_y = button_y
+    screen.blit(header_surface, (header_x, header_y))
+
+    #Tabelka wyników
+    row_height = 150
+    for i, player in enumerate(players):
+
+        row_text = f"Gracz {player.player_number} | {player.crows}"
+        row_surface = font.render(row_text, True, (138, 99, 58))  # White color
+
+        row_x = button_x + (button_width - row_surface.get_width()) // 2
+        row_y = header_y + (i + 1) * row_height
+        screen.blit(row_surface, (row_x, row_y))
+
+    pygame.display.flip()
+
+    #czekanie na koniec gry
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                waiting = False
+            elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+                waiting = False
+
 
 #Bardzo szybki wariant przez to jak działa liczenie kruków
 def idz_na_calosc(screen):
@@ -49,7 +94,7 @@ def idz_na_calosc(screen):
 
         elif game_round.round_number > 4:
             if game_round.player_type == "human":
-                wake_up = game_round.wake_up_option(state, game_renderer, game_round)
+                wake_up = game_round.wake_up_option(state, game_renderer, game_round, screen)
                 if(not wake_up):
                     game_round.human_take_card_from_any_pile(state, game_round, game_renderer)
             else:
@@ -84,10 +129,9 @@ def idz_na_calosc(screen):
         pygame.time.wait(200)
 
         if end_game:
-            if player1.crows <100:
-                print("You win")
-            else:
-                print("You lose")
+            winner ="player1!" if player1.crows <100 else "Nie ty"
+            winner = str(player1)
+            end_screen(screen, players, winner)
             running = False
 
     pygame.quit()

@@ -29,6 +29,7 @@ class ActionButton:
         if self.show == True:
             screen.blit(self.image, self.rect.topleft)
             screen.blit(self.text_surface, self.text_position)
+            pygame.display.flip()
 
     def check_click(self, mouse_pos, event): # ta metoda musi byc identyczna jak check click z klasy card zeby input handler dobrze dzialal
         if self.rect.collidepoint(mouse_pos) and event.type == pygame.MOUSEBUTTONDOWN:
