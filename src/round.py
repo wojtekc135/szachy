@@ -1,14 +1,19 @@
-from inspect import stack
+from turtle import Screen
 
 import pygame
 from pygame.font import get_fonts
 
 from input_handler import InputHandler
 from card import Card
-from random import choice
+from random import choice, randint, shuffle
 from action_button import ActionButton
+from button import Button
 
-
+info = pygame.display.Info()
+SCREEN_WIDTH = info.current_w
+SCREEN_HEIGHT = info.current_h
+SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+font = pygame.font.Font("../assets/Berylium/Berylium.ttf", 45)
 
 class Round:
     def __init__(self, round_number, player_type, player_number):
@@ -24,6 +29,7 @@ class Round:
         return sum
 
     def create_example_state(self, screen, assets, card_size, variant):
+
         state = {
             "hand1": [],
             "hand2": [],
@@ -32,43 +38,59 @@ class Round:
             "face_down_pile": [],
             "face_up_pile": []
         }
+
+        num_cards = 6
+        all_cards = []
+        for i in range(num_cards):
+            all_cards.append(assets["cards"][i])
+
         id = 0
+
+        # Przydziel karty do rąk graczy
         for hand in ["hand1", "hand2", "hand3", "hand4"]:
             for i in range(4):
-                state[hand].append(
-                    Card(screen, assets["cards"][i], assets["card_back"], False, False, hand, i, False, False,
-                         card_size, id,9))
+                card_name = choice(all_cards)
+                c = Card(screen, card_name, assets["card_back"], False, False, hand, i, False, False, card_size, id, 0)
+                state[hand].append(c)
+                if c.crows == 9:
+                    return 0
+
                 id += 1
-        state["face_up_pile"].append(
-            Card(screen, assets["cards"][0], assets["card_back"], True, True, "face_up_pile", 0, False, False,
-                 card_size, id,4))
-        id += 1
-        state["face_up_pile"].append(
-            Card(screen, assets["cards"][1], assets["card_back"], True, True, "face_up_pile", 1, False, False,
-                 card_size, id,2))
-        id += 1
-        state["face_down_pile"].append(
-            Card(screen, assets["cards"][0], assets["card_back"], False, False, "face_down_pile", 0,
-                 False, False, card_size, id,9))
-        id += 1
-        state["face_down_pile"].append(
-            Card(screen, assets["cards"][1], assets["card_back"], False, False, "face_down_pile", 1,
-                 False, False, card_size, id,1))
+
+        # Przydziel karty do face_up_pile (ustalona liczba kart)
+        for i in range(60):
+            card_name = choice(all_cards)
+            state["face_up_pile"].append(
+                Card(screen, card_name, assets["card_back"], True, True, "face_up_pile", i, False, False,
+                     card_size, id, 0)
+            )
+            id += 1
+
+        # Przydziel karty do face_down_pile (ustalona liczba kart)
+        for i in range(60):
+            card_name = choice(all_cards)
+            state["face_down_pile"].append(
+                Card(screen, card_name, assets["card_back"], False, False, "face_down_pile", i, False, False,
+                     card_size, id, 0)
+            )
+            id += 1
 
         button_img = pygame.image.load("../assets/przycisk.png").convert_alpha()
         button_width, button_height = 200, 50
         button_img = pygame.transform.scale(button_img, (button_width, button_height))
-        use_card_button  = ActionButton(100,100, "use card", button_img, False)
-        swap_card_button = ActionButton(100,200, "swap card", button_img, False)
-        do_not_use_card_button = ActionButton(100,300, "do not use card", button_img, False)
-        EXAMPLE_SWAP_button = ActionButton(100,400, "swap card chosen_pile_bottom <-> hand", button_img, False)
+        use_card_button = ActionButton(100, 100, "use card", button_img, False)
+        swap_card_button = ActionButton(100, 200, "swap card", button_img, False)
+        do_not_use_card_button = ActionButton(100, 300, "do not use card", button_img, False)
+        EXAMPLE_SWAP_button = ActionButton(100, 400, "swap card chosen_pile_bottom <-> hand", button_img, False)
         what_card_do_button = ActionButton(100, 700, "what card do", button_img, False)
-        woke_button= ActionButton(button_width * 8.5, button_height*2, "pobudka", button_img, False) # kontrowersyjne ustawienie, ale takie refactoruje
-        action_buttons = [use_card_button, swap_card_button, what_card_do_button, do_not_use_card_button, EXAMPLE_SWAP_button, woke_button]
-        if variant=="variant3":
+        woke_button = ActionButton(button_width * 8.5, button_height * 2, "pobudka", button_img,
+                                   False)  # kontrowersyjne ustawienie, ale takie refactoruje
+        action_buttons = [use_card_button, swap_card_button, what_card_do_button, do_not_use_card_button,
+                          EXAMPLE_SWAP_button, woke_button]
+        if variant == "variant3":
             tell_two_cards_button = ActionButton(100, 500, "tell the two cards value", button_img, False)
             action_buttons.append(tell_two_cards_button)
-        state["action_buttons"] =  action_buttons
+        state["action_buttons"] = action_buttons
         for localisation in state:
             if localisation != "action_buttons":
                 for card in state[localisation]:
@@ -264,40 +286,34 @@ class Round:
         pass
 
     def human_take_card_from_any_pile(self, state, game_round, game_renderer):
-        #  Być może  karty odkłada się  na  góre!  Trzeba zrobić innego defa! To jest tylko przykład!
-        # wybranie karty z dowolnego stosu i zamienienie dołu stosu  z wybraną kartą z reki
-        # Trzeba uzywać metod typu choose_stack, choose_card_from_stack
-        # choose stack zwraca jaki to stos zakryty czy odkryty, a choose_card_from_stack wybiera np. karte ze spodu jak sie da 0
         game_renderer.draw_state(game_round, state, "Wybierz stos")
         stack_type = game_round.choose_stack_type(state)
         stack_index_to_choose = -1  # 0 spód karty, -1 góra
-
-
-        if stack_type == "face_down_pile":
-            game_round.swap_card(state, game_round.choose_card_from_stack(state, stack_type, 0),game_round.choose_card_from_stack(state, stack_type, -1))
+        # if stack_type == "face_down_pile":
+            # game_round.swap_card(state, game_round.choose_card_from_stack(state, stack_type, 0),game_round.choose_card_from_stack(state, stack_type, -1))
         card_from_stack = game_round.choose_card_from_stack(state, stack_type, stack_index_to_choose)
-        card_from_stack.highlighted = True
         if stack_type == "face_down_pile":
             card_from_stack.show_front = True
-            use_card_img = pygame.image.load("../assets/przycisk.png").convert_alpha()
-            swap_card_img = pygame.image.load("../assets/przycisk.png").convert_alpha()
-            do_not_use_card_img = pygame.image.load("../assets/przycisk.png").convert_alpha()
-            what_card_do_img = pygame.image.load("../assets/przycisk.png").convert_alpha()
-            button_width, button_height = 200, 50
-            use_card_img = pygame.transform.scale(use_card_img, (button_width, button_height))
-            swap_card_img = pygame.transform.scale(use_card_img, (button_width, button_height))
-            use_card_button_rect = use_card_img.get_rect(topleft=(100, 100))
-            swap_card_button_rect = swap_card_img.get_rect(topleft=(100, 200))
-            do_not_use_button_rect = do_not_use_card_img.get_rect(topleft=(100, 300))
-            what_card_do_button_rect = what_card_do_img.get_rect(topleft=(100, 700))
+            card_from_stack.highlighted = True
+            use_card_button_rect = Button(image=pygame.image.load("../assets/przycisk.png"), pos=(100, 100),
+                             text_input="Uzyj karty", font=font, base_color="#8a633a", hovering_color="White",
+                             scale=1.1)
+            swap_card_button_rect = Button(image=pygame.image.load("../assets/przycisk.png"), pos=(100, 200),
+                             text_input="Zamień kartę", font=font, base_color="#8a633a", hovering_color="White",
+                             scale=1.1)
+            do_not_use_button_rect = Button(image=pygame.image.load("../assets/przycisk.png"), pos=(100, 300),
+                             text_input="Nie bierz karty", font=font, base_color="#8a633a", hovering_color="White",
+                             scale=1.1)
+            what_card_do_button_rect = Button(image=pygame.image.load("../assets/przycisk.png"), pos=(100, 700),
+                             text_input="Co robi karta?", font=font, base_color="#8a633a", hovering_color="White",
+                             scale=1.1)
 
             decision_made = False
+            action_buttons = [use_card_button_rect, swap_card_button_rect, do_not_use_button_rect,
+                              what_card_do_button_rect]
             while not decision_made:
-                game_renderer.draw_state(game_round, state, "Kliknij opcję")
-                game_renderer.screen.blit(use_card_img, use_card_button_rect.topleft)
-                game_renderer.screen.blit(swap_card_img, swap_card_button_rect.topleft)
-                game_renderer.screen.blit(use_card_img, do_not_use_button_rect.topleft)
-                game_renderer.screen.blit(what_card_do_img, what_card_do_button_rect.topleft)
+                for button in action_buttons:
+                    button.update(SCREEN)
                 pygame.display.flip()
 
                 for event in pygame.event.get():
@@ -305,27 +321,38 @@ class Round:
                         pygame.quit()
                         exit()
                     if event.type == pygame.MOUSEBUTTONDOWN:
-                        if use_card_button_rect.collidepoint(event.pos):
-                            decision_made = True
-                            card_from_stack.show_front = False
-                            game_renderer.draw_state(game_round, state, "Używasz karty")
-                            pygame.time.wait(1000)
-                            return
-                        elif swap_card_button_rect.collidepoint(event.pos):
-                            decision_made = True
-                            break
-                        elif do_not_use_button_rect.collidepoint(event.pos):
-                            decision_made = True
-                            game_renderer.draw_state(game_round, state, "Odkładasz kartę na stos odkryty")
-                            # game_round.add_to_pile(state, card_from_stack, "face_up_pile")  # Do poprawy
-                            pygame.time.wait(1000)
-                            return
-                        elif what_card_do_button_rect.collidepoint(event.pos):  # Co robi karta
-                            game_renderer.draw_state(game_round, state, "Sprawdzasz działanie karty")
-                            pygame.time.wait(1000)
-                            # Dodaj logikę wyświetlania opisu działania karty
-                            game_renderer.draw_state(game_round, state, f"Karta: {card_from_stack.get_description()}")
-                            pygame.time.wait(2000)
+                        for button in action_buttons:
+                            if button.checkForInput(event.pos):
+                                if button == use_card_button_rect:
+                                    decision_made = True
+                                    # Logika dla use card
+                                    print("Używasz karty")
+                                    game_renderer.draw_state(game_round, state, "Używasz karty")
+                                    pygame.time.wait(1000)
+                                    return
+                                elif button == swap_card_button_rect:
+                                    decision_made = True
+                                    break
+                                elif button == do_not_use_button_rect:
+                                    decision_made = True
+                                    game_renderer.draw_state(game_round, state, "Odkładasz kartę na stos odkryty")
+                                    s, c1, c2 = game_round.swap_card(state, card_from_stack, game_round.choose_card_from_stack(state, -1))
+                                    c1.show_front = True
+                                    c1.highlighted = False
+                                    c2.show_front = False
+                                    c2.highlighted = False
+                                    pygame.time.wait(1000)
+                                    return
+                                elif button == what_card_do_button_rect:
+                                    decision_made = True
+                                    # Tu dodaj logikę dla 'What does card do?'
+                                    game_renderer.draw_state(game_round, state, "Sprawdzasz działanie karty")
+                                    pygame.time.wait(1000)
+                                    # Wyświetl opis karty
+                                    game_renderer.draw_state(game_round, state,
+                                                             f"Karta: {card_from_stack.get_description()}")
+                                    pygame.time.wait(2000)
+                                    return
         game_renderer.draw_state(game_round, state, " Wybierz karte z ręki")
 
         card_from_hand = game_round.choose_card_from_hand(state, "hand1")
@@ -414,7 +441,7 @@ class Round:
         chosen_option = chosen_button.text
         if chosen_option == "use card":
             self.use_card(game_round,game_renderer,state,chosen_card_from_stack)
-        elif chosen_option == "swap card chosen_pile_bottom <-> hand":
+        elif chosen_option == "swap card":
             self.swap_bottom_chosen_pile_with_hand(game_renderer,game_round,state, chosen_stack_type)
         elif chosen_option == "what card do":
             self.what_card_do(game_renderer,game_round,state,chosen_card_from_stack)
