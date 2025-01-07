@@ -1,5 +1,5 @@
 import pygame
-from Tools.scripts.generate_opcode_h import header
+#from Tools.scripts.generate_opcode_h import header
 
 from game_render import GameRenderer
 from round import Round
@@ -16,7 +16,7 @@ font = pygame.font.SysFont("arial", 24)
 card_size = get_card_size(screen_height)
 assets = load_assets(os.path.join(os.pardir, "assets"), "karta", "stół", "rewers")
 assets = scale_assets(assets, card_size, (screen_width, screen_height))
-state = game_round.create_example_state(screen, assets, card_size)
+state = game_round.create_example_state(screen, assets, card_size, "variant2")
 
 def end_screen(screen, players, winner):
 

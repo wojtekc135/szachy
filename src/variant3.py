@@ -13,10 +13,10 @@ font = pygame.font.SysFont("arial", 24)
 card_size = get_card_size(screen_height)
 assets = load_assets(os.path.join(os.pardir, "assets"), "karta", "stół", "rewers")
 assets = scale_assets(assets, card_size, (screen_width, screen_height))
-state = game_round.create_example_state(screen, assets, card_size, "example_variant")
+state = game_round.create_example_state(screen, assets, card_size, "variant3")
 
 
-def example_variant(screen):
+def variant3(screen):
     pygame.init()
     game_round.debug(state)
     game_renderer = GameRenderer(screen, assets, font)
@@ -29,6 +29,7 @@ def example_variant(screen):
                 if event.key == pygame.K_q:
                     running = False
 
+
         cur_hand = "hand" + str(game_round.player_number)
 
         if game_round.round_number <= 4:
@@ -39,9 +40,9 @@ def example_variant(screen):
 
         elif game_round.round_number > 4:
             if game_round.player_type == "human":
-                game_round.human_take_bottom_card_from_any_pile_add_it_on_front_to_hand(state, game_round, game_renderer)
+                game_round.variant3_options(screen, running, state, game_round, game_renderer)
             else:
-                game_round.human_take_bottom_card_from_any_pile_add_it_on_front_to_hand(state, game_round, game_renderer)
+                game_round.variant3_options(screen, running, state, game_round, game_renderer)
 
         # aktualizacja rundy
         game_round.round_number += 1
@@ -58,4 +59,4 @@ def example_variant(screen):
     pygame.quit()
 
 
-example_variant(screen)
+variant3(screen)

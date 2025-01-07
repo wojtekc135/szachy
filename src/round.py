@@ -6,8 +6,8 @@ from pygame.font import get_fonts
 from input_handler import InputHandler
 from card import Card
 from random import choice
-
 from action_button import ActionButton
+
 
 
 class Round:
@@ -23,7 +23,7 @@ class Round:
                 sum += 1
         return sum
 
-    def create_example_state(self, screen, assets, card_size):
+    def create_example_state(self, screen, assets, card_size, variant):
         state = {
             "hand1": [],
             "hand2": [],
@@ -65,6 +65,9 @@ class Round:
         what_card_do_button = ActionButton(100, 700, "what card do", button_img, False)
         woke_button= ActionButton(button_width * 8.5, button_height*2, "pobudka", button_img, False) # kontrowersyjne ustawienie, ale takie refactoruje
         action_buttons = [use_card_button, swap_card_button, what_card_do_button, do_not_use_card_button, EXAMPLE_SWAP_button, woke_button]
+        if variant=="variant3":
+            tell_two_cards_button = ActionButton(100, 500, "tell the two cards value", button_img, False)
+            action_buttons.append(tell_two_cards_button)
         state["action_buttons"] =  action_buttons
         for localisation in state:
             if localisation != "action_buttons":
@@ -235,7 +238,7 @@ class Round:
             new_card_from_hand.highlighted = True
         """
 
-    def human_take_bottom_card_from_any_pile_add_it_on_front_to_hand(self, state, game_round, game_renderer): #example
+    def human_take_bottom_card_from_any_pile_add_it_on_front_to_hand(self,state, game_round, game_renderer): #example
         game_renderer.draw_state(game_round, state, "Wybierz stos")
         chosen_stack_type = self.choose_stack_type(state) #choose_from_stack  ma w srodu input handler dlatego rozgrywka ,,pausuje" i czeka na wybor karty
         chosen_card_from_stack = self.choose_card_from_stack_bottom(state, chosen_stack_type) # tego tu moze nie byc tylko  trzeba odpowiednio inne opcje zrobic argumenty to jest tylko zeby sie nic narazie nie popsulo bo moja funkcja to przyklad
@@ -405,3 +408,71 @@ class Round:
                         print('missed')
                         decision_made = True
                         break
+
+    def variant3_options(self,screen, running, state, game_round, game_renderer):
+        game_renderer.draw_state(game_round, state, "Wybierz stos")
+        chosen_stack_type = self.choose_stack_type(state)
+        chosen_card_from_stack = self.choose_card_from_stack_bottom(state, chosen_stack_type)
+        chosen_button = self.show_action_buttons_choose_option_and_hide_buttons(state,game_round,game_renderer,"wybierz opcje")
+        chosen_option = chosen_button.text
+        if chosen_option == "use card":
+            self.use_card(game_round,game_renderer,state,chosen_card_from_stack)
+        elif chosen_option == "swap card chosen_pile_bottom <-> hand":
+            self.swap_bottom_chosen_pile_with_hand(game_renderer,game_round,state, chosen_stack_type)
+        elif chosen_option == "what card do":
+            self.what_card_do(game_renderer,game_round,state,chosen_card_from_stack)
+        elif chosen_option == "pobudka":
+            self.wake_up()
+        elif chosen_option == "tell the two cards value":
+            self.show_text_bar(screen, running)
+
+        game_round.debug(state)
+
+    def show_text_bar(self, screen, running):
+        input_rect = pygame.Rect(300, 250, 200, 50)
+        text_color = (0, 0, 0)
+        input_color_active = (255, 255, 255)
+        input_color_inactive = (200, 200, 200)
+        input_color = input_color_inactive
+        active = False
+        user_text = ""  # Tekst wpisany przez użytkownika
+        font = pygame.font.Font(None, 36)
+
+        while running:
+           # screen.fill((0, 0, 0))
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    return None
+
+                # Kliknięcie myszą
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if input_rect.collidepoint(event.pos):
+                        active = True
+                        input_color = input_color_active
+                    else:
+                        active = False
+                        input_color = input_color_inactive
+
+                # Wprowadzanie tekstu
+                if event.type == pygame.KEYDOWN and active:
+                    if event.key == pygame.K_BACKSPACE:
+                        user_text = user_text[:-1]
+                    elif event.key == pygame.K_RETURN:
+                        try:
+                            value = int(user_text)
+                            print(f"Wprowadzona wartość: {value}")
+                            return value
+                        except ValueError:
+                            print("Nieprawidłowa liczba!")
+                            user_text = ""
+                    else:
+                        if event.unicode.isdigit():
+                            user_text += event.unicode
+
+            pygame.draw.rect(screen, input_color, input_rect, border_radius=5)
+            text_surface = font.render(user_text, True, text_color)
+            screen.blit(text_surface, (input_rect.x + 10, input_rect.y + 10))
+            pygame.display.flip()
+
