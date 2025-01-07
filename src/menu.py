@@ -8,7 +8,7 @@ import os
 
 pygame.init()
 # Ustawienie ikony gry
-game_icon = pygame.image.load("assets/ikonka.png")
+game_icon = pygame.image.load("../assets/ikonka.png")
 pygame.display.set_icon(game_icon)
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -24,18 +24,18 @@ SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Sen")
 
 # Tło gry:
-BG = pygame.image.load("assets/menu.png")
+BG = pygame.image.load("../assets/menu.png")
 BG_SCALED = pygame.transform.scale(BG, (SCREEN_WIDTH, SCREEN_HEIGHT))
-OP = pygame.image.load("assets/menu_rozmazane.png")
+OP = pygame.image.load("../assets/menu_rozmazane.png")
 OP_SCALED = pygame.transform.scale(OP, (SCREEN_WIDTH, SCREEN_HEIGHT))
-TABLE = pygame.image.load("assets/stół.png")
+TABLE = pygame.image.load("../assets/stół.png")
 TABLE_SCALED = pygame.transform.scale(TABLE, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Ścieżki muzyczne
 music_tracks = [
-    'assets/muzyka/Cozy day.mp3',
-    'assets/muzyka/Memories.mp3',
-    'assets/muzyka/Coffee.mp3'
+    '../assets/muzyka/Cozy day.mp3',
+    '../assets/muzyka/Memories.mp3',
+    '../assets/muzyka/Coffee.mp3'
 ]
 current_track_index = 0  # Aktualny indeks ścieżki
 pygame.mixer.music.load(music_tracks[current_track_index])
@@ -52,7 +52,7 @@ def load_gif_frames(folder_path):
             frames.append(frame)
     return frames
 
-GIF_FRAMES = load_gif_frames("assets/klatki")
+GIF_FRAMES = load_gif_frames("../assets/klatki")
 current_frame = 0  # Indeks aktualnej klatki
 frame_delay = 300  # Opóźnienie między klatkami w milisekundach
 last_frame_update = pygame.time.get_ticks()  # Czas ostatniej zmiany klatki
@@ -67,11 +67,11 @@ def change_music(direction):
 
 
 def get_font(size):  # Zwraca czcionkę o określonym rozmiarze
-    return pygame.font.Font("assets/Berylium/Berylium.ttf", size)
+    return pygame.font.Font("../assets/Berylium/Berylium.ttf", size)
 
 
 def get_title(size):
-    return pygame.font.Font("assets/ringbearer/RINGM___.TTF", size)
+    return pygame.font.Font("../assets/ringbearer/RINGM___.TTF", size)
 
 
 def toggle_fullscreen():
@@ -99,16 +99,16 @@ def main_menu():
         MENU_TEXT = get_title(170).render("Sen", True, "#8a6539")
         MENU_RECT = MENU_TEXT.get_rect(center=(200, 120))
 
-        PLAY_BUTTON = Button(image=pygame.image.load("assets/przycisk.png"), pos=(200, 290),
+        PLAY_BUTTON = Button(image=pygame.image.load("../assets/przycisk.png"), pos=(200, 290),
                              text_input="Graj", font=get_font(45), base_color="#8a633a", hovering_color="White",
                              scale=1.1)
-        OPTIONS_BUTTON = Button(image=pygame.image.load("assets/przycisk.png"), pos=(200, 440),
+        OPTIONS_BUTTON = Button(image=pygame.image.load("../assets/przycisk.png"), pos=(200, 440),
                                 text_input="Ustawienia", font=get_font(45), base_color="#8a633a",
                                 hovering_color="White", scale=1.1)
-        RULES_BUTTON = Button(image=pygame.image.load("assets/przycisk.png"), pos=(200, 590),
+        RULES_BUTTON = Button(image=pygame.image.load("../assets/przycisk.png"), pos=(200, 590),
                               text_input="Zasady Gry", font=get_font(45), base_color="#8a633a", hovering_color="White",
                               scale=1.1)
-        QUIT_BUTTON = Button(image=pygame.image.load("assets/przycisk.png"), pos=(200, 740),
+        QUIT_BUTTON = Button(image=pygame.image.load("../assets/przycisk.png"), pos=(200, 740),
                              text_input="Wyjście", font=get_font(45), base_color="#8a633a", hovering_color="White",
                              scale=1.1)
 
@@ -251,7 +251,7 @@ def options():
         SCREEN.blit(OP_SCALED, (0, 0))
 
         #Pusty prostokąt, który ma się znaleźć pod napisami
-        prost = pygame.image.load('assets/przycisk2.png')
+        prost = pygame.image.load('../assets/przycisk2.png')
 
         # Napisy na ustawienia dźwięku, rozdzielczości, ekranu oraz wielki napis ustawienia
         OPTIONS_TITLE = get_title(74).render("USTAWIENIA", True, "#8a6539")
@@ -306,30 +306,30 @@ def options():
         OPTIONS_AUT.update(SCREEN)
 
         # Przyciski strzałek do zmiany trybu ekranu
-        OPTIONS_ARROW_L = Button(image=pygame.image.load("assets/strzałka2.png"), pos=(750, 520),
+        OPTIONS_ARROW_L = Button(image=pygame.image.load("../assets/strzałka2.png"), pos=(750, 520),
                                  text_input=None, font=get_font(43), base_color="#674a29", hovering_color="White",
                                  scale=0.35)
-        OPTIONS_ARROW_R = Button(image=pygame.image.load("assets/strzałka.png"), pos=(1050, 520),
+        OPTIONS_ARROW_R = Button(image=pygame.image.load("../assets/strzałka.png"), pos=(1050, 520),
                                  text_input=None, font=get_font(43), base_color="#674a29", hovering_color="White",
                                  scale=0.35)
         OPTIONS_ARROW_L.update(SCREEN)
         OPTIONS_ARROW_R.update(SCREEN)
 
         # Przyciski do zmiany muzyki
-        MUSIC_ARROW_L = Button(image=pygame.image.load("assets/strzałka2.png"), pos=(750, 320),
+        MUSIC_ARROW_L = Button(image=pygame.image.load("../assets/strzałka2.png"), pos=(750, 320),
                                 text_input=None, font=get_font(43), base_color="#674a29", hovering_color="White",
                                 scale=0.35)
-        MUSIC_ARROW_R = Button(image=pygame.image.load("assets/strzałka.png"), pos=(1050, 320),
+        MUSIC_ARROW_R = Button(image=pygame.image.load("../assets/strzałka.png"), pos=(1050, 320),
                                 text_input=None, font=get_font(43), base_color="#674a29", hovering_color="White",
                                 scale=0.35)
         MUSIC_ARROW_L.update(SCREEN)
         MUSIC_ARROW_R.update(SCREEN)
 
         # Przyciski strzałek do regulacji głośności
-        VOLUME_ARROW_L = Button(image=pygame.image.load("assets/strzałka2.png"), pos=(750, 420),
+        VOLUME_ARROW_L = Button(image=pygame.image.load("../assets/strzałka2.png"), pos=(750, 420),
                                  text_input=None, font=get_font(43), base_color="#674a29", hovering_color="White",
                                  scale=0.35)
-        VOLUME_ARROW_R = Button(image=pygame.image.load("assets/strzałka.png"), pos=(1050, 420),
+        VOLUME_ARROW_R = Button(image=pygame.image.load("../assets/strzałka.png"), pos=(1050, 420),
                                  text_input=None, font=get_font(43), base_color="#674a29", hovering_color="White",
                                  scale=0.35)
         VOLUME_ARROW_L.update(SCREEN)
