@@ -68,7 +68,7 @@ def get_card_size(screen_height, card_scale=5, card_aspect_ratio=1080 / 1520):
     return card_size
 
 
-def message_box(screen, text, font, color, rect_color, x, y, padding=10):
+def message_box(screen, text, font, color, rect_color, x, y, padding=5):
     """
     Rysuje prostokąt z wycentrowanym tekstem w zadanej lokalizacji na ekranie.
     Args:
