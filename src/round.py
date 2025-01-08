@@ -7,6 +7,7 @@ from card import Card
 from random import choice, randint, shuffle
 from action_button import ActionButton
 from button import Button
+#from src.variant2 import screen
 
 info = pygame.display.Info()
 SCREEN_WIDTH = info.current_w
@@ -77,13 +78,12 @@ class Round:
         button_img = pygame.image.load("../assets/przycisk.png").convert_alpha()
         button_width, button_height = 200, 50
         button_img = pygame.transform.scale(button_img, (button_width, button_height))
-        use_card_button = ActionButton(100, 100, "use card", button_img, False)
+        use_card_button = ActionButton(100, 100, "Użyj karty", button_img, False)
         swap_card_button = ActionButton(100, 200, "swap card", button_img, False)
-        do_not_use_card_button = ActionButton(100, 300, "do not use card", button_img, False)
+        do_not_use_card_button = ActionButton(100, 300, "Nie używaj umiejętności", button_img, False)
         EXAMPLE_SWAP_button = ActionButton(100, 400, "swap card chosen_pile_bottom <-> hand", button_img, False)
-        what_card_do_button = ActionButton(100, 700, "what card do", button_img, False)
-        woke_button = ActionButton(button_width * 8.5, button_height * 2, "pobudka", button_img,
-                                   False)  # kontrowersyjne ustawienie, ale takie refactoruje
+        what_card_do_button = ActionButton(100, 700, "Co robi?", button_img, False)
+        woke_button = ActionButton(button_width * 8.5, button_height * 2, "Pobudka",button_img, height = 90, show = False)  # kontrowersyjne ustawienie, ale takie refactoruje
         action_buttons = [use_card_button, swap_card_button, what_card_do_button, do_not_use_card_button,
                           EXAMPLE_SWAP_button, woke_button]
         if variant == "variant3":
@@ -232,8 +232,117 @@ class Round:
         pygame.time.wait(2000)
         return
 
-    def wake_up(self):
-        pass # dodac tu wywołanie wake up co sie dzieje, bo wybieranie przycisku juz poprawilem w examplach
+    def end_screen(self, screen, players, winner):
+        # "przycisk"
+        screen_width, screen_height = screen.get_size()
+        button_img = pygame.image.load("../assets/przycisk.png").convert_alpha()
+        button_width, button_height = 800, 800
+        button_img = pygame.transform.scale(button_img, (button_width, button_height))
+        button_x = (screen_width - button_width) // 2
+        button_y = (screen_height - button_height) // 2
+        font = pygame.font.Font("../assets/Berylium/Berylium.ttf", 50)
+        screen.blit(button_img, (button_x, button_y))
+
+        # Nagłówek
+        header_text = "Wygrałeś!" if winner == "player1" else "Przegrałeś"
+        header_surface = font.render(header_text, True, (255, 255, 255))  # White color
+
+        header_x = button_x + (button_width - header_surface.get_width()) // 2
+        header_y = button_y
+        screen.blit(header_surface, (header_x, header_y))
+
+        # Tabelka wyników
+        row_height = 150
+        for i, player in enumerate(players):
+            row_text = f"Gracz {player.player_number} | {player.crows}"
+            row_surface = font.render(row_text, True, (138, 99, 58))  # White color
+
+            row_x = button_x + (button_width - row_surface.get_width()) // 2
+            row_y = header_y + (i + 1) * row_height
+            screen.blit(row_surface, (row_x, row_y))
+
+        pygame.display.flip()
+
+        # czekanie na koniec gry
+        waiting = True
+        while waiting:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    waiting = False
+                elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+                    waiting = False
+                    return -1 #zwracanie żeby wrócić do menu? Wojtek?
+
+    def wake_up(self, variant, state, players, screen):
+        end_game = False
+        player1 = players[0] #wyświetlamy tylko dla żywego gracza czyli player1
+        #UAGA każdy wariant ma prawdopodobnie inne licznei kruków, to kazdy musi sbie dostosować
+        if variant == 2:
+            player1 = players[0]
+            waker = player1 # tylko gracz może budzić (najwyżej potem można zmeinic)
+            for player in players:
+                cur_hand = "hand" + str(player.player_number)
+                hand_counting = state[cur_hand]
+                for card in hand_counting:
+                    if card.crows != 9:
+                        player.crows += 50
+                        if player.crows >= 100: end_game = True  # warunek zakończenia gry
+                        break
+                print("Gracz: ", player.player_number, " punkty: ", player.crows)
+                # jesteśmy hojni i jak dwaj gracze mają tylko karty z 9 krukami to niech oboje sobie nic dodają :)
+
+        #TUTAJ DLA WSZYSTKICH WARIANTÓW
+        if end_game:
+            winner = "WYGRYWASZ!!!" if player1.crows < 100 else "Nie ty" #chyba każdy wariant ma wygraną od 100 krókó, jak nie zróbcie if -MM
+            winner = str(player1)
+            self.end_screen(screen, players, winner)
+            return
+
+        #Tutaj wyśwuietlanie tabelki dla wszytskich wariantów
+        print("hello from wakey")
+        screen_width, screen_height = screen.get_size()
+        button_img = pygame.image.load("../assets/przycisk.png").convert_alpha()
+        button_width, button_height = 800, 800
+        button_img = pygame.transform.scale(button_img, (button_width, button_height))
+        button_x = (screen_width - button_width) // 2
+        button_y = (screen_height - button_height) // 2
+        font = pygame.font.Font("../assets/Berylium/Berylium.ttf", 50)
+        screen.blit(button_img, (button_x, button_y))
+
+        # Nagłówek
+        header_text = "Aktualne punkty"
+        header_surface = font.render(header_text, True, (255, 255, 255))  # White color
+        header_x = button_x + (button_width - header_surface.get_width()) // 2
+        header_y = button_y
+        screen.blit(header_surface, (header_x, header_y))
+
+        # Dolny tekst
+        bottom_text = "Kliknij, aby kontynuować"
+        bottom_surface = font.render(bottom_text, True, (255, 255, 255))
+        bottom_x = button_x + (button_width - bottom_surface.get_width()) // 2
+        bottom_y = button_y + button_height - bottom_surface.get_height() - 10  # 20 px margines od dołu
+        screen.blit(bottom_surface, (bottom_x, bottom_y))
+
+        # Tabelka wyników
+        row_height = 150
+        for i, player in enumerate(players):
+            row_text = f"Gracz {player.player_number} | {player.crows}"
+            row_surface = font.render(row_text, True, (138, 99, 58))  # White color
+
+            row_x = button_x + (button_width - row_surface.get_width()) // 2
+            row_y = header_y + (i + 1) * row_height
+            screen.blit(row_surface, (row_x, row_y))
+
+        pygame.display.flip()
+
+        # czekanie na input
+        waiting = True
+        while waiting:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    waiting = False
+                elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+                    waiting = False
 
     def swap_bottom_chosen_pile_with_hand(self,game_renderer,game_round,state, chosen_stack_type): #example
         game_renderer.draw_state(game_round, state, " Wybierz karte z ręki")
@@ -282,122 +391,73 @@ class Round:
 
         game_round.debug(state)
 
-    def bot_take_bottom_card_from_any_pile_POP(self, state, game_round, game_renderer):
+    def bot_take_bottom_card_from_any_pile(self, state, game_round, game_renderer):
         pass
 
-    def human_take_card_from_any_pile_POP(self, state, game_round, game_renderer):
+    def human_turn_variant2(self, state, game_round, game_renderer, screen,players):
+        variant = 2
+        #Zasady mówią że gracz może wybrać pobudkę tylko przed wybraniem stosu
+        wake_up = game_round.wake_up_option(state, game_renderer, game_round, screen)
+        if wake_up:
+            self.wake_up(variant, state, players, screen)
+            return #pobudka skipuje ture gracza
         game_renderer.draw_state(game_round, state, "Wybierz stos")
-        stack_type = game_round.choose_stack_type(state)
-        stack_index_to_choose = -1  # 0 spód karty, -1 góra
-        # if stack_type == "face_down_pile":
-            # game_round.swap_card(state, game_round.choose_card_from_stack(state, stack_type, 0),game_round.choose_card_from_stack(state, stack_type, -1))
-        card_from_stack = game_round.choose_card_from_stack(state, stack_type, stack_index_to_choose)
-        if stack_type == "face_down_pile":
-            card_from_stack.show_front = True
-            card_from_stack.highlighted = True
-            use_card_button_rect = Button(image=pygame.image.load("../assets/przycisk.png"), pos=(100, 100),
-                             text_input="Uzyj karty", font=font, base_color="#8a633a", hovering_color="White",
-                             scale=1.1)
-            swap_card_button_rect = Button(image=pygame.image.load("../assets/przycisk.png"), pos=(100, 200),
-                             text_input="Zamień kartę", font=font, base_color="#8a633a", hovering_color="White",
-                             scale=1.1)
-            do_not_use_button_rect = Button(image=pygame.image.load("../assets/przycisk.png"), pos=(100, 300),
-                             text_input="Nie bierz karty", font=font, base_color="#8a633a", hovering_color="White",
-                             scale=1.1)
-            what_card_do_button_rect = Button(image=pygame.image.load("../assets/przycisk.png"), pos=(100, 700),
-                             text_input="Co robi karta?", font=font, base_color="#8a633a", hovering_color="White",
-                             scale=1.1)
+        chosen_stack_type = self.choose_stack_type(state) #choose_from_stack  ma w srodu input handler dlatego rozgrywka ,,pausuje" i czeka na wybor karty
+        chosen_card_from_stack = self.choose_card_from_stack_up(state, chosen_stack_type) #zabranie z góry stosu
+        chosen_card_from_stack.highlighted = True
 
-            decision_made = False
-            action_buttons = [use_card_button_rect, swap_card_button_rect, do_not_use_button_rect,
-                              what_card_do_button_rect]
-            while not decision_made:
-                for button in action_buttons:
-                    button.update(SCREEN)
-                pygame.display.flip()
+        if chosen_stack_type == "face_up_pile":
+            game_renderer.draw_state(game_round, state, "Teraz kartę z ręki")
+            card_from_hand = game_round.choose_card_from_hand(state, "hand1")
+            card_from_hand.highlighted = True
 
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        pygame.quit()
-                        exit()
-                    if event.type == pygame.MOUSEBUTTONDOWN:
-                        for button in action_buttons:
-                            if button.checkForInput(event.pos):
-                                if button == use_card_button_rect:
-                                    decision_made = True
-                                    # Logika dla use card
-                                    print("Używasz karty")
-                                    game_renderer.draw_state(game_round, state, "Używasz karty")
-                                    pygame.time.wait(1000)
-                                    return
-                                elif button == swap_card_button_rect:
-                                    decision_made = True
-                                    break
-                                elif button == do_not_use_button_rect:
-                                    decision_made = True
-                                    game_renderer.draw_state(game_round, state, "Odkładasz kartę na stos odkryty")
-                                    s, c1, c2 = game_round.swap_card(state, card_from_stack, game_round.choose_card_from_stack(state, -1))
-                                    c1.show_front = True
-                                    c1.highlighted = False
-                                    c2.show_front = False
-                                    c2.highlighted = False
-                                    pygame.time.wait(1000)
-                                    return
-                                elif button == what_card_do_button_rect:
-                                    decision_made = True
-                                    # Tu dodaj logikę dla 'What does card do?'
-                                    game_renderer.draw_state(game_round, state, "Sprawdzasz działanie karty")
-                                    pygame.time.wait(1000)
-                                    # Wyświetl opis karty
-                                    game_renderer.draw_state(game_round, state,
-                                                             f"Karta: {card_from_stack.get_description()}")
-                                    pygame.time.wait(2000)
-                                    return
-        game_renderer.draw_state(game_round, state, " Wybierz karte z ręki")
+            game_renderer.draw_state(game_round, state, "Zamienianie miejscami")
+            pygame.time.wait(500) #todo wydłużyć czas
+            state, new_card_from_hand, new_card_from_stack = game_round.swap_card(state, chosen_card_from_stack,
+                                                                                  card_from_hand)
 
-        card_from_hand = game_round.choose_card_from_hand(state, "hand1")
-        card_from_hand.highlighted = True
+            # aktualizacja kart, żey dobrze sie wyświetlały na stosach
+            new_card_from_stack.selected_info = False
+            if new_card_from_stack.location == "face_down_pile":
+                new_card_from_stack.show_front = False
+            elif new_card_from_stack.location == "face_up_pile":
+                new_card_from_stack.show_front = True
+                new_card_from_stack.clicked = False
 
-        game_renderer.draw_state(game_round, state, "Zamienianie miejscami")
-        pygame.time.wait(500)
-        state, new_card_from_hand, new_card_from_stack = game_round.swap_card(state, card_from_stack, card_from_hand)
-        state[stack_type].pop(-1) #usuniecie karty z gry
-
-        #pokazanie karty którą wybraliśmy (przez chwilę)
-        if game_round.player_type == "human":
-            #new_card_from_hand.selected_info = "niewidoczna"
-            if stack_type == "face_down_pile":
-                new_card_from_hand.show_front = False
-            else:
-                new_card_from_hand.show_front = True
-                game_renderer.draw_state(game_round, state, "Patrz")
-                pygame.time.wait(500)
-                new_card_from_hand.show_front = False
-                game_renderer.draw_state(game_round, state, "Koniec patrzenia")
-        elif game_round.player_type == "bot":
-            new_card_from_hand.selected_info = "niewidoczna"
-            new_card_from_hand.show_front = False
-
-        # aktualizacja kard, żeby np niewkładały się obrocone czy coś, moze trzeba cos dodac jeszcze
-        new_card_from_stack.selected_info = False
-        if new_card_from_stack.location == "face_down_pile":
-            new_card_from_stack.show_front = False
-        elif new_card_from_stack.location == "face_up_pile":
-            new_card_from_stack.show_front = True
-            new_card_from_stack.clicked = False
-        card_from_stack.highlighted = False
-        new_card_from_hand.highlighted = False
-        new_card_from_hand.selected_info = False
-
-        """
-        elif game_round.player_type == "bot":
+            new_card_from_stack.highlighted = False
+            chosen_card_from_stack.highlighted = False
+            new_card_from_hand.highlighted = False
             new_card_from_hand.selected_info = False
-            new_card_from_hand.show_front = False
-            new_card_from_hand.highlighted = True
-        """
+
+            # pokazanie karty, którą wybraliśmy (przez chwilę)
+            if game_round.player_type == "human":
+                # new_card_from_hand.selected_info = "niewidoczna"
+                if chosen_stack_type == "face_down_pile":
+                    new_card_from_hand.show_front = False
+                else:
+                    new_card_from_hand.show_front = True
+                    game_renderer.draw_state(game_round, state, "Patrz")
+                    pygame.time.wait(500)
+                    new_card_from_hand.show_front = False
+                    game_renderer.draw_state(game_round, state, "Koniec patrzenia")
+
+        else:
+            chosen_button = self.show_action_buttons_choose_option_and_hide_buttons(state,game_round,game_renderer,"wybierz opcje")
+            chosen_option = chosen_button.text
+            if chosen_option == "use card":
+                self.use_card(game_round,game_renderer,state,chosen_card_from_stack)
+            elif chosen_option == "swap card":
+                self.swap_card2()
+            elif chosen_option == "swap card chosen_pile_bottom <-> hand":
+                self.swap_bottom_chosen_pile_with_hand(game_renderer,game_round,state, chosen_stack_type)
+            elif chosen_option == "do not use  card":
+                self.do_not_use_card(game_renderer,game_round,state)
+            elif chosen_option == "what card do":  # Co robi karta
+                self.what_card_do(game_renderer,game_round,state,chosen_card_from_stack)
+            elif chosen_option == "pobudka":
+                self.wake_up(variant, state, players, screen)
 
         game_round.debug(state)
-        game_renderer.draw_state(game_round, state, "Zamieniono miejscami")
 
     def bot_take_card_from_any_pile_POP(self, state, game_round, game_renderer):
         print("robot! ᕙ(  •̀ ᗜ •́  )ᕗ") #do zrobienia
@@ -407,12 +467,14 @@ class Round:
         # Dodałem wwybranie opcji wake_up_do zrefaktorowanych metod,  wakeup wyswietla sie zazwsze kiedy wybieranie innych opcji jak np. swap
         # bedzie to pewnie mozna usunac po implementacji do metody wake_up na ktora zrobilem miejsce
         wake_up = False
-        button_img = pygame.image.load("../assets/przycisk.png").convert_alpha()
-        button_width, button_height = 200, 100
-        button_img = pygame.transform.scale(button_img, (button_width, button_height))
-        font = pygame.font.Font("../assets/Berylium/Berylium.ttf", 50 )
-        better_button = ActionButton(button_width * 8.5,button_height, "Pobudka", button_img,True, font, 90, (138, 99, 58))
+        # button_img = pygame.image.load("../assets/przycisk.png").convert_alpha()
+        # button_width, button_height = 200, 100
+        # button_img = pygame.transform.scale(button_img, (button_width, button_height))
+        # font = pygame.font.Font("../assets/Berylium/Berylium.ttf", 50 )
+        # better_button = ActionButton(button_width * 8.5,button_height, "Pobudka", button_img,True, font, 90, (138, 99, 58))
 
+        better_button = state["action_buttons"][-1]
+        better_button.show = True  # pokazanie tylko przycisku pobudki
         decision_made = False
         while not decision_made:
             game_renderer.draw_state(game_round, state, "Możesz kliknac pobudke lub wybrac karte")
@@ -428,8 +490,11 @@ class Round:
                         decision_made = True
                         wake_up = True
                         game_renderer.draw_state(game_round, state, "POBUDKA")
+                        better_button.show = False
                         return wake_up
                     else:
+
+                        better_button.show = False
                         decision_made = True
                         break
 

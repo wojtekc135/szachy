@@ -1,7 +1,7 @@
 import pygame
 class ActionButton:
     # na szybko
-    def __init__(self, x, y, text, bg_image, show, font = pygame.font.SysFont("arial", 24), height=50, text_color=(0, 0, 0)):
+    def __init__(self, x, y, text, bg_image, show, font = pygame.font.Font("../assets/Berylium/Berylium.ttf", 50 ), height=50, text_color=(138, 99, 58)):
         self.text = text
         self.font = font
         self.text_color = text_color

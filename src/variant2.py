@@ -1,6 +1,5 @@
 import pygame
 #from Tools.scripts.generate_opcode_h import header
-from points_screen import wake_up_screen, end_screen
 from game_render import GameRenderer
 from round import Round
 import os
@@ -45,32 +44,18 @@ def idz_na_calosc(screen):
 
         if game_round.round_number <= 4:
             if game_round.player_type == "human":
+                pass
                 game_round.human_show_2_cards(state[cur_hand], game_renderer, game_round, state)
             else:
+                pass
                 game_round.bot_show_2_cards(state[cur_hand], game_renderer, game_round, state)
 
         elif game_round.round_number > 4:
             if game_round.player_type == "human":
-                wake_up = game_round.wake_up_option(state, game_renderer, game_round, screen)
-                if(not wake_up):
-                    game_round.human_take_card_from_any_pile_POP(state, game_round, game_renderer)
+                game_round.human_turn_variant2(state, game_round, game_renderer, screen, players)
             else:
-                game_round.bot_take_card_from_any_pile_POP(state, game_round, game_renderer)
-
-        #pobudka
-        if wake_up:
-            waker = player1 #tylko gracz może budzić (najwyżej potem można zmeinic)
-            for player in players:
-                cur_hand = "hand" + str(player.player_number)
-                hand_counting = state[cur_hand]
-                for card in hand_counting:
-                    if card.crows != 9:
-                        player.crows += 50
-                        if player.crows >= 100: end_game = True  # warunek zakończenia gry
-                        break
-                print("Gracz: ",player.player_number," punkty: ", player.crows)
-                #jesteśmy hojni i jak dwaj gracze mają tylko karty z 9 krukami to niech oboje sobie nic dodają :)
-
+                pass
+                game_round.bot_turn_variant2(state, game_round, game_renderer)
 
         # aktualizacja rundy
         game_round.round_number += 1
@@ -84,14 +69,6 @@ def idz_na_calosc(screen):
             game_round.player_number = game_round.round_number % 4
         pygame.time.wait(200)
 
-        if end_game:
-            winner ="player1!" if player1.crows <100 else "Nie ty"
-            winner = str(player1)
-            end_screen(screen, players, winner)
-            running = False
-        elif wake_up:
-            wake_up_screen(screen, players)
-        wake_up = False
 
     pygame.quit()
 
