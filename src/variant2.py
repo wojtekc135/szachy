@@ -19,6 +19,7 @@ state = game_round.create_example_state(screen, assets, card_size, "variant2")
 
 #Bardzo szybki wariant przez to jak działa liczenie kruków
 def idz_na_calosc(screen):
+    variant = 2
     pygame.init()
 
     player1 = Player(True,1)

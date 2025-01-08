@@ -82,7 +82,7 @@ class Round:
         swap_card_button = ActionButton(100, 200, "swap card", button_img, False)
         do_not_use_card_button = ActionButton(100, 300, "Nie używaj umiejętności", button_img, False)
         EXAMPLE_SWAP_button = ActionButton(100, 400, "swap card chosen_pile_bottom <-> hand", button_img, False)
-        what_card_do_button = ActionButton(100, 700, "Co robi?", button_img, False)
+        what_card_do_button = ActionButton(100, 700, "Co robi?", button_img, False) #opis umiejetnoesi karty
         woke_button = ActionButton(button_width * 8.5, button_height * 2, "Pobudka",button_img, height = 90, show = False)  # kontrowersyjne ustawienie, ale takie refactoruje
         action_buttons = [use_card_button, swap_card_button, what_card_do_button, do_not_use_card_button,
                           EXAMPLE_SWAP_button, woke_button]
@@ -211,12 +211,16 @@ class Round:
     def use_card(self, game_round, game_renderer, state, card_from_stack):
         # nie wiem czy tu ma byc card from stack
         Player.human_use_ability(self, state, Card, game_round, game_renderer)
-        card_from_stack.show_front = False
+        #card_from_stack.show_front = False #dlaczego???
         game_renderer.draw_state(game_round, state, "Używasz karty")
         pygame.time.wait(1000)
         return
 
-    def do_not_use_card(self,game_renderer, game_round, state):
+    def do_not_use_card(self,game_renderer, game_round, state): #todo change
+        #czy to nie powinno być use ability? Wojtek?
+        #i jeśli tak, to wtedy opcja wybrania czy bierzemy do ręki
+        #czy odkładamy na stos odkryty
+
         game_renderer.draw_state(game_round, state, "Odkładasz kartę na stos odkryty")
         # game_round.add_to_pile(state, card_from_stack, "face_up_pile")  # Do poprawy
         pygame.time.wait(1000)
@@ -376,7 +380,7 @@ class Round:
         # zrobcie moze zamiast create example state, juz poprawne rozdanie kart na poczatku rozgrywki, bo to pisze ze jest example, ta funkcja to tez przyklad tylko
         chosen_button = self.show_action_buttons_choose_option_and_hide_buttons(state,game_round,game_renderer,"wybierz opcje")
         chosen_option = chosen_button.text
-        if chosen_option == "use card":
+        if chosen_option == "use card": #ten button powinnien sie wyswietlac tylko jak karta ma .ability != 'None'
             self.use_card(game_round,game_renderer,state,chosen_card_from_stack)
         elif chosen_option == "swap card":
             self.swap_card2()
@@ -396,7 +400,7 @@ class Round:
 
     def human_turn_variant2(self, state, game_round, game_renderer, screen,players):
         variant = 2
-        #Zasady mówią że gracz może wybrać pobudkę tylko przed wybraniem stosu
+        #Zasady mówią że gracz może wybrać pobudkę tylko na poczatku swojej kolejki
         wake_up = game_round.wake_up_option(state, game_renderer, game_round, screen)
         if wake_up:
             self.wake_up(variant, state, players, screen)
@@ -444,22 +448,22 @@ class Round:
         else:
             chosen_button = self.show_action_buttons_choose_option_and_hide_buttons(state,game_round,game_renderer,"wybierz opcje")
             chosen_option = chosen_button.text
-            if chosen_option == "use card":
+            if chosen_option == "Użyj karty": #powinno sie wyswietlac tylko jak karta ma .ability != 'None'
                 self.use_card(game_round,game_renderer,state,chosen_card_from_stack)
             elif chosen_option == "swap card":
                 self.swap_card2()
             elif chosen_option == "swap card chosen_pile_bottom <-> hand":
                 self.swap_bottom_chosen_pile_with_hand(game_renderer,game_round,state, chosen_stack_type)
-            elif chosen_option == "do not use  card":
+            elif chosen_option == "Nie używaj umiejętności":
                 self.do_not_use_card(game_renderer,game_round,state)
-            elif chosen_option == "what card do":  # Co robi karta
+            elif chosen_option == "Co robi?":  # Co robi karta
                 self.what_card_do(game_renderer,game_round,state,chosen_card_from_stack)
-            elif chosen_option == "pobudka":
+            elif chosen_option == "Pobudka":
                 self.wake_up(variant, state, players, screen)
 
         game_round.debug(state)
 
-    def bot_take_card_from_any_pile_POP(self, state, game_round, game_renderer):
+    def bot_turn_variant2(self, state, game_round, game_renderer):
         print("robot! ᕙ(  •̀ ᗜ •́  )ᕗ") #do zrobienia
 
 
