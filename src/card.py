@@ -6,7 +6,7 @@ pygame.init()
 
 class Card:
     def __init__(self, screen, front_image, back_image, known_for_player, show_front, location, location_number,
-                 highlighted, selected_info, card_size, id, crows):
+                 highlighted, selected_info, card_size, id, crows, ability):
         self.screen = screen
         self.screen_width, self.screen_height = screen.get_size()
         self.front_image = front_image
@@ -22,7 +22,7 @@ class Card:
         self.selected_info = selected_info
         self.id = id
         self.crows = crows
-
+        self.ability = ability
     def update_position(self):
         """Aktualizuje pozycję karty w zależności od jej lokalizacji i stanu."""
         self.update_image()

@@ -39,9 +39,9 @@ def example_variant(screen):
 
         elif game_round.round_number > 4:
             if game_round.player_type == "human":
-                game_round.human_take_bottom_card_from_any_pile_add_it_on_front_to_hand(state, game_round, game_renderer)
+                game_round.basic_variant_turn(state, game_round, game_renderer)
             else:
-                game_round.human_take_bottom_card_from_any_pile_add_it_on_front_to_hand(state, game_round, game_renderer)
+                game_round.basic_variant_turn(state, game_round, game_renderer)
 
         # aktualizacja rundy
         game_round.round_number += 1
@@ -58,4 +58,4 @@ def example_variant(screen):
     pygame.quit()
 
 
-#  example_variant(screen)
+example_variant(screen)

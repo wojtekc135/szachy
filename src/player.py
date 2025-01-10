@@ -17,7 +17,7 @@ class Player:
 
         if card.ability == "take":
 
-            temp_hand = "temp_hand"
+            temp_hand = "hand_temp"
             game_renderer.draw_state(game_round, state, "Wybierz ZE STOSU ZKATYREGO")
 
             stack_type = InputHandler.choose_from(state["face_down_pile"])  # I beg you
