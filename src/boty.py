@@ -21,3 +21,7 @@ class Bot():
             return "pobudka"
 
         return "pass"
+
+    def _choose_card_to_replace(selfself, new_card):
+        worst_card=max((card for card in self.dream if card is not None), default=None)
+        return self.dream.index(worst_card) if worst card and worst_card>new_card else None
