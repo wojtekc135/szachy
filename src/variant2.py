@@ -11,6 +11,15 @@ from player import Player
 def idz_na_calosc(screen):
     variant = 2
     pygame.init()
+    game_round = Round(1, "human", 1)
+    font = pygame.font.SysFont("arial", 24)
+    screen_info = pygame.display.Info()
+    screen_width = screen_info.current_w
+    screen_height = screen_info.current_h
+    card_size = get_card_size(screen_height)
+    assets = load_assets(os.path.join(os.pardir, "assets"), "karta", "stół", "rewers")
+    assets = scale_assets(assets, card_size, (screen_width, screen_height))
+    state = game_round.create_example_state(screen, assets, card_size, "variant2")
 
     player1 = Player(True,1)
     player2 = Player(True, 2)
@@ -18,10 +27,7 @@ def idz_na_calosc(screen):
     player4 = Player(True, 4)
     players = [player1, player2, player3, player4]
 
-    end_game = False
-    game_round.debug(state)
     game_renderer = GameRenderer(screen, assets, font)
-    wake_up = False
     running = True
     while running:
         for event in pygame.event.get():
@@ -75,5 +81,4 @@ if __name__ == "__main__":
     assets = load_assets(os.path.join(os.pardir, "assets"), "karta", "stół", "rewers")
     assets = scale_assets(assets, card_size, (screen_width, screen_height))
     state = game_round.create_example_state(screen, assets, card_size, "variant2")
-
     idz_na_calosc(screen)
