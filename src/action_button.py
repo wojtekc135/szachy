@@ -8,7 +8,7 @@ class ActionButton:
         self.show = show
 
         # Renderowanie tekstu i obliczanie szerokości przycisku na podstawie tekstu
-        self.text_surface = font.render(location, True, text_color)
+        self.text_surface = font.render(location[7:], True, text_color)
         text_width = self.text_surface.get_width()
         self.width = text_width + 20  # Dodanie marginesów po 10 pikseli z każdej strony
         self.height = height

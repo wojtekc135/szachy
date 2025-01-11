@@ -31,13 +31,11 @@ class Round:
         button_img = pygame.image.load("../assets/przycisk.png").convert_alpha()
         button_width, button_height = 200, 50
         button_img = pygame.transform.scale(button_img, (button_width, button_height))
-        use_card_button = ActionButton(100, 100, "button_Użyj karty", button_img, False)
-        do_not_use_card_button = ActionButton(100, 300, "button_Nie używaj umiejętności", button_img, False)
-        what_card_do_button = ActionButton(100, 700, "button_Co robi?", button_img, False)  # opis umiejetnoesi karty
-        woke_button = ActionButton(button_width * 8.5, button_height * 2, "button_Pobudka", button_img, height=90,
-                                   show=False)  # kontrowersyjne ustawienie, ale takie refactoruje
-        tell_two_cards_button = ActionButton(100, 500, "button_tell the two cards value", button_img, False)
-        action_buttons = [use_card_button, what_card_do_button, do_not_use_card_button,
+        use_card_button = ActionButton(5, SCREEN_HEIGHT*0.4, "button_Użyj karty", button_img, False,  height = 40)
+        do_not_use_card_button = ActionButton(5, SCREEN_HEIGHT*0.5, "button_Nie używaj umiejętności", button_img, False,height = 40)
+        woke_button = ActionButton(SCREEN_WIDTH*0.885, SCREEN_HEIGHT*0.1, "button_Pobudka", button_img, height=70,show=False)
+        tell_two_cards_button = ActionButton(5, SCREEN_HEIGHT*0.6, "button_tell the two cards value", button_img, False)
+        action_buttons = [use_card_button, do_not_use_card_button,
                           woke_button, tell_two_cards_button]
         for button in action_buttons:
             state[button.location] = [button]
