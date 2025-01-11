@@ -94,7 +94,8 @@ class Round:
             id += 1
         # nadanie kart specjalnych! uwaga!
         #take two nie dziala
-        state["face_down_pile"][-2].ability = "swap"
+        state["face_down_pile"][-2].ability = "take"
+        state["face_down_pile"][-1].ability = "swap"
         state["face_down_pile"][-1].ability = "look"
 
         for localisation in state:
@@ -189,15 +190,21 @@ class Round:
             temp_card.location_number = len(state["face_up_pile"])
             state["face_up_pile"].append(temp_card)
             state["hand_temp"].pop()
+
         def move_in_temp_to_hand_and_hand_to_face_up_pile(temp_card,hand_card):
+            print("Hello from moving")
+
             temp_card.location = hand_card.location
             temp_card.location_number = hand_card.location_number
-            hand_card.location_number = len(state["face_up_pile"])
+
+            hand_card.location_number = len(state["face_up_pile"]) - 1
             hand_card.location = "face_up_pile"
             hand_card.show_front = True
+
             state["face_up_pile"].append(hand_card)
-            state["hand1"][card1.location_number] = card1
+            state["hand1"][temp_card.location_number] = temp_card
             state["hand_temp"].pop()
+
             temp_card.show_front = True
             game_renderer.draw_state(game_round, state, "Patrz")
             pygame.time.wait(500)
@@ -210,6 +217,7 @@ class Round:
             if chosen_card.location == "face_up_pile":
                 move_in_temp_card_to_face_up_pile(temp_card)  # card1 is in hand_temp
             if chosen_card.location == "hand1":
+                print("Zamiana z reka")
                 hand_card = chosen_card
                 move_in_temp_to_hand_and_hand_to_face_up_pile(temp_card,hand_card)
         def special_card_taken():

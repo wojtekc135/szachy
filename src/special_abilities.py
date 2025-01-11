@@ -63,23 +63,29 @@ def special_ability_take_two(game_round, game_renderer, state):
     game_renderer.draw_state(game_round, state, "Wybierz którą z nich chcesz użyć")
     picked_card = InputHandler.choose_from(state[temp_hand])
     print("1")
+
+    ###########
     if picked_card.location_number == card1.location_number:  # ta druga wtedy dajemy na stos odkryty
         state["face_up_pile"].append(card2)
         card2.location = "face_up_pile"
-        card2.location_number = state["face_up_pile"][
-                                    -1].location_number + 1  # o jeden wiekszy niż ostatniego elementu # fajnie :) mozesz zobaczyc jak  zrobilem  to samo inną komendą haha
+        card2.location_number = state["face_up_pile"][-1].location_number + 1  # o jeden wiekszy niż ostatniego elementu
+        del state[temp_hand][-1]
         state["hand_temp"].append(card1)
         card1.location = "hand_temp"
         card1.location_number = 0
+
     else:
-        # to samo? chyba jakis blad proboje naprawic
+        # zamieniamy miejsca kart i robimy jak wpoprzednim
+        state[temp_hand][0], state[temp_hand][1] = state[temp_hand][1], state[temp_hand][0]
         state["face_up_pile"].append(card1)
         card1.location = "face_up_pile"
-        card1.location_number = state["face_up_pile"][-1].location_number + 1  # o jeden wiekszy niż ostatniego elementu
+        card1.location_number = state["face_up_pile"][
+                                    -1].location_number - 1  # o jeden MNIEJSZY niż ostatniego elementu
+        del state[temp_hand][-1]
+        #przeniesienie do lewego górnego
         state["hand_temp"].append(card2)
         card2.location = "hand_temp"
         card2.location_number = 0
-    state[temp_hand].pop(0)
-    state[temp_hand].pop(0)
+
 
 
