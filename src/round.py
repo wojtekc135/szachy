@@ -4,7 +4,7 @@ from input_handler import InputHandler
 from card import Card
 from random import choice, randint, shuffle
 from action_button import ActionButton
-
+from  special_abilities import *
 
 info = pygame.display.Info()
 SCREEN_WIDTH = info.current_w
@@ -279,77 +279,6 @@ class Round:
                 elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
                     waiting = False
 
-
-    def special_ability_take_two(self,game_round,game_renderer,state):
-        # to bardzo  juz nie działa. usunelem to z example state, niech ktos zrobi example state poprawny
-        # ma sie stac tak że karta ktora jest wybrana ma być w hand_temp w lokalizacji 0 i wtedy juz zrobione jest wywolanie na to b1 b2 b3
-        temp_hand = "hand_temp"
-        game_renderer.draw_state(game_round, state, "Wybierz z stosu zakrytego")
-        stack_type = InputHandler.choose_from(state["face_down_pile"])  # I beg you
-        stack_type = "face_down_pile" #don't change those two lines or it all BREAKS #Ale dziwne, ale jak działa to nie ruszam :)
-
-        stack_index_to_choose = -1
-        card1 = game_round.choose_card_from_stack(state, stack_type, stack_index_to_choose)
-        state[temp_hand].append(card1)
-        card1.location = temp_hand
-        card1.location_number = 5
-        card1.show_front = True
-        del state[stack_type][-1] # wiem że miałam nie usuwać, ale potem by się duplikowały karty - MM, wiesz co robisz spoko
-        game_renderer.draw_state(game_round, state, "Jeszcze jedną :D")
-        stack_type = InputHandler.choose_from(state["face_down_pile"])  # I beg you
-        stack_type = "face_down_pile" #don't change those two lines or it all BREAKS # zmieniłem D;
-        card2 = game_round.choose_card_from_stack(state, stack_type, stack_index_to_choose)
-        state[temp_hand].append(card2)
-        card2.location = temp_hand
-        card2.location_number = 6
-        card2.show_front = True
-        del state[stack_type][-1]
-        game_renderer.draw_state(game_round, state, "Wybierz którą z nich chcesz użyć")
-        picked_card = InputHandler.choose_from(state[temp_hand])
-        print("1")
-        self.debug(state)
-        if picked_card.location_number == card1.location_number: #ta druga wtedy dajemy na stos odkryty
-            state["face_up_pile"].append(card2)
-            card2.location = "face_up_pile"
-            card2.location_number = state["face_up_pile"][-1].location_number + 1 # o jeden wiekszy niż ostatniego elementu # fajnie :) mozesz zobaczyc jak  zrobilem  to samo inną komendą haha
-            state["hand_temp"].append(card1)
-            card1.location = "hand_temp"
-            card1.location_number = 0
-        else:
-            # to samo? chyba jakis blad proboje naprawic
-            state["face_up_pile"].append(card1)
-            card1.location = "face_up_pile"
-            card1.location_number = state["face_up_pile"][-1].location_number + 1  # o jeden wiekszy niż ostatniego elementu
-            state["hand_temp"].append(card2)
-            card2.location = "hand_temp"
-            card2.location_number = 0
-        state[temp_hand].pop(0)
-        state[temp_hand].pop(0)
-        self.debug(state)
-    def special_ability_look(self,game_renderer, state):
-        game_renderer.draw_state(self, state, "Podejrzyj karte z jakiejkolwiek reki")
-        picked_card = InputHandler.choose_from(state["hand1"] + state["hand2"] + state["hand3"] + state["hand4"])
-        picked_card.highlighted = True
-        picked_card.show_front = True
-        game_renderer.draw_state(self, state, "Patrz")
-        pygame.time.wait(2000)
-        picked_card.show_front = False
-        picked_card.highlighted = False
-        game_renderer.draw_state(self, state, "Koniec patrzenia")
-    def special_ability_swap(self,game_renderer,state):
-        game_renderer.draw_state(self, state, "Wybierz pierwsza karte (z graczy) do wymiany")
-        card1 = InputHandler.choose_from(state["hand1"] + state["hand2"] + state["hand3"] + state["hand4"])
-        card1.highlighted = True
-        game_renderer.draw_state(self, state, " Wybierz druga karte (z graczy) do wymiany")
-        card2 = InputHandler.choose_from(state["hand1"] + state["hand2"] + state["hand3"] + state["hand4"])
-        card2.highlighted = True
-        state, card1, card2 = self.swap_card(state, card1,card2)
-        game_renderer.draw_state(self, state, "Zamienianie miejscami")
-        pygame.time.wait(500)
-        card1.highlighted = False
-        card2.highlighted = False
-        game_renderer.draw_state(self, state, "Zamieniono")
-        pygame.time.wait(900)
     def human_swap_chosen_pile_up_with_hand(self, game_renderer, game_round, state, chosen_card_from_stack):  # example
         chosen_card_from_stack.highlighted = True
         game_renderer.draw_state(game_round, state, "Wybierz karte z ręki")
@@ -426,14 +355,14 @@ class Round:
             if chosen_option.location == "button_Użyj karty":
                 if state["hand_temp"][0].ability == "swap":
                     move_in_temp_card_to_face_up_pile()
-                    self.special_ability_swap(game_renderer,state)
+                    special_ability_swap(game_round,game_renderer,state)
                 elif state["hand_temp"][0].ability == "look":# I am your father
                     move_in_temp_card_to_face_up_pile()
-                    self.special_ability_look(game_renderer,state)
+                    special_ability_look(game_round,game_renderer,state)
                 # take two  nie dziala
                 elif state["hand_temp"][0].ability == "take":
                     move_in_temp_card_to_face_up_pile()
-                    self.special_ability_take_two(game_round,game_renderer,state)
+                    special_ability_take_two(game_round,game_renderer,state)
                     # po skonczeniu take two wybrana karta ma byc w hand_temp z  lokalizacja 0 zeby poznisza funkcja  mogla dzialac choose_card...
                     choose_card_and_move_to_hand_or_face_down_pile()
             elif chosen_option.location == "button_Nie używaj umiejętności":
