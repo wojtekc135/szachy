@@ -1,4 +1,4 @@
-#Naprawienie volume level - sprawienie, że nie resetuje się po wyjściu z opcji.
+#Ustawienie pozycji przycisków w zależności od screen_width, screen_height.
 
 import pygame
 import sys
@@ -86,6 +86,11 @@ def toggle_fullscreen():
 
 def main_menu():
     global current_frame, last_frame_update
+
+    #Wymiary przycisków menu na podstawie rozdzielczości monitora:
+    menu_button_width = int(SCREEN_WIDTH * 0.3 // 2)
+    menu_button_height = int(SCREEN_HEIGHT * 0.1)
+
     while True:
         SCREEN.blit(GIF_FRAMES[current_frame], (0, 0))  # Wyświetlenie klatki GIF-a
 
@@ -97,21 +102,31 @@ def main_menu():
 
         MENU_MOUSE_POS = pygame.mouse.get_pos()
 
-        MENU_TEXT = get_title(170).render("Sen", True, "#8a6539")
-        MENU_RECT = MENU_TEXT.get_rect(center=(200, 120))
+        MENU_TEXT = get_title(int(SCREEN_HEIGHT*0.19)).render("Sen", True, "#8a6539")
+        MENU_RECT = MENU_TEXT.get_rect(center=(SCREEN_WIDTH * 0.12, SCREEN_HEIGHT*0.14))
 
-        PLAY_BUTTON = Button(image=pygame.image.load("../assets/przycisk.png"), pos=(200, 290),
-                             text_input="Graj", font=get_font(45), base_color="#8a633a", hovering_color="White",
-                             scale=1.1)
-        OPTIONS_BUTTON = Button(image=pygame.image.load("../assets/przycisk.png"), pos=(200, 440),
-                                text_input="Ustawienia", font=get_font(45), base_color="#8a633a",
-                                hovering_color="White", scale=1.1)
-        RULES_BUTTON = Button(image=pygame.image.load("../assets/przycisk.png"), pos=(200, 590),
-                              text_input="Zasady Gry", font=get_font(45), base_color="#8a633a", hovering_color="White",
-                              scale=1.1)
-        QUIT_BUTTON = Button(image=pygame.image.load("../assets/przycisk.png"), pos=(200, 740),
-                             text_input="Wyjście", font=get_font(45), base_color="#8a633a", hovering_color="White",
-                             scale=1.1)
+        PLAY_BUTTON = Button(image=pygame.transform.scale(pygame.image.load("../assets/przycisk.png"), (menu_button_width, menu_button_height)),
+            pos=(SCREEN_WIDTH * 0.12, SCREEN_HEIGHT*0.33),
+            text_input="Graj", font=get_font(int(SCREEN_HEIGHT * 0.05)),  # Rozmiar czcionki jako proporcja wysokości
+            base_color="#8a633a", hovering_color="White")
+
+        OPTIONS_BUTTON = Button(
+            image=pygame.transform.scale(pygame.image.load("../assets/przycisk.png"), (menu_button_width, menu_button_height)),
+            pos=(SCREEN_WIDTH * 0.12, SCREEN_HEIGHT*0.49),
+            text_input="Ustawienia", font=get_font(int(SCREEN_HEIGHT * 0.05)),
+            base_color="#8a633a", hovering_color="White")
+
+        RULES_BUTTON = Button(
+            image=pygame.transform.scale(pygame.image.load("../assets/przycisk.png"), (menu_button_width, menu_button_height)),
+            pos=(SCREEN_WIDTH * 0.12, SCREEN_HEIGHT*0.65),
+            text_input="Zasady Gry", font=get_font(int(SCREEN_HEIGHT * 0.05)),
+            base_color="#8a633a", hovering_color="White")
+
+        QUIT_BUTTON = Button(image=pygame.transform.scale(pygame.image.load("../assets/przycisk.png"), (menu_button_width, menu_button_height)),
+            pos=(SCREEN_WIDTH * 0.12, SCREEN_HEIGHT*0.81),
+            text_input="Wyjście", font=get_font(int(SCREEN_HEIGHT * 0.05)),
+            base_color="#8a633a", hovering_color="White")
+
 
         SCREEN.blit(MENU_TEXT, MENU_RECT)
 
@@ -147,27 +162,30 @@ def open_rules():
 
 
 def play():
+    # Rozmiar czcionki dla przycisków
+    play_button_font_size = int(SCREEN_HEIGHT * 0.05)
+
     while True:
         SCREEN.blit(OP_SCALED, (0, 0))
         PLAY_MOUSE_POS = pygame.mouse.get_pos()
 
         # Nagłówek:
-        PLAY_TEXT = get_title(50).render("WYBIERZ WARIANT GRY:", True, "#8a6539")
-        PLAY_RECT = PLAY_TEXT.get_rect(center=(760, 160))
+        PLAY_TEXT = get_title(int(SCREEN_HEIGHT * 0.06)).render("WYBIERZ WARIANT GRY:", True, "#8a6539")
+        PLAY_RECT = PLAY_TEXT.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.2))
         SCREEN.blit(PLAY_TEXT, PLAY_RECT)
 
         # Przyciski dla trybów gry:
-        MODE_1 = Button(image=None, pos=(760, 300), text_input="Nie takie kruki straszne", font=get_font(45),
-                        base_color="White", hovering_color="#F4A460", scale=1)
-        MODE_2 = Button(image=None, pos=(760, 400), text_input="Idź na całość", font=get_font(45),
-                        base_color="White", hovering_color="#F4A460", scale=1)
-        MODE_3 = Button(image=None, pos=(760, 500), text_input="Wiem, co mam", font=get_font(45),
-                        base_color="White", hovering_color="#F4A460", scale=1)
+        MODE_1 = Button(image=None, pos=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.4),
+                        text_input="Nie takie kruki straszne",
+                        font=get_font(play_button_font_size), base_color="White", hovering_color="#F4A460", scale=1)
+        MODE_2 = Button(image=None, pos=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.5), text_input="Idź na całość",
+                        font=get_font(play_button_font_size), base_color="White", hovering_color="#F4A460", scale=1)
+        MODE_3 = Button(image=None, pos=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.6), text_input="Wiem, co mam",
+                        font=get_font(play_button_font_size), base_color="White", hovering_color="#F4A460", scale=1)
 
         # Przycisk powrotu:
-        PLAY_BACK = Button(image=None, pos=(750, 730),
-                              text_input="Powrót", font=get_font(43), base_color="#5b4224", hovering_color="White",
-                              scale=1)
+        PLAY_BACK = Button(image=None, pos=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.85), text_input="Powrót",
+                           font=get_font(play_button_font_size), base_color="#5b4224", hovering_color="White", scale=1)
 
         # Wyświetlenie przycisków:
         for button in [MODE_1, MODE_2, MODE_3, PLAY_BACK]:
@@ -197,13 +215,15 @@ def play():
 
 
 def show_authors():
+
     while True:
         AUTHOR_MOUSE_POS = pygame.mouse.get_pos()
 
         SCREEN.blit(TABLE_SCALED, (0, 0))
 
-        AUTHOR_TEXT = get_font(50).render("Autorzy gry:", True, "#8a6539")
-        AUTHOR_RECT = AUTHOR_TEXT.get_rect(center=(780, 150))
+        header_font_size = int(SCREEN_HEIGHT * 0.07)
+        AUTHOR_TEXT = get_font(header_font_size).render("Autorzy gry:", True, "#8a6539")
+        AUTHOR_RECT = AUTHOR_TEXT.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.15))
         SCREEN.blit(AUTHOR_TEXT, AUTHOR_RECT)
 
         # Lista autorów gry
@@ -216,18 +236,34 @@ def show_authors():
             "Magdalena Majda, Wiktoria Szczepaniak - Warianty gry"
         ]
 
-        y_offset = 250
+        # Rozmiar czcionki dla autorów
+        author_font_size = int(SCREEN_HEIGHT * 0.05)
+
+        # Pozycje i odstępy dla autorów
+        author_start_y = int(SCREEN_HEIGHT * 0.25)
+        author_gap = int(SCREEN_HEIGHT * 0.07)
+
+        y_offset = author_start_y
         for name in AUTHOR_NAMES:
-            author_text = get_font(40).render(name, True, "White")
-            author_rect = author_text.get_rect(center=(780, y_offset))
+            author_text = get_font(author_font_size).render(name, True, "White")
+            author_rect = author_text.get_rect(center=(SCREEN_WIDTH * 0.5, y_offset))
             SCREEN.blit(author_text, author_rect)
-            y_offset += 50
+            y_offset += author_gap
 
-        AUTHOR_BACK = Button(image=None, pos=(780, 650),
-                             text_input="Powrót", font=get_font(43), base_color="#5b4224", hovering_color="White",
-                             scale=1)
+        # Przycisk powrotu
+        button_font_size = int(SCREEN_HEIGHT * 0.05)
+        AUTHOR_BACK = Button(
+            image=None,
+            pos=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.9),
+            text_input="Powrót",
+            font=get_font(button_font_size),
+            base_color="#5b4224",
+            hovering_color="White",
+            scale=1
+        )
 
-        AUTHOR_BACK.changeColor(AUTHOR_MOUSE_POS)
+        # Obsługa myszy i przycisku
+        AUTHOR_BACK.changeColor(pygame.mouse.get_pos())
         AUTHOR_BACK.update(SCREEN)
 
         for event in pygame.event.get():
@@ -247,94 +283,141 @@ def show_authors():
 def options():
     global SCREEN, fullscreen, current_track_index, volume_level  # Dodanie globalnej zmiennej indeksu muzyki
 
+    # Proporcje dla elementów
+    title_font_size = int(SCREEN_HEIGHT * 0.08)
+    option_font_size = int(SCREEN_HEIGHT * 0.045)
+    button_font_size = int(SCREEN_HEIGHT * 0.05)
+    arrow_scale_ratio = 0.4  # Skala przycisków strzałek
+
+    # Pusty prostokąt, który ma się znaleźć pod napisami
+    prost = pygame.image.load('../assets/przycisk2.png')
+    prost_scale = pygame.transform.scale(prost, (SCREEN_WIDTH*0.28//2, SCREEN_HEIGHT*0.088))
 
     while True:
         OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
 
         SCREEN.blit(OP_SCALED, (0, 0))
 
-        #Pusty prostokąt, który ma się znaleźć pod napisami
-        prost = pygame.image.load('../assets/przycisk2.png')
-
         # Napisy na ustawienia dźwięku, rozdzielczości, ekranu oraz wielki napis ustawienia
-        OPTIONS_TITLE = get_title(74).render("USTAWIENIA", True, "#8a6539")
-        OPTIONS_DZW = get_font(57).render("Muzyka", True, "#8a633a")
-        OPTIONS_EKR = get_font(57).render("Ekran", True, "#8a633a")
-        OPTIONS_GLOS = get_font(57).render("Głośność", True, "#8a633a")  # Dodanie napisu "Dźwięk"
-
-        OPTIONS_RECT_T = OPTIONS_TITLE.get_rect(center=(770, 180))
-        OPTIONS_RECT_D = OPTIONS_DZW.get_rect(center=(610, 320))
-        OPTIONS_RECT_E = OPTIONS_EKR.get_rect(center=(610, 520))
-        OPTIONS_RECT_G = OPTIONS_GLOS.get_rect(center=(610, 420))  # Wysokość dla napisu "Dźwięk"
-
-
-        SCREEN.blit(prost,(790,280))
-        SCREEN.blit(prost, (790,380))
-        SCREEN.blit(prost, (790,480))
+        OPTIONS_TITLE = get_title(title_font_size).render("USTAWIENIA", True, "#8a6539")
+        OPTIONS_RECT_T = OPTIONS_TITLE.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.2))
         SCREEN.blit(OPTIONS_TITLE, OPTIONS_RECT_T)
+
+        OPTIONS_DZW = get_font(int(button_font_size*1.25)).render("Muzyka", True, "#8a633a")
+        OPTIONS_EKR = get_font(int(button_font_size*1.25)).render("Ekran", True, "#8a633a")
+        OPTIONS_GLOS = get_font(int(button_font_size*1.25)).render("Głośność", True,"#8a633a")  # Dodanie napisu "Dźwięk"
+
+        OPTIONS_RECT_D = OPTIONS_DZW.get_rect(center=(SCREEN_WIDTH * 0.4, SCREEN_HEIGHT * 0.343))
+        OPTIONS_RECT_E = OPTIONS_EKR.get_rect(center=(SCREEN_WIDTH * 0.4, SCREEN_HEIGHT * 0.605))
+        OPTIONS_RECT_G = OPTIONS_GLOS.get_rect(center=(SCREEN_WIDTH * 0.4, SCREEN_HEIGHT * 0.476))
+
+        SCREEN.blit(prost_scale, (SCREEN_WIDTH * 0.52, SCREEN_HEIGHT * 0.3))
+        SCREEN.blit(prost_scale, (SCREEN_WIDTH * 0.52, SCREEN_HEIGHT * 0.56))
+        SCREEN.blit(prost_scale, (SCREEN_WIDTH * 0.52, SCREEN_HEIGHT * 0.43))
         SCREEN.blit(OPTIONS_DZW, OPTIONS_RECT_D)
         SCREEN.blit(OPTIONS_EKR, OPTIONS_RECT_E)
         SCREEN.blit(OPTIONS_GLOS, OPTIONS_RECT_G)
 
         # Wyświetlanie aktualnie odtwarzanej muzyki
         current_music_name = os.path.splitext(os.path.basename(music_tracks[current_track_index]))[0]  # Pobiera nazwę pliku bez rozszerzenia
-        current_music_text = get_font(43).render(current_music_name, True, "#241c1b")
-        current_music_rect = current_music_text.get_rect(center=(900, 320))
+        current_music_text = get_font(option_font_size).render(current_music_name, True,"#241c1b")
+        current_music_rect = current_music_text.get_rect(center=(SCREEN_WIDTH * 0.588, SCREEN_HEIGHT * 0.343))
         SCREEN.blit(current_music_text, current_music_rect)
 
         # Napisy z informacją o trybie ekranu:
         if fullscreen:
-            screen_mode_text = get_font(43).render("Pełny ekran", True, "#241c1b")
+            screen_mode_text = get_font(option_font_size).render("Pełny ekran", True,"#241c1b")
         else:
-            screen_mode_text = get_font(43).render("Okno", True, "#241c1b")
-        screen_mode_rect = screen_mode_text.get_rect(center=(900, 520))
+            screen_mode_text = get_font(option_font_size).render("Okno", True, "#241c1b")
+        screen_mode_rect = screen_mode_text.get_rect(center=(SCREEN_WIDTH * 0.589, SCREEN_HEIGHT * 0.605))
         SCREEN.blit(screen_mode_text, screen_mode_rect)
 
         # Wyświetlanie aktualnego poziomu głośności
-        volume_text = get_font(43).render(f"{int(volume_level * 100)}%", True, "#241c1b")
-        volume_rect = volume_text.get_rect(center=(900, 420))
+        volume_text = get_font(option_font_size).render(f"{int(volume_level * 100)}%", True,"#241c1b")
+        volume_rect = volume_text.get_rect(center=(SCREEN_WIDTH * 0.593, SCREEN_HEIGHT * 0.476))
         SCREEN.blit(volume_text, volume_rect)
 
         # Przyciski powrotu
-        OPTIONS_BACK = Button(image=None, pos=(750, 730),
-                              text_input="Powrót", font=get_font(43), base_color="#5b4224", hovering_color="White",
-                              scale=1)
-        OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_BACK = Button(
+            image=None,
+            pos=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.85),
+            text_input="Powrót",
+            font=get_font(button_font_size),
+            base_color="#5b4224", hovering_color="White",
+            scale=1
+        )
+        OPTIONS_BACK.changeColor(pygame.mouse.get_pos())
         OPTIONS_BACK.update(SCREEN)
 
         # Przycisk autorzy
-        OPTIONS_AUT = Button(image=None, pos=(1010, 750), text_input="Autorzy", font=get_font(43), base_color="#8a633a",
-                             hovering_color="White", scale=1)
-        OPTIONS_AUT.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_AUT = Button(
+            image=None,
+            pos=(SCREEN_WIDTH * 0.66, SCREEN_HEIGHT * 0.865),
+            text_input="Autorzy",
+            font=get_font(button_font_size),
+            base_color="#8a633a", hovering_color="White",
+            scale=1
+        )
+        OPTIONS_AUT.changeColor(pygame.mouse.get_pos())
         OPTIONS_AUT.update(SCREEN)
 
         # Przyciski strzałek do zmiany trybu ekranu
-        OPTIONS_ARROW_L = Button(image=pygame.image.load("../assets/strzałka2.png"), pos=(750, 520),
-                                 text_input=None, font=get_font(43), base_color="#674a29", hovering_color="White",
-                                 scale=0.35)
-        OPTIONS_ARROW_R = Button(image=pygame.image.load("../assets/strzałka.png"), pos=(1050, 520),
-                                 text_input=None, font=get_font(43), base_color="#674a29", hovering_color="White",
-                                 scale=0.35)
+        OPTIONS_ARROW_L = Button(
+            image=pygame.image.load("../assets/strzałka2.png"),
+            pos=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.605),
+            text_input=None,
+            font=get_font(option_font_size),
+            base_color="#674a29", hovering_color="White",
+            scale=arrow_scale_ratio
+        )
+        OPTIONS_ARROW_R = Button(
+            image=pygame.image.load("../assets/strzałka.png"),
+            pos=(SCREEN_WIDTH * 0.68, SCREEN_HEIGHT * 0.605),
+            text_input=None,
+            font=get_font(option_font_size),
+            base_color="#674a29", hovering_color="White",
+            scale=arrow_scale_ratio
+        )
         OPTIONS_ARROW_L.update(SCREEN)
         OPTIONS_ARROW_R.update(SCREEN)
 
         # Przyciski do zmiany muzyki
-        MUSIC_ARROW_L = Button(image=pygame.image.load("../assets/strzałka2.png"), pos=(750, 320),
-                                text_input=None, font=get_font(43), base_color="#674a29", hovering_color="White",
-                                scale=0.35)
-        MUSIC_ARROW_R = Button(image=pygame.image.load("../assets/strzałka.png"), pos=(1050, 320),
-                                text_input=None, font=get_font(43), base_color="#674a29", hovering_color="White",
-                                scale=0.35)
+        MUSIC_ARROW_L = Button(
+            image=pygame.image.load("../assets/strzałka2.png"),
+            pos=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.343),
+            text_input=None,
+            font=get_font(option_font_size),
+            base_color="#674a29", hovering_color="White",
+            scale=arrow_scale_ratio
+        )
+        MUSIC_ARROW_R = Button(
+            image=pygame.image.load("../assets/strzałka.png"),
+            pos=(SCREEN_WIDTH * 0.68, SCREEN_HEIGHT * 0.343),
+            text_input=None,
+            font=get_font(option_font_size),
+            base_color="#674a29", hovering_color="White",
+            scale=arrow_scale_ratio
+        )
         MUSIC_ARROW_L.update(SCREEN)
         MUSIC_ARROW_R.update(SCREEN)
 
         # Przyciski strzałek do regulacji głośności
-        VOLUME_ARROW_L = Button(image=pygame.image.load("../assets/strzałka2.png"), pos=(750, 420),
-                                 text_input=None, font=get_font(43), base_color="#674a29", hovering_color="White",
-                                 scale=0.35)
-        VOLUME_ARROW_R = Button(image=pygame.image.load("../assets/strzałka.png"), pos=(1050, 420),
-                                 text_input=None, font=get_font(43), base_color="#674a29", hovering_color="White",
-                                 scale=0.35)
+        VOLUME_ARROW_L = Button(
+            image=pygame.image.load("../assets/strzałka2.png"),
+            pos=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.476),
+            text_input=None,
+            font=get_font(option_font_size),
+            base_color="#674a29", hovering_color="White",
+            scale=arrow_scale_ratio
+        )
+        VOLUME_ARROW_R = Button(
+            image=pygame.image.load("../assets/strzałka.png"),
+            pos=(SCREEN_WIDTH * 0.68, SCREEN_HEIGHT * 0.476),
+            text_input=None,
+            font=get_font(option_font_size),
+            base_color="#674a29", hovering_color="White",
+            scale=arrow_scale_ratio
+        )
         VOLUME_ARROW_L.update(SCREEN)
         VOLUME_ARROW_R.update(SCREEN)
 
