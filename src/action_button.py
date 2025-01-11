@@ -1,14 +1,14 @@
 import pygame
 class ActionButton:
     # na szybko
-    def __init__(self, x, y, text, bg_image, show, font = pygame.font.SysFont("arial", 24), height=50, text_color=(0, 0, 0)):
-        self.text = text
+    def __init__(self, x, y, location, bg_image, show, font = pygame.font.Font("../assets/Berylium/Berylium.ttf", 50 ), height=50, text_color=(138, 99, 58)):
+        self.location = location
         self.font = font
         self.text_color = text_color
         self.show = show
 
         # Renderowanie tekstu i obliczanie szerokości przycisku na podstawie tekstu
-        self.text_surface = font.render(text, True, text_color)
+        self.text_surface = font.render(location[7:], True, text_color)
         text_width = self.text_surface.get_width()
         self.width = text_width + 20  # Dodanie marginesów po 10 pikseli z każdej strony
         self.height = height
