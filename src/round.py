@@ -184,33 +184,72 @@ class Round:
         new_card_from_hand.show_front = False
         game_renderer.draw_state(game_round, state, "Koniec patrzenia")
     def human_take_card_from_face_down_pile(self, game_renderer, game_round, state, chosen_card_from_stack):
-        def move_in_temp_card_to_face_up_pile():
-            card1.location = "face_up_pile"
-            card1.location_number = len(state["face_up_pile"])
-            state["face_up_pile"].append(card1)
+        def move_in_temp_card_to_face_up_pile(temp_card):
+            temp_card.location = "face_up_pile"
+            temp_card.location_number = len(state["face_up_pile"])
+            state["face_up_pile"].append(temp_card)
             state["hand_temp"].pop()
-        def move_in_temp_to_hand_and_hand_to_face_up_pile(card2):
-            card1.location = card2.location
-            card1.location_number = card2.location_number
-            card2.location_number = len(state["face_up_pile"])
-            card2.location = "face_up_pile"
-            card2.show_front = True
-            state["face_up_pile"].append(card2)
+        def move_in_temp_to_hand_and_hand_to_face_up_pile(temp_card,hand_card):
+            temp_card.location = hand_card.location
+            temp_card.location_number = hand_card.location_number
+            hand_card.location_number = len(state["face_up_pile"])
+            hand_card.location = "face_up_pile"
+            hand_card.show_front = True
+            state["face_up_pile"].append(hand_card)
             state["hand1"][card1.location_number] = card1
             state["hand_temp"].pop()
-            card1.show_front = True
+            temp_card.show_front = True
             game_renderer.draw_state(game_round, state, "Patrz")
             pygame.time.wait(500)
-            card1.show_front = False
+            temp_card.show_front = False
             game_renderer.draw_state(game_round, state, "Koniec patrzenia")
 
-        def choose_card_and_move_to_hand_or_face_down_pile():
+        def choose_target_and_move_temp0_to_target(temp_card):
             game_renderer.draw_state(game_round, state, "Zamień dobraną karte z ręką lub stosem odkrytym")
-            card2 = InputHandler.choose_from(state["face_up_pile"] + state["hand1"])
-            if card2.location == "face_up_pile":
-                move_in_temp_card_to_face_up_pile()  # card1 is in hand_temp
-            if card2.location == "hand1":
-                move_in_temp_to_hand_and_hand_to_face_up_pile(card2)
+            chosen_card = InputHandler.choose_from(state["face_up_pile"] + state["hand1"])
+            if chosen_card.location == "face_up_pile":
+                move_in_temp_card_to_face_up_pile(temp_card)  # card1 is in hand_temp
+            if chosen_card.location == "hand1":
+                hand_card = chosen_card
+                move_in_temp_to_hand_and_hand_to_face_up_pile(temp_card,hand_card)
+        def special_card_taken():
+            # musze dac to do funkcji bo po take two cards moze dobrac sie znowu karta specjalna
+            if state["hand_temp"][0].ability == "swap":
+                text = "Karta specjalna: Możesz zamienić dowolne 2 karty z rąk graczy (bez odkrywania ich)"
+            elif state["hand_temp"][0].ability == "look":
+                text = "Karta specjalna:  Możesz podejrzeć dowolną kartę z rąk graczy"
+            elif state["hand_temp"][0].ability == "take":
+                text = "Karta specjalna: Wybierasz 2 karty z góry zakrytego stosu jedną odkładasz na stos odkryty i robisz to co zawsze"
+            # pokazanie  przyciskow
+            state["button_Użyj karty"][0].show = True
+            state["button_Nie używaj umiejętności"][0].show = True
+            game_renderer.draw_state(game_round, state, text)
+            chosen_option = InputHandler.choose_from(
+                state["button_Użyj karty"] + state["button_Nie używaj umiejętności"])
+            print("kliknieto", chosen_option)
+            # po nacisnieciu przycisku ukrycie przyciskow
+            state["button_Użyj karty"][0].show = False
+            state["button_Nie używaj umiejętności"][0].show = False
+            # wykonanie tury
+            if chosen_option.location == "button_Użyj karty":
+                if state["hand_temp"][0].ability == "swap":
+                    move_in_temp_card_to_face_up_pile(state["hand_temp"][0])
+                    special_ability_swap(game_round, game_renderer, state)
+                elif state["hand_temp"][0].ability == "look":
+                    move_in_temp_card_to_face_up_pile(state["hand_temp"][0])
+                    special_ability_look(game_round, game_renderer, state)
+                # take two  nie dziala
+                elif state["hand_temp"][0].ability == "take":
+                    move_in_temp_card_to_face_up_pile(state["hand_temp"][0])
+                    special_ability_take_two(game_round, game_renderer, state)
+                    # po skonczeniu special_ability_take_two wybrana karta ma byc w hand_temp loc_number 0
+                    temp_card = state["hand_temp"][0]
+                    if temp_card.ability != None:
+                        special_card_taken()
+                    else:
+                        choose_target_and_move_temp0_to_target(state["hand_temp"][0])
+            elif chosen_option.location == "button_Nie używaj umiejętności":
+                choose_target_and_move_temp0_to_target(state["hand_temp"][0])
         # dodanie karty do hand_temp, usunięcie z wybranego  stosu
         card1 = chosen_card_from_stack
         card1.location = "hand_temp"
@@ -218,42 +257,12 @@ class Round:
         card1.show_front = True
         state["hand_temp"].append(card1)
         state["face_down_pile"].pop()
+        # card 1 is in temp
         # wybranie  karty z atrybutem location, która wskaże gdzie ma pójść
         if state["hand_temp"][0].ability==None:
-            choose_card_and_move_to_hand_or_face_down_pile()
+            choose_target_and_move_temp0_to_target(state["hand_temp"][0])
         else:
-            if state["hand_temp"][0].ability == "swap":
-                text ="Karta specjalna: Możesz zamienić dowolne 2 karty z rąk graczy (bez odkrywania ich)"
-            elif state["hand_temp"][0].ability == "look":
-                text = "Karta specjalna:  Możesz podejrzeć dowolną kartę z rąk graczy"
-            elif state["hand_temp"][0].ability == "take":
-                text ="Karta specjalna: Wybierasz 2 karty z góry zakrytego stosu jedną odkładasz na stos odkryty i robisz to co zawsze"
-            # pokazanie  przyciskow
-            state["button_Użyj karty"][0].show = True
-            state["button_Nie używaj umiejętności"][0].show = True
-            game_renderer.draw_state(game_round,state,text)
-            chosen_option = InputHandler.choose_from(state["button_Użyj karty"] + state["button_Nie używaj umiejętności"])
-            print("kliknieto",chosen_option)
-            # po nacisnieciu przycisku ukrycie przyciskow
-            state["button_Użyj karty"][0].show = False
-            state["button_Nie używaj umiejętności"][0].show = False
-            # wykonanie tury
-            if chosen_option.location == "button_Użyj karty":
-                if state["hand_temp"][0].ability == "swap":
-                    move_in_temp_card_to_face_up_pile()
-                    special_ability_swap(game_round,game_renderer,state)
-                elif state["hand_temp"][0].ability == "look":# I am your father
-                    move_in_temp_card_to_face_up_pile()
-                    special_ability_look(game_round,game_renderer,state)
-                # take two  nie dziala
-                elif state["hand_temp"][0].ability == "take":
-                    move_in_temp_card_to_face_up_pile()
-                    special_ability_take_two(game_round,game_renderer,state)
-                    # po skonczeniu take two wybrana karta ma byc w hand_temp z  lokalizacja 0 zeby poznisza funkcja  mogla dzialac choose_card...
-                    choose_card_and_move_to_hand_or_face_down_pile()
-            elif chosen_option.location == "button_Nie używaj umiejętności":
-                choose_card_and_move_to_hand_or_face_down_pile()
-        self.debug(state)
+            special_card_taken()
 
     def human_turn_idz_na_calosc(self, state, game_round, game_renderer,players):  # example
         state["button_Pobudka"][0].show = True
