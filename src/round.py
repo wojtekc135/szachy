@@ -56,47 +56,65 @@ class Round:
             "button_Pobudka": [],
             "button_tell the two cards value": []
         }
-
-        num_cards = 6
+        num_cards = 12
         all_cards = []
-        for i in range(num_cards):
+        crows = {}
+        ability = {}
+        for i in range(num_cards + 1):
+            if i < 6:  # Karty 1-5
+                crows[assets["cards"][i]] = i
+            elif 6 <= i <= 10:  # Karty 5s, 6s, 7s (poprawne przypisanie wartości 5, 6, 7)
+                if i%2 == 0:
+                    v = (5 + (i - 6) // 2) * 2
+                else: v = 5 + (i - 6)
+                crows[assets["cards"][i]] = v
+            else:
+                crows[assets["cards"][i]] = i-3
+
             all_cards.append(assets["cards"][i])
+            ability[assets["cards"][i]] = None
+
+        ability[assets["cards"][6]] = "look"
+        ability[assets["cards"][8]] = "swap"
+        ability[assets["cards"][10]] = "take"
 
         id = 0
-
         # Przydziel karty do rąk graczy
         for hand in ["hand1", "hand2", "hand3", "hand4"]:
             for i in range(4):
                 card_name = choice(all_cards)
-                c = Card(screen, card_name, assets["card_back"], False, False, hand, i, False, False, card_size, id, 0,
-                         None)
+                crow = crows[card_name]
+                a = ability[card_name]
+                c = Card(screen, card_name, assets["card_back"], False, False, hand, i, False, False, card_size, id, crow,
+                         a)
                 state[hand].append(c)
-                if c.crows == 9:
-                    return 0
 
                 id += 1
 
         # Przydziel karty do face_up_pile (ustalona liczba kart)
         for i in range(10):
             card_name = choice(all_cards)
-            state["face_up_pile"].append(
-                Card(screen, card_name, assets["card_back"], True, True, "face_up_pile", 0, False, False,
-                     card_size, id, 0, None)
+            crow = crows[card_name]
+            a = ability[card_name]
+            state["face_up_pile"].append(Card(screen, card_name, assets["card_back"], True, True, "face_up_pile", 0, False, False,
+                     card_size, id, crow, a)
             )
             id += 1
         # Przydziel karty do face_down_pile (ustalona liczba kart)
         for i in range(10):
             card_name = choice(all_cards)
+            crow = crows[card_name]
+            a = ability[card_name]
             state["face_down_pile"].append(
-                Card(screen, card_name, assets["card_back"], False, False, "face_down_pile", 0, False, False, #blad nie moze   byc i naprawione
-                     card_size, id, 0, None)
-            )
+                Card(screen, card_name, assets["card_back"], False, False, "face_down_pile", 0, False, False,
+                     card_size, id, crow, a)
+                )
             id += 1
         # nadanie kart specjalnych! uwaga!
         #take two nie dziala
-        state["face_down_pile"][-2].ability = "take"
-        state["face_down_pile"][-1].ability = "swap"
-        state["face_down_pile"][-1].ability = "look"
+        # state["face_down_pile"][-2].ability = "take"
+        # state["face_down_pile"][-1].ability = "swap"
+        # state["face_down_pile"][-1].ability = "look"
 
         for localisation in state:
             if localisation[:4] == "hand" or localisation[:4] == "face":

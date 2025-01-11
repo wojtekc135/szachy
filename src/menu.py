@@ -6,6 +6,7 @@ import webbrowser
 from menu_button import Button
 import os
 from variant2 import idz_na_calosc
+from variant1 import  variant1
 pygame.init()
 # Ustawienie ikony gry
 game_icon = pygame.image.load("../assets/ikonka.png")
@@ -181,8 +182,8 @@ def play():
                 if PLAY_BACK.checkForInput(PLAY_MOUSE_POS):
                     main_menu()
                 if MODE_1.checkForInput(PLAY_MOUSE_POS):
-                    print("????????") # podstawa? - wojtek
-                    idz_na_calosc(SCREEN)  # Zastąp odpowiednią funkcją
+                    print("Wybrano tryb: Nietakie kruki straszne") #
+                    variant1(SCREEN)  # Zastąp odpowiednią funkcją
                 if MODE_2.checkForInput(PLAY_MOUSE_POS):
                     idz_na_calosc(SCREEN)  # Zastąp odpowiednią funkcją
                     print("Wybrano tryb: Idź na całość")  # Zastąp odpowiednią funkcją
