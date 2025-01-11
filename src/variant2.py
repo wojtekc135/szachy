@@ -1,21 +1,11 @@
 import pygame
-#from Tools.scripts.generate_opcode_h import header
 from game_render import GameRenderer
 from round import Round
 import os
 from utils import load_assets, scale_assets, get_card_size
 from player import Player
 
-game_round = Round(1, "human", 1)
-screen_info = pygame.display.Info()
-screen_width = screen_info.current_w
-screen_height = screen_info.current_h
-screen = pygame.display.set_mode((screen_width, screen_height))
-font = pygame.font.SysFont("arial", 24)
-card_size = get_card_size(screen_height)
-assets = load_assets(os.path.join(os.pardir, "assets"), "karta", "stół", "rewers")
-assets = scale_assets(assets, card_size, (screen_width, screen_height))
-state = game_round.create_example_state(screen, assets, card_size, "variant2")
+
 
 #Bardzo szybki wariant przez to jak działa liczenie kruków
 def idz_na_calosc(screen):
@@ -53,10 +43,14 @@ def idz_na_calosc(screen):
 
         elif game_round.round_number > 4:
             if game_round.player_type == "human":
-                game_round.human_turn_variant2(state, game_round, game_renderer, screen, players)
+                if game_round.human_turn_idz_na_calosc(state, game_round, game_renderer,players) == "koniec gry":
+                    running = False
+                    break
             else:
                 pass
-                game_round.bot_turn_variant2(state, game_round, game_renderer)
+                if game_round.bot_turn_idz_na_calosc(game_round,game_renderer,state) == "koniec gry":
+                    running = False
+                    break
 
         # aktualizacja rundy
         game_round.round_number += 1
@@ -70,8 +64,16 @@ def idz_na_calosc(screen):
             game_round.player_number = game_round.round_number % 4
         pygame.time.wait(200)
 
+if __name__ == "__main__":
+    game_round = Round(1, "human", 1)
+    screen_info = pygame.display.Info()
+    screen_width = screen_info.current_w
+    screen_height = screen_info.current_h
+    screen = pygame.display.set_mode((screen_width, screen_height))
+    font = pygame.font.SysFont("arial", 24)
+    card_size = get_card_size(screen_height)
+    assets = load_assets(os.path.join(os.pardir, "assets"), "karta", "stół", "rewers")
+    assets = scale_assets(assets, card_size, (screen_width, screen_height))
+    state = game_round.create_example_state(screen, assets, card_size, "variant2")
 
-    pygame.quit()
-
-
-idz_na_calosc(screen)
+    idz_na_calosc(screen)

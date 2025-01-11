@@ -41,3 +41,7 @@ class GameRenderer:
             for object in state_type:
                 object.draw(self.screen)
         pygame.display.flip()
+    def draw_text_at_bottom(self, text):
+        text_surface = self.font.render(text, True, (255, 255, 255))  # Biały tekst
+        text_rect = text_surface.get_rect(center=(self.screen.get_width() // 2, self.screen.get_height() - 20))  # Na dole
+        self.screen.blit(text_surface, text_rect)
