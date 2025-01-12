@@ -184,24 +184,36 @@ class Round:
                 game_renderer.draw_state(game_round, state, action_text)
                 picked_card.highlighted = False
 
-    def human_swap_chosen_pile_up_with_hand(self, game_renderer, game_round, state, chosen_card_from_stack):  # example
-        chosen_card_from_stack.highlighted = True
+    def human_swap_chosen_pile_up_with_hand(self, game_renderer, game_round, state):  # example
+        self.debug(state)
+        card_from_stack =  state["face_up_pile"][-1]
+        print(card_from_stack.id)
+        card_from_stack.highlighted = True
         game_renderer.draw_state(game_round, state, "Wybierz karte z ręki")
         card_from_hand = game_round.choose_card_from_hand(state, "hand1")
+        print(card_from_hand.id)
         card_from_hand.highlighted = True
         game_renderer.draw_state(game_round, state, "Zamienianie miejscami")
         pygame.time.wait(500)  # todo wydłużyć czas
-        state, new_card_from_hand, new_card_from_stack = game_round.swap_card(state, chosen_card_from_stack,
-                                                                              card_from_hand)
+        temp=card_from_stack
+        state["face_up_pile"][-1] = card_from_hand
+        state["hand1"][card_from_hand.location_number] = temp
+        state["hand1"][card_from_hand.location_number].location = "hand1"
+        state["hand1"][card_from_hand.location_number].location_number = card_from_hand.location_number
+        new_card_from_hand = state["hand1"][card_from_hand.location_number]
+        card_from_hand.location = "face_up_pile"
+        card_from_hand.location_number = 0
+        new_card_from_stack = state["face_up_pile"][-1]
         new_card_from_stack.highlighted = False
         new_card_from_hand.highlighted = False
-        new_card_from_stack.show_front = True
         # pokazanie karty, którą wybraliśmy (przez chwilę)
+        new_card_from_stack.show_front = True
         new_card_from_hand.show_front = True
         game_renderer.draw_state(game_round, state, "Patrz")
         pygame.time.wait(500)
-        new_card_from_hand.show_front = False
+        new_card_from_hand.show_front =  False
         game_renderer.draw_state(game_round, state, "Koniec patrzenia")
+        self.debug(state)
     def human_take_card_from_face_down_pile(self, game_renderer, game_round, state, chosen_card_from_stack):
         def move_in_temp_card_to_face_up_pile(temp_card):
             temp_card.location = "face_up_pile"
@@ -302,7 +314,7 @@ class Round:
         chosen_stack_type = object_type
         chosen_card_from_stack = self.choose_card_from_stack_up(state, chosen_stack_type)
         if object_type == "face_up_pile":
-            self.human_swap_chosen_pile_up_with_hand(game_renderer, game_round, state, chosen_card_from_stack)
+            self.human_swap_chosen_pile_up_with_hand(game_renderer, game_round, state)
         if object_type == "face_down_pile":
             self.human_take_card_from_face_down_pile(game_renderer, game_round, state, chosen_card_from_stack)
 
