@@ -40,9 +40,9 @@ def variant3(screen):
 
         elif game_round.round_number > 4:
             if game_round.player_type == "human":
-                game_round.variant3_options(screen, running, state, game_round, game_renderer)
+                game_round.variant3_options(game_renderer, game_round, state, screen, running, game_round.player_number)
             else:
-                game_round.variant3_options(screen, running, state, game_round, game_renderer)
+                game_round.variant3_options(game_renderer, game_round, state, screen, running, game_round.player_number)
 
         # aktualizacja rundy
         game_round.round_number += 1

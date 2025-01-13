@@ -7,6 +7,8 @@ from card import Card
 from random import choice, randint, shuffle
 from action_button import ActionButton
 from button import Button
+from src import game_render
+
 #from src.variant2 import screen
 
 info = pygame.display.Info()
@@ -502,7 +504,7 @@ class Round:
                         decision_made = True
                         break
 
-    def variant3_options(self,screen, running, state, game_round, game_renderer):
+    def variant3_options(self, game_renderer, game_round, state, screen, running, player):
         game_renderer.draw_state(game_round, state, "Wybierz stos")
         chosen_stack_type = self.choose_stack_type(state)
         chosen_card_from_stack = self.choose_card_from_stack_bottom(state, chosen_stack_type)
@@ -517,23 +519,33 @@ class Round:
         elif chosen_option == "pobudka":
             self.wake_up()
         elif chosen_option == "tell the two cards value":
-            self.show_text_bar(screen, running)
+            if self.player_number==1:
+                self.check_two_cards(game_renderer, game_round, state, screen, running, "hand1")
+            elif self.player_number==2:
+                self.check_two_cards(game_renderer, game_round, state, screen, running, "hand2")
+            elif self.player_number==3:
+                self.check_two_cards(game_renderer, game_round, state, screen, running, "hand3")
+            elif self.player_number==4:
+                self.check_two_cards(game_renderer, game_round, state, screen, running, "hand4")
 
         game_round.debug(state)
 
-    def show_text_bar(self, screen, running):
-        input_rect = pygame.Rect(300, 250, 200, 50)
-        text_color = (0, 0, 0)
-        input_color_active = (255, 255, 255)
-        input_color_inactive = (200, 200, 200)
+    def show_text_bar(self, screen, running, state, game_round, game_renderer):
+        screen_info = pygame.display.Info()
+        screen_width = screen_info.current_w
+        screen_height = screen_info.current_h
+        input_rect = pygame.Rect(screen_width//2 - 100, screen_height//2 -170, 200, 50)
+        text_color = (108, 77, 40)
+        input_color_active = (142,100, 53)
+        input_color_inactive = (164, 115, 62)
         input_color = input_color_inactive
         active = False
         user_text = ""  # Tekst wpisany przez użytkownika
         font = pygame.font.Font(None, 36)
+        action_text="Podaj przewidywaną wartość dwóch kart"
+        game_renderer.draw_state(game_round, state, action_text)
 
         while running:
-           # screen.fill((0, 0, 0))
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -548,7 +560,6 @@ class Round:
                         active = False
                         input_color = input_color_inactive
 
-                # Wprowadzanie tekstu
                 if event.type == pygame.KEYDOWN and active:
                     if event.key == pygame.K_BACKSPACE:
                         user_text = user_text[:-1]
@@ -556,6 +567,7 @@ class Round:
                         try:
                             value = int(user_text)
                             print(f"Wprowadzona wartość: {value}")
+
                             return value
                         except ValueError:
                             print("Nieprawidłowa liczba!")
@@ -568,4 +580,39 @@ class Round:
             text_surface = font.render(user_text, True, text_color)
             screen.blit(text_surface, (input_rect.x + 10, input_rect.y + 10))
             pygame.display.flip()
+
+    def check_two_cards(self, game_renderer, game_round, state, screen, running, player):
+        print("ta funkcja działa")
+        cards_values=self.show_text_bar(screen, running, state, game_round, game_renderer)
+        action_text_1 = "Wybierz pierwszą kartę:"
+        game_renderer.draw_state(game_round, state, action_text_1)
+        picked_set = set()
+        picked_card_1 = game_round.choose_card_from_hand(state, player)
+        action_text_2 = "Wybierz drugą kartę:"
+        game_renderer.draw_state(game_round, state, action_text_2)
+        picked_card_2 = game_round.choose_card_from_hand(state, player)
+        #if not picked_card_1.known_for_player and not picked_card_2.known_for_player:
+        picked_set.add(picked_card_1)
+        picked_card_1.show_front = True
+        picked_card_1.highlighted = True
+        picked_card_1.known_for_player = True
+        a = picked_card_1.crows
+        picked_set.add(picked_card_2)
+        picked_card_2.show_front = True
+        picked_card_2.highlighted = True
+        picked_card_2.known_for_player = True
+        b = picked_card_2.crows
+        game_renderer.draw_state(game_round, state, "Podgladnie...")
+        print("dotąd też")
+        if cards_values==a==b:
+            action_text ="Udało się! -3 kruki dla gracza"
+            game_renderer.draw_state(game_round, state, action_text)
+        else:
+            action_text = "Nie udało się. +3 kruki dla gracza"
+            game_renderer.draw_state(game_round, state, action_text)
+
+        pygame.time.wait(3000)
+        for c in picked_set:
+            c.show_front = False
+            c.highlighted = False
 
