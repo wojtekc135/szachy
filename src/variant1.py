@@ -6,7 +6,8 @@ from round import Round
 import os
 from utils import load_assets, scale_assets, get_card_size
 from player import Player
-from points_screen import wake_up_screen, end_screen
+#from points_screen import wake_up_screen, end_screen
+#from boty import Bot
 
 game_round = Round(1, "human", 1)
 screen_info = pygame.display.Info()
