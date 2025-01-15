@@ -289,8 +289,29 @@ class Round:
             self.human_take_card_from_face_down_pile(game_renderer, game_round, state, chosen_card_from_stack)
 
     def bot_turn_idz_na_calosc(self,game_round,game_renderer,state):
-        game_renderer.draw_state(game_round, state, "Bot cos robi")
+
+        game_renderer.draw_state(game_round, state, "Bot wybiera stos")
+        chosen_pile=choice(["face_down_pile", "face_down_pile"])
+        chosen_card_from_stack = self.choose_card_from_stack_up(state, chosen_pile)
+        chosen_card_from_stack.highlighted = True
+
+        if chosen_pile=="face_up_pile":
+            game_renderer.draw_state(game_round, state, "Bot wybrał stos odkryty")
+        elif chosen_pile=="face_down_pile":
+            game_renderer.draw_state(game_round, state, "Bot wybrał stos zakryty")
+
         pygame.time.wait(500)
+        chosen_card_from_hand = state["hand" + str(game_round.player_number)][randint(0, 3)]
+        chosen_card_from_hand.highlighted=True
+
+        game_renderer.draw_state(game_round, state, f"Bot wybrał kartę z ręki")
+        pygame.time.wait(500)
+        self.debug(state)
+        print(chosen_card_from_hand.location_number, chosen_card_from_stack.location)
+        state, new_chosen_card_from_stack, new_chosen_card_from_hand=self.swap_card(state, chosen_card_from_hand, chosen_card_from_stack)
+        self.debug(state)
+
+
         print("robot! ᕙ(  •̀ ᗜ •́  )ᕗ")  # do zrobienia
 
     def show_text_bar(self, screen, running):

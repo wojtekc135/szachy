@@ -1,14 +1,14 @@
 import pygame
-#from Tools.scripts.generate_opcode_h import header
-
+import random
 from game_render import GameRenderer
 from round import Round
 import os
 from utils import load_assets, scale_assets, get_card_size
 from player import Player
-#from points_screen import wake_up_screen, end_screen
-#from boty import Bot
+from boty import Bot
 
+# Inicjalizacja gry
+pygame.init()
 game_round = Round(1, "human", 1)
 screen_info = pygame.display.Info()
 screen_width = screen_info.current_w
@@ -21,18 +21,25 @@ assets = scale_assets(assets, card_size, (screen_width, screen_height))
 state = game_round.create_example_state(screen, assets, card_size, "variant2")
 
 def variant1(screen):
-    pygame.init()
-    player1 = Player(True,1)
+    # Tworzenie graczy
+    player1 = Player(True, 1)
     player2 = Player(True, 2)
     player3 = Player(True, 3)
     player4 = Player(True, 4)
     players = [player1, player2, player3, player4]
 
+    # Tworzenie bota
+    bot = Bot()
+    initial_cards = [random.randint(1, 9) for _ in range(4)]
+    bot.start_game(initial_cards)
+
     end_game = False
-    game_round.debug(state)
-    game_renderer = GameRenderer(screen, assets, font)
     wake_up = False
     running = True
+
+    game_renderer = GameRenderer(screen, assets, font)
+    game_round.debug(state)
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -52,25 +59,41 @@ def variant1(screen):
         elif game_round.round_number > 4:
             if game_round.player_type == "human":
                 wake_up = game_round.wake_up_option(state, game_renderer, game_round, screen)
-                if(not wake_up):
+                if not wake_up:
                     game_round.human_take_card_from_any_pile(state, game_round, game_renderer)
             else:
-                game_round.bot_take_card_from_any_pile(state, game_round, game_renderer)
+                # Logika tury bota
+                top_discard = state["discard_pile"][-1] if state["discard_pile"] else None
+                draw_pile_top = random.randint(1, 9)  # Symulacja wierzchniej karty zakrytego stosu
+                special_action_available = True  # Jeśli akcje specjalne są dostępne
 
-        #pobudka
+                decision = bot.take_turn(top_discard, draw_pile_top, special_action_available)
+
+                if decision[0] == "replace":
+                    _, index, new_card = decision
+                    state["discard_pile"].append(bot.dream[index])
+                    bot.dream[index] = new_card
+                elif decision[0] == "special":
+                    print(f"{bot.name} używa akcji specjalnej!")
+                    # Tutaj implementujesz specjalną akcję bota
+                elif decision[0] == "pobudka":
+                    print(f"{bot.name} ogłasza POBUDKA!")
+                    wake_up = True
+                elif decision[0] == "pass":
+                    print(f"{bot.name} nie wykonuje akcji.")
+
+        # Pobudka i zakończenie rundy
         if wake_up:
-            waker = player1 #tylko gracz może budzić (najwyżej potem można zmeinic)
+            waker = player1  # Tylko gracz może budzić (możesz zmienić później)
             for player in players:
                 cur_hand = "hand" + str(player.player_number)
                 hand_counting = state[cur_hand]
                 for card in hand_counting:
                     if card.crows == 9:
                         player.ninecrows += 1
-                print("Gracz: ",player.player_number," punkty: ", player.crows, "9 kruków: ", player.ninecrows)
-                #jesteśmy hojni i jak dwaj gracze mają tylko karty z 9 krukami to niech oboje sobie nic dodają :)
+                print("Gracz:", player.player_number, "punkty:", player.crows, "9 kruków:", player.ninecrows)
 
-
-        # aktualizacja rundy
+        # Aktualizacja rundy
         game_round.round_number += 1
         if game_round.round_number % 4 == 1:
             game_round.player_type = "human"
@@ -80,17 +103,18 @@ def variant1(screen):
             game_round.player_number = 4
         else:
             game_round.player_number = game_round.round_number % 4
+
         pygame.time.wait(200)
 
         if end_game:
             winner = "player1!" if player1.ninecrows == max(player.ninecrows for player in players) else "Nie ty"
-            end_screen(screen, players, winner)
+            # end_screen(screen, players, winner)  # Zaimplementuj, jeśli używasz tej funkcji
             running = False
         elif wake_up:
-            wake_up_screen(screen, players)
+            # wake_up_screen(screen, players)  # Zaimplementuj, jeśli używasz tej funkcji
+            pass
         wake_up = False
 
     pygame.quit()
-
 
 variant1(screen)
