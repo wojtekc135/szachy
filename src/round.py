@@ -319,9 +319,85 @@ class Round:
             self.human_take_card_from_face_down_pile(game_renderer, game_round, state, chosen_card_from_stack)
 
     def bot_turn_idz_na_calosc(self,game_round,game_renderer,state):
-        game_renderer.draw_state(game_round, state, "Bot cos robi")
-        pygame.time.wait(500)
-        print("robot! ᕙ(  •̀ ᗜ •́  )ᕗ")  # do zrobienia
+        game_renderer.draw_state(game_round, state, "Bot wybiera stos")
+        chosen_pile=choice(["face_down_pile", "face_up_pile"])
+        card_from_stack = self.choose_card_from_stack_up(state, chosen_pile)
+        if chosen_pile=="face_up_pile":
+            #  mega blad znikajace karty
+            # juz tez działa :) 💀
+            state["face_up_pile"][-1].highlighted = True
+            game_renderer.draw_state(game_round, state, "Bot wybrał stos odkryty")
+            pygame.time.wait(500)
+            state["face_up_pile"][-1].highlighted = False
+            bot_hand = "hand" + str(game_round.player_number)
+            card_from_hand = state[bot_hand][randint(0, 3)]
+            card_from_hand.highlighted = True
+            game_renderer.draw_state(game_round, state, f"Bot wybrał kartę z ręki")
+            pygame.time.wait(500)
+            card_from_hand.highlighted = False
+            # skopiowane z kodu wyzej
+            temp = card_from_stack
+            state["face_up_pile"][-1] = card_from_hand
+            state[bot_hand][card_from_hand.location_number] = temp
+            state[bot_hand][card_from_hand.location_number].location = bot_hand
+            state[bot_hand][card_from_hand.location_number].location_number = card_from_hand.location_number
+            new_card_from_hand = state[bot_hand][card_from_hand.location_number]
+            card_from_hand.location = "face_up_pile"
+            card_from_hand.location_number = 0
+            new_card_from_stack = state["face_up_pile"][-1]
+            new_card_from_hand.show_front = False
+            new_card_from_stack.show_front = True
+            # koniec kopiowania
+            # nie było bo problemu gdyby ktoś w końcu zrobił poprawny example_state z jedna kartą w stosie  odkrytym w koncu, albo wojtek poprawil aktualizowanie kart w state :)
+        elif chosen_pile=="face_down_pile":
+            state["face_down_pile"][-1].highlighted = True
+            game_renderer.draw_state(game_round, state, "Bot wybrał stos zakryty")
+            pygame.time.wait(500)
+            state["face_down_pile"][-1].highlighted = False
+            bot_like_chosen_card = choice([False])
+            if bot_like_chosen_card:
+                # testowane działa
+                # dalsze kopiowanie z malymi zmianami na  bota,
+                bot_hand = "hand" + str(game_round.player_number)
+                rand_loc_number = randint(0, 3)
+                hand_card = state[bot_hand][rand_loc_number]
+                state[bot_hand][rand_loc_number].highlighted = True
+                game_renderer.draw_state(game_round, state, "Bot wybrał karte z reki, zamienianie  miejscami")
+                pygame.time.wait(500)
+                state[bot_hand][rand_loc_number].highlighted = False
+                card1 = card_from_stack
+                card1.location = "hand_temp"
+                card1.location_number = 0
+                card1.show_front = False # zmiana!
+                state["hand_temp"].append(card1)
+                state["face_down_pile"].pop()
+                temp_card = state["hand_temp"][0]
+                temp_card.location = hand_card.location
+                temp_card.location_number = hand_card.location_number
+                hand_card.location_number = len(state["face_up_pile"]) - 1
+                hand_card.location = "face_up_pile"
+                hand_card.show_front = True
+                state["face_up_pile"].append(hand_card)
+                state[bot_hand][temp_card.location_number] = temp_card
+                state["hand_temp"].pop()
+            else:
+                # juz totalnie nie wiem o co chodzi ale buja ദ്ദി（• ˕ •マᐟ
+                # przetestowane i  też superiten działa
+                game_renderer.draw_state(game_round, state, "Bot wybrał stos odkryty, zamienianie miejscami")
+                pygame.time.wait(500)
+                card1 = card_from_stack
+                card1.location = "hand_temp"
+                card1.location_number = 0
+                card1.show_front = True
+                state["hand_temp"].append(card1)
+                state["face_down_pile"].pop()
+                temp_card = state["hand_temp"][0]
+                temp_card.location = "face_up_pile"
+                temp_card.location_number = len(state["face_up_pile"])
+                state["face_up_pile"].append(temp_card)
+                state["hand_temp"].pop()
+                card_from_stack.highlighted = False
+        self.debug(state)
 
     def show_text_bar(self, screen, running):
         input_rect = pygame.Rect(300, 250, 200, 50)
