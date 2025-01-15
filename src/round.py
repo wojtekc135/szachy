@@ -56,33 +56,41 @@ class Round:
             "button_Pobudka": [],
             "button_tell the two cards value": []
         }
-        num_cards = 12
-        all_cards = []
+        all_cards = {}
         crows = {}
         ability = {}
-        for i in range(num_cards + 1):
+        for i in range(13):
             if i < 6:  # Karty 1-5
                 crows[assets["cards"][i]] = i
             elif 6 <= i <= 10:  # Karty 5s, 6s, 7s (poprawne przypisanie wartości 5, 6, 7)
-                if i%2 == 0:
+                if i % 2 == 0:
                     v = (5 + (i - 6) // 2) * 2
-                else: v = 5 + (i - 6)
+                else:
+                    v = 5 + (i - 6)
                 crows[assets["cards"][i]] = v
             else:
-                crows[assets["cards"][i]] = i-3
-
-            all_cards.append(assets["cards"][i])
+                crows[assets["cards"][i]] = i - 3
+            all_cards[i] = (assets["cards"][i])
             ability[assets["cards"][i]] = None
 
         ability[assets["cards"][6]] = "look"
         ability[assets["cards"][8]] = "swap"
         ability[assets["cards"][10]] = "take"
+        karty = []
+        for i, card in all_cards.items():
+            if i in [6,8,10]:
+                karty.extend([card] * 3)
+            elif i == 12:
+                karty.extend([card] * 9)
+            else:
+                karty.extend([card] * 4)
 
         id = 0
         # Przydziel karty do rąk graczy
         for hand in ["hand1", "hand2", "hand3", "hand4"]:
             for i in range(4):
-                card_name = choice(all_cards)
+                card_name = choice(karty)
+                karty.remove(card_name)
                 crow = crows[card_name]
                 a = ability[card_name]
                 c = Card(screen, card_name, assets["card_back"], False, False, hand, i, False, False, card_size, id, crow,
@@ -92,8 +100,9 @@ class Round:
                 id += 1
 
         # Przydziel karty do face_up_pile (ustalona liczba kart)
-        for i in range(10):
-            card_name = choice(all_cards)
+        for i in range(1):
+            card_name = choice(karty)
+            karty.remove(card_name)
             crow = crows[card_name]
             a = ability[card_name]
             state["face_up_pile"].append(Card(screen, card_name, assets["card_back"], True, True, "face_up_pile", 0, False, False,
@@ -101,8 +110,9 @@ class Round:
             )
             id += 1
         # Przydziel karty do face_down_pile (ustalona liczba kart)
-        for i in range(10):
-            card_name = choice(all_cards)
+        for i in range(37):
+            card_name = choice(karty)
+            karty.remove(card_name)
             crow = crows[card_name]
             a = ability[card_name]
             state["face_down_pile"].append(
@@ -187,11 +197,9 @@ class Round:
     def human_swap_chosen_pile_up_with_hand(self, game_renderer, game_round, state):  # example
         self.debug(state)
         card_from_stack =  state["face_up_pile"][-1]
-        print(card_from_stack.id)
         card_from_stack.highlighted = True
         game_renderer.draw_state(game_round, state, "Wybierz karte z ręki")
         card_from_hand = game_round.choose_card_from_hand(state, "hand1")
-        print(card_from_hand.id)
         card_from_hand.highlighted = True
         game_renderer.draw_state(game_round, state, "Zamienianie miejscami")
         pygame.time.wait(500)  # todo wydłużyć czas
@@ -302,14 +310,15 @@ class Round:
         else:
             special_card_taken()
 
-    def human_turn_idz_na_calosc(self, state, game_round, game_renderer,players):  # example
+    def human_turn_idz_na_calosc(self, state, game_round, game_renderer,players, variant):  # example
         state["button_Pobudka"][0].show = True
         game_renderer.draw_state(game_round, state, "Wybierz stos lub kliknij pobudka")
         object = InputHandler.choose_from(state["face_up_pile"] + state["face_down_pile"] + state["button_Pobudka"])
         state["button_Pobudka"][0].show = False
         object_type = object.location
         if object_type == "button_Pobudka":
-             if wake_up(2,state,players, game_renderer.screen) == "koniec gry":
+             if wake_up(variant,state,players, game_renderer.screen) == "koniec gry":
+
                 return "koniec gry" # w petli gry dodalem if basic_variant_turn == koniec gry: running = False, menu cos nie teges
         chosen_stack_type = object_type
         chosen_card_from_stack = self.choose_card_from_stack_up(state, chosen_stack_type)
@@ -320,9 +329,9 @@ class Round:
 
     def bot_turn_idz_na_calosc(self,game_round,game_renderer,state):
         game_renderer.draw_state(game_round, state, "Bot wybiera stos")
-        chosen_pile=choice(["face_down_pile", "face_up_pile"])
+        chosen_pile = choice(["face_down_pile", "face_up_pile"])
         card_from_stack = self.choose_card_from_stack_up(state, chosen_pile)
-        if chosen_pile=="face_up_pile":
+        if chosen_pile == "face_up_pile":
             #  mega blad znikajace karty
             # juz tez działa :) 💀
             state["face_up_pile"][-1].highlighted = True
@@ -349,7 +358,7 @@ class Round:
             new_card_from_stack.show_front = True
             # koniec kopiowania
             # nie było bo problemu gdyby ktoś w końcu zrobił poprawny example_state z jedna kartą w stosie  odkrytym w koncu, albo wojtek poprawil aktualizowanie kart w state :)
-        elif chosen_pile=="face_down_pile":
+        elif chosen_pile == "face_down_pile":
             state["face_down_pile"][-1].highlighted = True
             game_renderer.draw_state(game_round, state, "Bot wybrał stos zakryty")
             pygame.time.wait(500)
@@ -368,7 +377,7 @@ class Round:
                 card1 = card_from_stack
                 card1.location = "hand_temp"
                 card1.location_number = 0
-                card1.show_front = False # zmiana!
+                card1.show_front = False  # zmiana!
                 state["hand_temp"].append(card1)
                 state["face_down_pile"].pop()
                 temp_card = state["hand_temp"][0]
