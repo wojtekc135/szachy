@@ -15,7 +15,8 @@ card_size = get_card_size(screen_height)
 assets = load_assets(os.path.join(os.pardir, "assets"), "karta", "stół", "rewers")
 assets = scale_assets(assets, card_size, (screen_width, screen_height))
 state = game_round.create_example_state(screen, assets, card_size, "variant3")
-
+img = pygame.image.load('../assets/ikonka.png')
+pygame.display.set_icon(img)
 
 def variant3(screen):
     pygame.init()

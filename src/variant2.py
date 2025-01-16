@@ -20,6 +20,8 @@ def idz_na_calosc(screen):
     assets = load_assets(os.path.join(os.pardir, "assets"), "karta", "stół", "rewers")
     assets = scale_assets(assets, card_size, (screen_width, screen_height))
     state = game_round.create_example_state(screen, assets, card_size, "variant2")
+    img = pygame.image.load('../assets/ikonka.png')
+    pygame.display.set_icon(img)
 
     player1 = Player(True,1)
     player2 = Player(True, 2)
