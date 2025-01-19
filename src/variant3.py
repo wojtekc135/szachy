@@ -47,10 +47,9 @@ def variant3(screen):
 
         elif game_round.round_number > 4:
             if game_round.player_type == "human":
-                game_round.human_turn_idz_na_calosc(state, game_round, game_renderer, players, 3)
+                game_round.variant3_options(game_renderer, game_round,state,screen,running, players, "variant3")
             else:
                 game_round.bot_turn_idz_na_calosc(game_round, game_renderer, state)
-
         # aktualizacja rundy
         game_round.round_number += 1
         if game_round.round_number % 4 == 1:
