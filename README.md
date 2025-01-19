@@ -33,9 +33,9 @@ Aby uruchomić grę, potrzebujesz:
 ## Jak grać?
 Uruchom grę poleceniem python main.py. Wybierz wariant i rozpocznij rozgrywkę. Każdy gracz (zarówno użytkownik jak i bot) ma możliwość wymiany kart, dążąc do uzyskania jak najmniejszej liczby punktów. Gra kończy się, gdy któryś z graczy ogłosi "Pobudka!", a pozostałe karty zostaną rozliczone. Wygrywa gracz z najmniejszą liczbą punktów.
 
-![Screenshot of the menu](../gra-karciana-sen/assets/Zrzut_ekranu_menu.png "Menu Screenshot")  
-![Screenshot of the variants](../gra-karciana-sen/assets/Zrzut_ekranu_warianty.png "Warianty Screenshot")  
-![Screenshot of the gameplay](../gra-karciana-sen/assets/Zrzut_ekranu_gra.png "Gra Screenshot")
+![Screenshot of the menu](../assetss/Zrzut ekranu menu.png "Menu Screenshot")  
+![Screenshot of the variants](../assetss/Zrzut ekranu warianty.png "Warianty Screenshot")  
+![Screenshot of the gameplay](../assetss/Zrzut ekranu gra.png "Gra Screenshot")
 
 ## Licencja
 Ten projekt jest udostępniany na licencji MIT. Szczegóły znajdziesz w pliku LICENSE
