@@ -7,6 +7,7 @@ from menu_button import Button
 import os
 from variant2 import idz_na_calosc
 from variant1 import  variant1
+from variant3 import variant3
 pygame.init()
 # Ustawienie ikony gry
 game_icon = pygame.image.load("../assets/ikonka.png")
@@ -206,6 +207,7 @@ def play():
                     idz_na_calosc(SCREEN)  # Zastąp odpowiednią funkcją
                     print("Wybrano tryb: Idź na całość")  # Zastąp odpowiednią funkcją
                 if MODE_3.checkForInput(PLAY_MOUSE_POS):
+                    variant3(SCREEN)
                     print("Wybrano tryb: Wiem, co mam")  # Zastąp odpowiednią funkcją
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_F11:  # F11 to klawisz skrótu

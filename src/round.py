@@ -34,11 +34,13 @@ class Round:
         use_card_button = ActionButton(5, SCREEN_HEIGHT*0.4, "button_Użyj karty", button_img, False,  height = 40)
         do_not_use_card_button = ActionButton(5, SCREEN_HEIGHT*0.5, "button_Nie używaj umiejętności", button_img, False,height = 40)
         woke_button = ActionButton(SCREEN_WIDTH*0.885, SCREEN_HEIGHT*0.1, "button_Pobudka", button_img, height=70,show=False)
-        tell_two_cards_button = ActionButton(5, SCREEN_HEIGHT*0.6, "button_tell the two cards value", button_img, False)
+        tell_two_cards_button = ActionButton(5, SCREEN_HEIGHT * 0.1, "button_tell the two cards value", button_img, height=40, show=False)
         action_buttons = [use_card_button, do_not_use_card_button,
                           woke_button, tell_two_cards_button]
         for button in action_buttons:
-            state[button.location] = [button]
+            if button.location not in state:
+                state[button.location] = []
+            state[button.location].append(button)
         return state
 
     def create_example_state(self, screen, assets, card_size, variant):
@@ -56,33 +58,41 @@ class Round:
             "button_Pobudka": [],
             "button_tell the two cards value": []
         }
-        num_cards = 12
-        all_cards = []
+        all_cards = {}
         crows = {}
         ability = {}
-        for i in range(num_cards + 1):
+        for i in range(13):
             if i < 6:  # Karty 1-5
                 crows[assets["cards"][i]] = i
             elif 6 <= i <= 10:  # Karty 5s, 6s, 7s (poprawne przypisanie wartości 5, 6, 7)
-                if i%2 == 0:
+                if i % 2 == 0:
                     v = (5 + (i - 6) // 2) * 2
-                else: v = 5 + (i - 6)
+                else:
+                    v = 5 + (i - 6)
                 crows[assets["cards"][i]] = v
             else:
-                crows[assets["cards"][i]] = i-3
-
-            all_cards.append(assets["cards"][i])
+                crows[assets["cards"][i]] = i - 3
+            all_cards[i] = (assets["cards"][i])
             ability[assets["cards"][i]] = None
 
-        ability[assets["cards"][6]] = "look"
-        ability[assets["cards"][8]] = "swap"
-        ability[assets["cards"][10]] = "take"
+        ability[assets["cards"][6]] = "take"
+        ability[assets["cards"][8]] = "look"
+        ability[assets["cards"][10]] = "swap"
+        karty = []
+        for i, card in all_cards.items():
+            if i in [6,8,10]:
+                karty.extend([card] * 3)
+            elif i == 12:
+                karty.extend([card] * 9)
+            else:
+                karty.extend([card] * 4)
 
         id = 0
         # Przydziel karty do rąk graczy
         for hand in ["hand1", "hand2", "hand3", "hand4"]:
             for i in range(4):
-                card_name = choice(all_cards)
+                card_name = choice(karty)
+                karty.remove(card_name)
                 crow = crows[card_name]
                 a = ability[card_name]
                 c = Card(screen, card_name, assets["card_back"], False, False, hand, i, False, False, card_size, id, crow,
@@ -92,8 +102,9 @@ class Round:
                 id += 1
 
         # Przydziel karty do face_up_pile (ustalona liczba kart)
-        for i in range(10):
-            card_name = choice(all_cards)
+        for i in range(1):
+            card_name = choice(karty)
+            karty.remove(card_name)
             crow = crows[card_name]
             a = ability[card_name]
             state["face_up_pile"].append(Card(screen, card_name, assets["card_back"], True, True, "face_up_pile", 0, False, False,
@@ -101,8 +112,9 @@ class Round:
             )
             id += 1
         # Przydziel karty do face_down_pile (ustalona liczba kart)
-        for i in range(10):
-            card_name = choice(all_cards)
+        for i in range(37):
+            card_name = choice(karty)
+            karty.remove(card_name)
             crow = crows[card_name]
             a = ability[card_name]
             state["face_down_pile"].append(
@@ -110,12 +122,6 @@ class Round:
                      card_size, id, crow, a)
                 )
             id += 1
-        # nadanie kart specjalnych! uwaga!
-        #take two nie dziala
-        # state["face_down_pile"][-2].ability = "take"
-        # state["face_down_pile"][-1].ability = "swap"
-        # state["face_down_pile"][-1].ability = "look"
-
         for localisation in state:
             if localisation[:4] == "hand" or localisation[:4] == "face":
                 for card in state[localisation]:
@@ -187,11 +193,9 @@ class Round:
     def human_swap_chosen_pile_up_with_hand(self, game_renderer, game_round, state):  # example
         self.debug(state)
         card_from_stack =  state["face_up_pile"][-1]
-        print(card_from_stack.id)
         card_from_stack.highlighted = True
         game_renderer.draw_state(game_round, state, "Wybierz karte z ręki")
         card_from_hand = game_round.choose_card_from_hand(state, "hand1")
-        print(card_from_hand.id)
         card_from_hand.highlighted = True
         game_renderer.draw_state(game_round, state, "Zamienianie miejscami")
         pygame.time.wait(randint(400, 800))  # todo wydłużyć czas
@@ -302,14 +306,15 @@ class Round:
         else:
             special_card_taken()
 
-    def human_turn_idz_na_calosc(self, state, game_round, game_renderer,players):  # example
+    def human_turn_idz_na_calosc(self, state, game_round, game_renderer,players, variant):  # example
         state["button_Pobudka"][0].show = True
         game_renderer.draw_state(game_round, state, "Wybierz stos lub kliknij pobudka")
         object = InputHandler.choose_from(state["face_up_pile"] + state["face_down_pile"] + state["button_Pobudka"])
         state["button_Pobudka"][0].show = False
         object_type = object.location
+        additional_points=[0,0,0,0]
         if object_type == "button_Pobudka":
-             if wake_up(2,state,players, game_renderer.screen) == "koniec gry":
+             if wake_up(variant,state,players, game_renderer.screen, additional_points) == "koniec gry":
                 return "koniec gry" # w petli gry dodalem if basic_variant_turn == koniec gry: running = False, menu cos nie teges
         chosen_stack_type = object_type
         chosen_card_from_stack = self.choose_card_from_stack_up(state, chosen_stack_type)
@@ -320,9 +325,9 @@ class Round:
 
     def bot_turn_idz_na_calosc(self,game_round,game_renderer,state):
         game_renderer.draw_state(game_round, state, "Bot wybiera stos")
-        chosen_pile=choice(["face_down_pile", "face_up_pile"])
+        chosen_pile = choice(["face_down_pile", "face_up_pile"])
         card_from_stack = self.choose_card_from_stack_up(state, chosen_pile)
-        if chosen_pile=="face_up_pile":
+        if chosen_pile == "face_up_pile":
             #  mega blad znikajace karty
             # juz tez działa :) 💀
             state["face_up_pile"][-1].highlighted = True
@@ -349,7 +354,7 @@ class Round:
             new_card_from_stack.show_front = True
             # koniec kopiowania
             # nie było bo problemu gdyby ktoś w końcu zrobił poprawny example_state z jedna kartą w stosie  odkrytym w koncu, albo wojtek poprawil aktualizowanie kart w state :)
-        elif chosen_pile=="face_down_pile":
+        elif chosen_pile == "face_down_pile":
             state["face_down_pile"][-1].highlighted = True
             game_renderer.draw_state(game_round, state, "Bot wybrał stos zakryty")
             pygame.time.wait(randint(400, 800))
@@ -368,7 +373,7 @@ class Round:
                 card1 = card_from_stack
                 card1.location = "hand_temp"
                 card1.location_number = 0
-                card1.show_front = False # zmiana!
+                card1.show_front = False  # zmiana!
                 state["hand_temp"].append(card1)
                 state["face_down_pile"].pop()
                 temp_card = state["hand_temp"][0]
@@ -399,25 +404,90 @@ class Round:
                 card_from_stack.highlighted = False
         self.debug(state)
 
-    def show_text_bar(self, screen, running):
-        input_rect = pygame.Rect(300, 250, 200, 50)
-        text_color = (0, 0, 0)
-        input_color_active = (255, 255, 255)
-        input_color_inactive = (200, 200, 200)
+    def variant3_options(self, game_renderer, game_round, state, screen, running, players, variant, additional_points):
+        state["button_tell the two cards value"][0].show = True
+        state["button_Pobudka"][0].show = True
+        game_renderer.draw_state(game_round, state, "Wybierz stos lub kliknij opcję")
+        object = InputHandler.choose_from(state["face_up_pile"] + state["face_down_pile"] + state["button_Pobudka"] + state["button_tell the two cards value"])
+        state["button_Pobudka"][0].show = False
+        state["button_tell the two cards value"][0].show = False
+        object_type = object.location
+        if object_type == "button_Pobudka":
+            if wake_up(variant, state, players, game_renderer.screen, additional_points) == "koniec gry":
+                return "koniec gry"  # w petli gry dodalem if basic_variant_turn == koniec gry: running = False, menu cos nie teges
+        if object_type == "button_tell the two cards value":
+            if self.player_number==1:
+                additional_points[0]+=self.check_two_cards(game_renderer, game_round, state, "hand1", screen, running)
+            elif self.player_number==2:
+                additional_points[1]+=self.check_two_cards(game_renderer, game_round, state, "hand2", screen, running)
+            elif self.player_number==3:
+                additional_points[2]+=self.check_two_cards(game_renderer, game_round, state, "hand3", screen, running)
+            elif self.player_number==4:
+                additional_points[3]+=self.check_two_cards(game_renderer, game_round, state, "hand4", screen, running)
+        chosen_stack_type = object_type
+        chosen_card_from_stack = self.choose_card_from_stack_up(state, chosen_stack_type)
+        if object_type == "face_up_pile":
+            self.human_swap_chosen_pile_up_with_hand(game_renderer, game_round, state)
+        if object_type == "face_down_pile":
+            self.human_take_card_from_face_down_pile(game_renderer, game_round, state, chosen_card_from_stack)
+
+    def check_two_cards(self, game_renderer, game_round, state, player, screen, running):
+        cards_values=self.show_text_bar(screen, running, game_round, state, game_renderer)
+        action_text1="Wybierz pierwszą kartę"
+        game_renderer.draw_state(game_round,state,action_text1)
+        picked_set=set()
+        picked_card1=game_round.choose_card_from_hand(state, player)
+        action_text2 = "Wybierz drugą kartę"
+        game_renderer.draw_state(game_round, state, action_text2)
+        picked_card2 = game_round.choose_card_from_hand(state, player)
+        picked_set.add(picked_card1)
+        picked_card1.show_front = True
+        picked_card1.highlighted = True
+        picked_card1.known_for_player = True
+        a = picked_card1.crows
+        picked_set.add(picked_card2)
+        picked_card2.show_front = True
+        picked_card2.highlighted = True
+        picked_card2.known_for_player = True
+        b = picked_card1.crows
+        game_renderer.draw_state(game_round,state, "Podglądanie...")
+        if cards_values==a==b:
+            action_text="Udało się! -3 kruki dla gracza"
+            game_renderer.draw_state(game_round, state, action_text)
+            new_points=-3
+        else:
+            action_text = "Nie udało się. +3 kruki dla gracza"
+            game_renderer.draw_state(game_round, state, action_text)
+            new_points=3
+        pygame.time.wait(3000)
+        for c in picked_set:
+            c.show_front = False
+            c.highlighted = False
+
+        return new_points
+
+
+    def show_text_bar(self, screen, running, game_round, state, game_renderer):
+        screen_info=pygame.display.Info()
+        screen_width=screen_info.current_w
+        screen_height=screen_info.current_h
+        input_rect = pygame.Rect(screen_width//2-100, screen_height//2-170, 200, 50)
+        text_color = (108, 77, 40)
+        input_color_active = (142, 100, 53)
+        input_color_inactive = (164, 115, 62)
         input_color = input_color_inactive
         active = False
         user_text = ""  # Tekst wpisany przez użytkownika
         font = pygame.font.Font(None, 36)
-
+        action_text="Podaj przewidywaną wartość dwóch kart"
+        game_renderer.draw_state(game_round, state, action_text)
         while running:
-            # screen.fill((0, 0, 0))
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
                     return None
 
-                # Kliknięcie myszą
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if input_rect.collidepoint(event.pos):
                         active = True
@@ -426,7 +496,6 @@ class Round:
                         active = False
                         input_color = input_color_inactive
 
-                # Wprowadzanie tekstu
                 if event.type == pygame.KEYDOWN and active:
                     if event.key == pygame.K_BACKSPACE:
                         user_text = user_text[:-1]
