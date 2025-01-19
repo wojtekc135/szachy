@@ -75,9 +75,9 @@ class Round:
             all_cards[i] = (assets["cards"][i])
             ability[assets["cards"][i]] = None
 
-        ability[assets["cards"][6]] = "look"
-        ability[assets["cards"][8]] = "swap"
-        ability[assets["cards"][10]] = "take"
+        ability[assets["cards"][6]] = "take"
+        ability[assets["cards"][8]] = "look"
+        ability[assets["cards"][10]] = "swap"
         karty = []
         for i, card in all_cards.items():
             if i in [6,8,10]:
@@ -122,12 +122,6 @@ class Round:
                      card_size, id, crow, a)
                 )
             id += 1
-        # nadanie kart specjalnych! uwaga!
-        #take two nie dziala
-        # state["face_down_pile"][-2].ability = "take"
-        # state["face_down_pile"][-1].ability = "swap"
-        # state["face_down_pile"][-1].ability = "look"
-
         for localisation in state:
             if localisation[:4] == "hand" or localisation[:4] == "face":
                 for card in state[localisation]:
