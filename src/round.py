@@ -177,7 +177,7 @@ class Round:
         while game_round.count_known_for_player(hand) < 2:
             picked_card = choice(hand)
             if not picked_card.known_for_player:
-                pygame.time.wait(100)
+                pygame.time.wait(randint(50, 150))
                 picked_card.known_for_player = True
                 picked_card.show_front = False
                 picked_card.highlighted = True
@@ -194,7 +194,7 @@ class Round:
         print(card_from_hand.id)
         card_from_hand.highlighted = True
         game_renderer.draw_state(game_round, state, "Zamienianie miejscami")
-        pygame.time.wait(500)  # todo wydłużyć czas
+        pygame.time.wait(randint(400, 800))  # todo wydłużyć czas
         temp=card_from_stack
         state["face_up_pile"][-1] = card_from_hand
         state["hand1"][card_from_hand.location_number] = temp
@@ -210,7 +210,7 @@ class Round:
         new_card_from_stack.show_front = True
         new_card_from_hand.show_front = True
         game_renderer.draw_state(game_round, state, "Patrz")
-        pygame.time.wait(500)
+        pygame.time.wait(randint(400, 800))
         new_card_from_hand.show_front =  False
         game_renderer.draw_state(game_round, state, "Koniec patrzenia")
         self.debug(state)
@@ -327,13 +327,13 @@ class Round:
             # juz tez działa :) 💀
             state["face_up_pile"][-1].highlighted = True
             game_renderer.draw_state(game_round, state, "Bot wybrał stos odkryty")
-            pygame.time.wait(500)
+            pygame.time.wait(randint(400, 800))
             state["face_up_pile"][-1].highlighted = False
             bot_hand = "hand" + str(game_round.player_number)
             card_from_hand = state[bot_hand][randint(0, 3)]
             card_from_hand.highlighted = True
             game_renderer.draw_state(game_round, state, f"Bot wybrał kartę z ręki")
-            pygame.time.wait(500)
+            pygame.time.wait(randint(400, 800))
             card_from_hand.highlighted = False
             # skopiowane z kodu wyzej
             temp = card_from_stack
@@ -352,7 +352,7 @@ class Round:
         elif chosen_pile=="face_down_pile":
             state["face_down_pile"][-1].highlighted = True
             game_renderer.draw_state(game_round, state, "Bot wybrał stos zakryty")
-            pygame.time.wait(500)
+            pygame.time.wait(randint(400, 800))
             state["face_down_pile"][-1].highlighted = False
             bot_like_chosen_card = choice([False])
             if bot_like_chosen_card:
@@ -363,7 +363,7 @@ class Round:
                 hand_card = state[bot_hand][rand_loc_number]
                 state[bot_hand][rand_loc_number].highlighted = True
                 game_renderer.draw_state(game_round, state, "Bot wybrał karte z reki, zamienianie  miejscami")
-                pygame.time.wait(500)
+                pygame.time.wait(randint(400, 800))
                 state[bot_hand][rand_loc_number].highlighted = False
                 card1 = card_from_stack
                 card1.location = "hand_temp"
@@ -384,7 +384,7 @@ class Round:
                 # juz totalnie nie wiem o co chodzi ale buja ദ്ദി（• ˕ •マᐟ
                 # przetestowane i  też superiten działa
                 game_renderer.draw_state(game_round, state, "Bot wybrał stos odkryty, zamienianie miejscami")
-                pygame.time.wait(500)
+                pygame.time.wait(randint(400, 800))
                 card1 = card_from_stack
                 card1.location = "hand_temp"
                 card1.location_number = 0
