@@ -37,7 +37,7 @@ class GameRenderer:
         for state_type in [state["hand_temp"], state["hand1"], state["hand2"], state["hand3"], state["hand4"],
                            face_down_hand, face_up_hand, state["button_Użyj karty"],
                            state["button_Nie używaj umiejętności"],
-                           state["button_Co robi?"], state["button_Pobudka"], state["button_tell the two cards value"]]:
+                           state["button_Co robi?"], state["button_Pobudka"], state["button_Wpisz wartości dwóch kart"]]:
             for object in state_type:
                 object.draw(self.screen)
         pygame.display.flip()

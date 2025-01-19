@@ -8,6 +8,7 @@ from player import Player
 
 def variant3(screen):
     pygame.init()
+    game_round = Round(1, "human", 1)
     game_round.debug(state)
     game_renderer = GameRenderer(screen, assets, font)
     running = True

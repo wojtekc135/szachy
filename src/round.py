@@ -34,7 +34,7 @@ class Round:
         use_card_button = ActionButton(5, SCREEN_HEIGHT*0.4, "button_Użyj karty", button_img, False,  height = 40)
         do_not_use_card_button = ActionButton(5, SCREEN_HEIGHT*0.5, "button_Nie używaj umiejętności", button_img, False,height = 40)
         woke_button = ActionButton(SCREEN_WIDTH*0.885, SCREEN_HEIGHT*0.1, "button_Pobudka", button_img, height=70,show=False)
-        tell_two_cards_button = ActionButton(5, SCREEN_HEIGHT * 0.1, "button_tell the two cards value", button_img, height=40, show=False)
+        tell_two_cards_button = ActionButton(5, SCREEN_HEIGHT * 0.1, "button_Wpisz wartości dwóch kart", button_img, height=40, show=False)
         action_buttons = [use_card_button, do_not_use_card_button,
                           woke_button, tell_two_cards_button]
         for button in action_buttons:
@@ -56,7 +56,7 @@ class Round:
             "button_Nie używaj umiejętności": [],
             "button_Co robi?": [],
             "button_Pobudka": [],
-            "button_tell the two cards value": []
+            "button_Wpisz wartości dwóch kart": []
         }
         all_cards = {}
         crows = {}
@@ -405,17 +405,17 @@ class Round:
         self.debug(state)
 
     def variant3_options(self, game_renderer, game_round, state, screen, running, players, variant, additional_points):
-        state["button_tell the two cards value"][0].show = True
+        state["button_Wpisz wartości dwóch kart"][0].show = True
         state["button_Pobudka"][0].show = True
         game_renderer.draw_state(game_round, state, "Wybierz stos lub kliknij opcję")
-        object = InputHandler.choose_from(state["face_up_pile"] + state["face_down_pile"] + state["button_Pobudka"] + state["button_tell the two cards value"])
+        object = InputHandler.choose_from(state["face_up_pile"] + state["face_down_pile"] + state["button_Pobudka"] + state["button_Wpisz wartości dwóch kart"])
         state["button_Pobudka"][0].show = False
-        state["button_tell the two cards value"][0].show = False
+        state["button_Wpisz wartości dwóch kart"][0].show = False
         object_type = object.location
         if object_type == "button_Pobudka":
             if wake_up(variant, state, players, game_renderer.screen, additional_points) == "koniec gry":
                 return "koniec gry"  # w petli gry dodalem if basic_variant_turn == koniec gry: running = False, menu cos nie teges
-        if object_type == "button_tell the two cards value":
+        if object_type == "button_Wpisz wartości dwóch kart":
             if self.player_number==1:
                 additional_points[0]+=self.check_two_cards(game_renderer, game_round, state, "hand1", screen, running)
             elif self.player_number==2:
