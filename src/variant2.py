@@ -20,7 +20,7 @@ def idz_na_calosc(screen):
     assets = load_assets(os.path.join(os.pardir, "assets"), "karta", "stół", "rewers")
     assets = scale_assets(assets, card_size, (screen_width, screen_height))
     state = game_round.create_example_state(screen, assets, card_size, "variant2")
-    img = pygame.image.load('../assets/design.png')
+    img = pygame.image.load('../assets/ikonka.png')
     pygame.display.set_icon(img)
 
     player1 = Player(True,1)
@@ -51,7 +51,7 @@ def idz_na_calosc(screen):
 
         elif game_round.round_number > 4:
             if game_round.player_type == "human":
-                if game_round.human_turn_idz_na_calosc(state, game_round, game_renderer,players) == "koniec gry":
+                if game_round.human_turn_idz_na_calosc(state, game_round, game_renderer,players, 2) == "koniec gry":
                     running = False
                     break
             else:

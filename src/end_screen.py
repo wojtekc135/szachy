@@ -1,3 +1,5 @@
+from itertools import count
+
 import pygame
 def end_screen(screen, players, winner):
     # "przycisk"
@@ -41,7 +43,7 @@ def end_screen(screen, players, winner):
                 return -1  # zwracanie żeby wrócić do menu? Wojtek?
 
 
-def wake_up(variant, state, players, screen):
+def wake_up(variant, state, players, screen, additional_points):
     end_game = False
     player1 = players[0]  # wyświetlamy tylko dla żywego gracza czyli player1
     # UAGA każdy wariant ma prawdopodobnie inne licznei kruków, to kazdy musi sbie dostosować
@@ -58,11 +60,83 @@ def wake_up(variant, state, players, screen):
                     break
             print("Gracz: ", player.player_number, " punkty: ", player.crows)
             # jesteśmy hojni i jak dwaj gracze mają tylko karty z 9 krukami to niech oboje sobie nic dodają :)
+    elif variant == 1:
+        player1 = players[0]
+        waker = player1
+        lk = {}
+        cp = {}
+        max_crows = 0
+        min_crows = 100
+        for player in players:
+            cur_hand = "hand" + str(player.player_number)
+            hand_counting = state[cur_hand]
+            lk[player] = 0
+            cp[player] = 0
+            for card in hand_counting:
+                cp[player] += card.crows
+                min_crows = min(min_crows, player.crows)
+                if card.crows == 9:
+                    lk[player] += 1
+            max_crows = max(max_crows, lk[player])
+        max_crows_players = [player for player in players if lk[player] == max_crows and player]
+        print(max_crows_players)
+        min_crows_player = [player for player in players if player.crows == min_crows]
+        for player in players:
+            if len(max_crows_players) != 1:
+                player.crows += cp[player]
+                if player not in min_crows_player:
+                    player.crows += 5
+            else:
+                if player in max_crows_players:
+                    player.crows += 0
+                else:
+                    player.crows += cp[player]
+                    if player not in min_crows_player:
+                        player.crows += 5
+            if player.crows >=100:
+                end_game = True
+                break
+    elif variant == 3:
+        player1 = players[0]
+        waker = player1
+        min_crows = float('inf')
+        waker_crows = 0
+        for player in players:
+            cur_hand = "hand" + str(player.player_number)
+            hand_counting = state[cur_hand]
+            for card in hand_counting:
+                player.crows += card.crows
+            player.crows += additional_points[player.player_number - 1]
+            if player.crows < min_crows:
+                min_crows = player.crows
+            if player == waker:
+                waker_crows = player.crows
+            if player.crows >= 100:
+                end_game = True
+                break
+        if waker_crows > min_crows:
+            waker.crows += 5
+            print(f"Gracz {waker.player_number} otrzymuje 5 kruków za karę!")
+
+
+    else:
+        for player in players:
+            cur_hand = "hand" + str(player.player_number)
+            hand_counting = state[cur_hand]
+            for card in hand_counting:
+                player.crows += card.crows
+            if player.crows >= 100:
+                end_game = True
+                break
+
+
+
 
     # TUTAJ DLA WSZYSTKICH WARIANTÓW
     if end_game:
-        winner = "WYGRYWASZ!!!" if player1.crows < 100 else "Nie ty"  # chyba każdy wariant ma wygraną od 100 krókó, jak nie zróbcie if -MM
         winner = str(player1)
+        if player1.crows == min(player.crows for player in players):
+            winner = "player1"
         end_screen(screen, players, winner)
         return "koniec gry"
 
