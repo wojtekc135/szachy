@@ -44,14 +44,14 @@ def idz_na_calosc(screen):
         if game_round.round_number <= 4:
             if game_round.player_type == "human":
                 pass
-                game_round.human_show_2_cards(state[cur_hand], game_renderer, game_round, state, 2)
+                game_round.human_show_2_cards(state[cur_hand], game_renderer, game_round, state)
             else:
                 pass
                 game_round.bot_show_2_cards(state[cur_hand], game_renderer, game_round, state)
 
         elif game_round.round_number > 4:
             if game_round.player_type == "human":
-                if game_round.human_turn_idz_na_calosc(state, game_round, game_renderer,players) == "koniec gry":
+                if game_round.human_turn_idz_na_calosc(state, game_round, game_renderer,players, 2) == "koniec gry":
                     running = False
                     break
             else:
