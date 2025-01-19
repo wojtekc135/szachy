@@ -318,9 +318,9 @@ class Round:
         object = InputHandler.choose_from(state["face_up_pile"] + state["face_down_pile"] + state["button_Pobudka"])
         state["button_Pobudka"][0].show = False
         object_type = object.location
+        additional_points=[0,0,0,0]
         if object_type == "button_Pobudka":
-             if wake_up(variant,state,players, game_renderer.screen) == "koniec gry":
-
+             if wake_up(variant,state,players, game_renderer.screen, additional_points) == "koniec gry":
                 return "koniec gry" # w petli gry dodalem if basic_variant_turn == koniec gry: running = False, menu cos nie teges
         chosen_stack_type = object_type
         chosen_card_from_stack = self.choose_card_from_stack_up(state, chosen_stack_type)
@@ -410,7 +410,7 @@ class Round:
                 card_from_stack.highlighted = False
         self.debug(state)
 
-    def variant3_options(self, game_renderer, game_round, state, screen, running, players, variant):
+    def variant3_options(self, game_renderer, game_round, state, screen, running, players, variant, additional_points):
         state["button_tell the two cards value"][0].show = True
         state["button_Pobudka"][0].show = True
         game_renderer.draw_state(game_round, state, "Wybierz stos lub kliknij opcję")
@@ -419,17 +419,17 @@ class Round:
         state["button_tell the two cards value"][0].show = False
         object_type = object.location
         if object_type == "button_Pobudka":
-            if wake_up(variant, state, players, game_renderer.screen) == "koniec gry":
+            if wake_up(variant, state, players, game_renderer.screen, additional_points) == "koniec gry":
                 return "koniec gry"  # w petli gry dodalem if basic_variant_turn == koniec gry: running = False, menu cos nie teges
         if object_type == "button_tell the two cards value":
             if self.player_number==1:
-                self.check_two_cards(game_renderer, game_round, state, "hand1", screen, running)
+                additional_points[0]+=self.check_two_cards(game_renderer, game_round, state, "hand1", screen, running)
             elif self.player_number==2:
-                self.check_two_cards(game_renderer, game_round, state, "hand2", screen, running)
+                additional_points[1]+=self.check_two_cards(game_renderer, game_round, state, "hand2", screen, running)
             elif self.player_number==3:
-                self.check_two_cards(game_renderer, game_round, state, "hand3", screen, running)
+                additional_points[2]+=self.check_two_cards(game_renderer, game_round, state, "hand3", screen, running)
             elif self.player_number==4:
-                self.check_two_cards(game_renderer, game_round, state, "hand4", screen, running)
+                additional_points[3]+=self.check_two_cards(game_renderer, game_round, state, "hand4", screen, running)
         chosen_stack_type = object_type
         chosen_card_from_stack = self.choose_card_from_stack_up(state, chosen_stack_type)
         if object_type == "face_up_pile":
@@ -460,13 +460,17 @@ class Round:
         if cards_values==a==b:
             action_text="Udało się! -3 kruki dla gracza"
             game_renderer.draw_state(game_round, state, action_text)
+            new_points=-3
         else:
             action_text = "Nie udało się. +3 kruki dla gracza"
             game_renderer.draw_state(game_round, state, action_text)
+            new_points=3
         pygame.time.wait(3000)
         for c in picked_set:
             c.show_front = False
             c.highlighted = False
+
+        return new_points
 
 
     def show_text_bar(self, screen, running, game_round, state, game_renderer):

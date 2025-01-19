@@ -28,6 +28,7 @@ def variant3(screen):
     player3 = Player(False, 3)
     player4 = Player(False, 4)
     players = [player1, player2, player3, player4]
+    additional_points=[0,0,0,0]
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -47,9 +48,13 @@ def variant3(screen):
 
         elif game_round.round_number > 4:
             if game_round.player_type == "human":
-                game_round.variant3_options(game_renderer, game_round,state,screen,running, players, "variant3")
+               if game_round.variant3_options(game_renderer, game_round,state,screen,running, players, 3 , additional_points) == "koniec gry":
+                   running = False
+                   break
             else:
-                game_round.bot_turn_idz_na_calosc(game_round, game_renderer, state)
+                if game_round.bot_turn_idz_na_calosc(game_round, game_renderer, state) == "koniec gry":
+                    running = False
+                    break
         # aktualizacja rundy
         game_round.round_number += 1
         if game_round.round_number % 4 == 1:

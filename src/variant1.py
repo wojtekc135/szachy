@@ -42,7 +42,7 @@ def variant1(screen):
         if game_round.round_number <= 4:
             if game_round.player_type == "human":
                 pass
-                game_round.human_show_2_cards(state[cur_hand], game_renderer, game_round, state)
+                game_round.human_show_2_cards(state[cur_hand], game_renderer, game_round, state, 1)
             else:
                 pass
                 game_round.bot_show_2_cards(state[cur_hand], game_renderer, game_round, state)

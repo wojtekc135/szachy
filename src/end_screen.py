@@ -43,7 +43,7 @@ def end_screen(screen, players, winner):
                 return -1  # zwracanie żeby wrócić do menu? Wojtek?
 
 
-def wake_up(variant, state, players, screen):
+def wake_up(variant, state, players, screen, additional_points):
     end_game = False
     player1 = players[0]  # wyświetlamy tylko dla żywego gracza czyli player1
     # UAGA każdy wariant ma prawdopodobnie inne licznei kruków, to kazdy musi sbie dostosować
@@ -96,6 +96,29 @@ def wake_up(variant, state, players, screen):
             if player.crows >=100:
                 end_game = True
                 break
+    elif variant == 3:
+        player1 = players[0]
+        waker = player1
+        min_crows = float('inf')
+        waker_crows = 0
+        for player in players:
+            cur_hand = "hand" + str(player.player_number)
+            hand_counting = state[cur_hand]
+            for card in hand_counting:
+                player.crows += card.crows
+            player.crows += additional_points[player.player_number - 1]
+            if player.crows < min_crows:
+                min_crows = player.crows
+            if player == waker:
+                waker_crows = player.crows
+            if player.crows >= 100:
+                end_game = True
+                break
+        if waker_crows > min_crows:
+            waker.crows += 5
+            print(f"Gracz {waker.player_number} otrzymuje 5 kruków za karę!")
+
+
     else:
         for player in players:
             cur_hand = "hand" + str(player.player_number)
