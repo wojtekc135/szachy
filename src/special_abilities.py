@@ -68,24 +68,22 @@ def special_ability_take_two(game_round, game_renderer, state):
     if picked_card.location_number == card1.location_number:  # ta druga wtedy dajemy na stos odkryty
         state["face_up_pile"].append(card2)
         card2.location = "face_up_pile"
-        card2.location_number = state["face_up_pile"][-1].location_number + 1  # o jeden wiekszy niż ostatniego elementu
-        del state[temp_hand][-1]
+        card2.location_number = state["face_up_pile"][
+                                    -1].location_number + 1  # o jeden wiekszy niż ostatniego elementu # fajnie :) mozesz zobaczyc jak  zrobilem  to samo inną komendą haha
         state["hand_temp"].append(card1)
         card1.location = "hand_temp"
         card1.location_number = 0
-
     else:
-        # zamieniamy miejsca kart i robimy jak wpoprzednim
-        state[temp_hand][0], state[temp_hand][1] = state[temp_hand][1], state[temp_hand][0]
+        # to samo? chyba jakis blad proboje naprawic
         state["face_up_pile"].append(card1)
         card1.location = "face_up_pile"
-        card1.location_number = state["face_up_pile"][
-                                    -1].location_number - 1  # o jeden MNIEJSZY niż ostatniego elementu
-        del state[temp_hand][-1]
-        #przeniesienie do lewego górnego
+        card1.location_number = state["face_up_pile"][-1].location_number + 1  # o jeden wiekszy niż ostatniego elementu
         state["hand_temp"].append(card2)
         card2.location = "hand_temp"
         card2.location_number = 0
+    state[temp_hand].pop(0)
+    state[temp_hand].pop(0)
+
 
 
 
