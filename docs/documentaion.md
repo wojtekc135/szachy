@@ -107,8 +107,7 @@ Obsługa grywalności wariantu drugiego tak jak w instrukcji. Wariant inicjuje g
 Obsługa grywalności wariantu trzeciego. Nowa opcja na początku tury, aby zgadnać ilość kruków na dwóch karatch poprzez wpisanie jej z klawiatury do wyśweitlanego okienka na środku ekranu.
 Z ograniczeń technicznych wyświetlania ilości kart zamiast kary, jaką jest dobranie kolejnej karty po niepoprawnym zgadnięciu ilości kruków na kartach, gracz dostaje +3 kruki. Nagrodą jest -3 kruki.  Wariant inicjuje graczy, rozgrywkę, rozdanie kart. Zarządza, którego gracza jest tura i obsługa końca gry po przeliczeniu kruków w sposób "Wiem co mam"
 
-
-
-
-
-	
+## Błędy
+- Na Linuxie karty specialne zamieniają się z kartami o tej samej liczbie kurków. Prawdopodobnie przez kolejność zczytywania z folderu.
+- Przy użyciu umiejętności "Take Two" kilka razy, mieszają się stosy, ale po turze już błąd mija.
+- Jeżeli stos się skończy to gra ma fatal error
