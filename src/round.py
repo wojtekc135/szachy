@@ -315,7 +315,7 @@ class Round:
         additional_points=[0,0,0,0]
         if object_type == "button_Pobudka":
              if wake_up(variant,state,players, game_renderer.screen, additional_points) == "koniec gry":
-                return "koniec gry" # w petli gry dodalem if basic_variant_turn == koniec gry: running = False, menu cos nie teges
+                return "koniec gry"
         chosen_stack_type = object_type
         chosen_card_from_stack = self.choose_card_from_stack_up(state, chosen_stack_type)
         if object_type == "face_up_pile":
@@ -328,8 +328,6 @@ class Round:
         chosen_pile = choice(["face_down_pile", "face_up_pile"])
         card_from_stack = self.choose_card_from_stack_up(state, chosen_pile)
         if chosen_pile == "face_up_pile":
-            #  mega blad znikajace karty
-            # juz tez działa :) 💀
             state["face_up_pile"][-1].highlighted = True
             game_renderer.draw_state(game_round, state, "Bot wybrał stos odkryty")
             pygame.time.wait(randint(400, 800))
@@ -340,7 +338,6 @@ class Round:
             game_renderer.draw_state(game_round, state, f"Bot wybrał kartę z ręki")
             pygame.time.wait(randint(400, 800))
             card_from_hand.highlighted = False
-            # skopiowane z kodu wyzej
             temp = card_from_stack
             state["face_up_pile"][-1] = card_from_hand
             state[bot_hand][card_from_hand.location_number] = temp
@@ -352,17 +349,13 @@ class Round:
             new_card_from_stack = state["face_up_pile"][-1]
             new_card_from_hand.show_front = False
             new_card_from_stack.show_front = True
-            # koniec kopiowania
-            # nie było bo problemu gdyby ktoś w końcu zrobił poprawny example_state z jedna kartą w stosie  odkrytym w koncu, albo wojtek poprawil aktualizowanie kart w state :)
         elif chosen_pile == "face_down_pile":
             state["face_down_pile"][-1].highlighted = True
             game_renderer.draw_state(game_round, state, "Bot wybrał stos zakryty")
             pygame.time.wait(randint(400, 800))
             state["face_down_pile"][-1].highlighted = False
-            bot_like_chosen_card = choice([False])
+            bot_like_chosen_card = choice([False,True])
             if bot_like_chosen_card:
-                # testowane działa
-                # dalsze kopiowanie z malymi zmianami na  bota,
                 bot_hand = "hand" + str(game_round.player_number)
                 rand_loc_number = randint(0, 3)
                 hand_card = state[bot_hand][rand_loc_number]
@@ -386,8 +379,6 @@ class Round:
                 state[bot_hand][temp_card.location_number] = temp_card
                 state["hand_temp"].pop()
             else:
-                # juz totalnie nie wiem o co chodzi ale buja ദ്ദി（• ˕ •マᐟ
-                # przetestowane i  też superiten działa
                 game_renderer.draw_state(game_round, state, "Bot wybrał stos odkryty, zamienianie miejscami")
                 pygame.time.wait(randint(400, 800))
                 card1 = card_from_stack

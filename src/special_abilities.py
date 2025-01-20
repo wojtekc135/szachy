@@ -33,10 +33,6 @@ def special_ability_swap(game_round,game_renderer, state):
     pygame.time.wait(900)
 
 
-# Special ability nie działał i tylko bardziej popsułem. Usunelem to z example state, niech ktos zrobi example state poprawny
-# Zmieniłem nowy game flow, który jest zgodny z instrukcją, take two musi sie troche zmienić, ale tylko troche
-# karta która zostaje na końcu ma pójść do hand_temp z localization_number = 0 i potem zrobiłem że po wykonaniu take two
-# karta z temp_hand 0 jest dawana juz albo do odkrytego albo do reki, tylko musi skonczyc w hand_temp localisation_number 0
 def special_ability_take_two(game_round, game_renderer, state):
     temp_hand = "hand_temp"
     game_renderer.draw_state(game_round, state, "Wybierz z stosu zakrytego")
@@ -65,25 +61,20 @@ def special_ability_take_two(game_round, game_renderer, state):
     print("1")
 
     ###########
-    if picked_card.location_number == card1.location_number:  # ta druga wtedy dajemy na stos odkryty
+    if picked_card.location_number == card1.location_number:
         state["face_up_pile"].append(card2)
         card2.location = "face_up_pile"
         card2.location_number = state["face_up_pile"][
-                                    -1].location_number + 1  # o jeden wiekszy niż ostatniego elementu # fajnie :) mozesz zobaczyc jak  zrobilem  to samo inną komendą haha
+                                    -1].location_number + 1
         state["hand_temp"].append(card1)
         card1.location = "hand_temp"
         card1.location_number = 0
     else:
-        # to samo? chyba jakis blad proboje naprawic
         state["face_up_pile"].append(card1)
         card1.location = "face_up_pile"
-        card1.location_number = state["face_up_pile"][-1].location_number + 1  # o jeden wiekszy niż ostatniego elementu
+        card1.location_number = state["face_up_pile"][-1].location_number + 1
         state["hand_temp"].append(card2)
         card2.location = "hand_temp"
         card2.location_number = 0
     state[temp_hand].pop(0)
     state[temp_hand].pop(0)
-
-
-
-
