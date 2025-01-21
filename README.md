@@ -21,7 +21,7 @@ Aby uruchomić grę, potrzebujesz:
 2. Pobierz grę i rozpakuj pliki na swoim komputerze
 3. Wejdź w folder Sen_gra_karciana/dist i kliknij Sen.exe 
 
-## Instalacja na Linux
+## Instalacja na Linux*
 
 1. Sklonuj repozytorium gry:
    ```bash
@@ -29,15 +29,18 @@ Aby uruchomić grę, potrzebujesz:
 2. Przejdź do katalogu projektu:
     ```bash
    cd gra-karciana-sen
-3. Zanistaluj wymagane zależności:
+3. Zanistaluj wymagane zależności (jeśli nie masz ich jeszcze zainstalowanych):
     ```bash
-   pip install -r requirements.txt
+   sudo apt install python3
+   sudo apt install python3-pygame
 4. Przejdź do katalogu z menu.py:
    ```bash
    cd src
 5. Uruchom grę:
     ```bash
-   python menu.py
+   python3 menu.py
+
+*aktualna wersja gry nie jest w pełni kompatybilna z systemem Linux
 
 ## Jak grać?
 Uruchom grę poleceniem python menu.py lub klikając plik Sen.exe. Wybierz wariant i rozpocznij rozgrywkę. Każdy gracz (zarówno użytkownik jak i bot) ma możliwość wymiany kart, dążąc do uzyskania jak najmniejszej liczby punktów. Gra kończy się, gdy któryś z graczy ogłosi "Pobudka!", a pozostałe karty zostaną rozliczone. Wygrywa gracz z najmniejszą liczbą punktów.
