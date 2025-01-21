@@ -77,13 +77,12 @@ def wake_up(variant, state, players, screen, additional_points):
             lk[player] = 0
             cp[player] = 0
             for card in hand_counting:
-                cp[player] += card.crows
-                min_crows = min(min_crows, player.crows)
+                player.crows += card.crows
                 if card.crows == 9:
                     lk[player] += 1
             max_crows = max(max_crows, lk[player])
+            min_crows = min(min_crows, player.crows)
         max_crows_players = [player for player in players if lk[player] == max_crows and player]
-        print(max_crows_players)
         min_crows_player = [player for player in players if player.crows == min_crows]
         for player in players:
             if len(max_crows_players) != 1:
