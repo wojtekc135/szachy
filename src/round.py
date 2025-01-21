@@ -218,7 +218,7 @@ class Round:
         new_card_from_stack.show_front = True
         new_card_from_hand.show_front = True
         game_renderer.draw_state(game_round, state, "Patrz")
-        pygame.time.wait(randint(1000, 200))
+        pygame.time.wait(randint(1000, 2000))
         new_card_from_hand.show_front =  False
         game_renderer.draw_state(game_round, state, "Koniec patrzenia")
         self.debug(state)
@@ -318,10 +318,11 @@ class Round:
         object_type = object.location
         additional_points=[0,0,0,0]
         if object_type == "button_Pobudka":
+             self.show_all_cards(state, game_renderer, game_round)
              if wake_up(variant,state,players, game_renderer.screen, additional_points) == "koniec gry":
                 return "koniec gry"
              else: return "pobudka"
-
+             self.hide_all_cards(state, game_renderer, game_round)
         chosen_stack_type = object_type
         chosen_card_from_stack = self.choose_card_from_stack_up(state, chosen_stack_type)
         if object_type == "face_up_pile":
@@ -401,6 +402,21 @@ class Round:
                 card_from_stack.highlighted = False
         self.debug(state)
 
+    def show_all_cards(self, state, game_renderer, game_round):
+        for player in range(4):
+            for card in state["hand" + str(player + 1)]:
+                card.show_front = True
+        game_renderer.draw_state(game_round, state, "Pobudka")
+        pygame.display.flip()
+        pygame.time.wait(5000)
+
+    def hide_all_cards(self, state, game_renderer, game_round):
+        for player in range(4):
+            for card in state["hand"+str(player+1)]:
+                card.show_front = False
+        game_renderer.draw_state(game_round, state, "Pobudka")
+        pygame.display.flip()
+
     def variant3_options(self, game_renderer, game_round, state, screen, running, players, variant, additional_points):
         state["button_Wpisz wartości dwóch kart"][0].show = True
         state["button_Pobudka"][0].show = True
@@ -410,8 +426,11 @@ class Round:
         state["button_Wpisz wartości dwóch kart"][0].show = False
         object_type = object.location
         if object_type == "button_Pobudka":
+            self.show_all_cards(state, game_renderer, game_round)
             if wake_up(variant, state, players, game_renderer.screen, additional_points) == "koniec gry":
                 return "koniec gry"  # w petli gry dodalem if basic_variant_turn == koniec gry: running = False, menu cos nie teges
+            else: return "pobudka"
+            self.hide_all_cards(state, game_renderer, game_round)
         if object_type == "button_Wpisz wartości dwóch kart":
             if self.player_number==1:
                 additional_points[0]+=self.check_two_cards(game_renderer, game_round, state, "hand1", screen, running)
