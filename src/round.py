@@ -161,8 +161,11 @@ class Round:
 
     def human_show_2_cards(self, hand, game_renderer, game_round, state):
         action_text = "Podglądnij 2 karty"
-        picked_set = set()  # znowu niepotrzebna zmiana stabilnej wersji ktora działała,  nie wiem moze to dziala, a moze beda bledy
+        picked_set = set()
         game_renderer.draw_state(game_round, state, action_text)
+        # Resetowanie stanu znanych kart dla nowej rundy
+        for card in hand:
+            card.known_for_player = False
         while game_round.count_known_for_player(hand) < 2:
             picked_card = game_round.choose_card_from_hand(state, "hand1")
             if not picked_card.known_for_player:
@@ -170,12 +173,13 @@ class Round:
                 picked_card.show_front = True
                 picked_card.highlighted = True
                 picked_card.known_for_player = True
-                # picked_card.selected_info = "Niewidoczna"
                 game_renderer.draw_state(game_round, state, "Podgladnie...")
-        pygame.time.wait(0)
+        pygame.time.wait(600)
         for c in picked_set:
             c.show_front = False
             c.highlighted = False
+            # Resetowanie znanych kart po wyświetleniu
+            c.known_for_player = False
 
     def bot_show_2_cards(self, hand, game_renderer, game_round, state):
         action_text = "Boty podglądają karty"
@@ -183,7 +187,7 @@ class Round:
         while game_round.count_known_for_player(hand) < 2:
             picked_card = choice(hand)
             if not picked_card.known_for_player:
-                pygame.time.wait(randint(800, 1000))
+                pygame.time.wait(randint(500, 800))
                 picked_card.known_for_player = True
                 picked_card.show_front = False
                 picked_card.highlighted = True
@@ -198,7 +202,7 @@ class Round:
         card_from_hand = game_round.choose_card_from_hand(state, "hand1")
         card_from_hand.highlighted = True
         game_renderer.draw_state(game_round, state, "Zamienianie miejscami")
-        pygame.time.wait(randint(1000, 2000))  # todo wydłużyć czas
+        pygame.time.wait(randint(1000, 2000))
         temp=card_from_stack
         state["face_up_pile"][-1] = card_from_hand
         state["hand1"][card_from_hand.location_number] = temp
@@ -316,6 +320,8 @@ class Round:
         if object_type == "button_Pobudka":
              if wake_up(variant,state,players, game_renderer.screen, additional_points) == "koniec gry":
                 return "koniec gry"
+             else: return "pobudka"
+
         chosen_stack_type = object_type
         chosen_card_from_stack = self.choose_card_from_stack_up(state, chosen_stack_type)
         if object_type == "face_up_pile":
@@ -352,7 +358,7 @@ class Round:
         elif chosen_pile == "face_down_pile":
             state["face_down_pile"][-1].highlighted = True
             game_renderer.draw_state(game_round, state, "Bot wybrał stos zakryty")
-            pygame.time.wait(randint(800, 100))
+            pygame.time.wait(randint(800, 1000))
             state["face_down_pile"][-1].highlighted = False
             bot_like_chosen_card = choice([False,True])
             if bot_like_chosen_card:

@@ -33,8 +33,8 @@ def variant1(screen):
 
     game_renderer = GameRenderer(screen, assets, font)
     game_round.debug(state)
-
     while running:
+        pobudka = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -44,7 +44,7 @@ def variant1(screen):
 
         cur_hand = "hand" + str(game_round.player_number)
 
-        if game_round.round_number >= 4:
+        if game_round.round_number <= 4:
             if game_round.player_type == "human":
                 pass
                 game_round.human_show_2_cards(state[cur_hand], game_renderer, game_round, state)
@@ -54,7 +54,10 @@ def variant1(screen):
 
         elif game_round.round_number > 4:
             if game_round.player_type == "human":
-                if game_round.human_turn_idz_na_calosc(state, game_round, game_renderer,players, 1) == "koniec gry":
+                stan = game_round.human_turn_idz_na_calosc(state, game_round, game_renderer, players, 1)
+                if  stan == "pobudka":
+                    pobudka = True
+                elif stan == "koniec gry":
                     running = False
                     break
             else:
@@ -62,6 +65,10 @@ def variant1(screen):
                 if game_round.bot_turn_idz_na_calosc(game_round,game_renderer,state) == "koniec gry":
                     running = False
                     break
+
+        if pobudka:
+            game_round.round_number = 0
+            state = game_round.create_example_state(screen, assets, card_size, "variant1")
 
         game_round.round_number += 1
         if game_round.round_number % 4 == 1:
@@ -85,5 +92,5 @@ if __name__ == "__main__":
     card_size = get_card_size(screen_height)
     assets = load_assets(os.path.join(os.pardir, "assets"), "karta", "stol", "rewers")
     assets = scale_assets(assets, card_size, (screen_width, screen_height))
-    state = game_round.create_example_state(screen, assets, card_size, "variant2")
+    state = game_round.create_example_state(screen, assets, card_size, "variant1")
     variant1(screen)

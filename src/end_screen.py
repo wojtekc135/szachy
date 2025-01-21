@@ -13,7 +13,7 @@ def end_screen(screen, players, winner):
     screen.blit(button_img, (button_x, button_y))
 
     # Nagłówek
-    header_text = "Wygrałeś!!!!" if winner == "player1" else "Przegrałeś :c"
+    header_text = "WYGRAŁEŚ" if winner == "player1" else "PRZEGRAŁEŚ"
     header_surface = font.render(header_text, True, (255, 255, 255))  # White color
 
     header_x = button_x + (button_width - header_surface.get_width()) // 2
@@ -24,6 +24,8 @@ def end_screen(screen, players, winner):
     row_height = 150
     for i, player in enumerate(players):
         row_text = f"Gracz {player.player_number} | {player.crows}"
+        if player.player_number == 1:
+            row_text = f"Twój wynik | {player.crows}"
         row_surface = font.render(row_text, True, (138, 99, 58))  # White color
 
         row_x = button_x + (button_width - row_surface.get_width()) // 2
@@ -46,6 +48,9 @@ def end_screen(screen, players, winner):
 def wake_up(variant, state, players, screen, additional_points):
     end_game = False
     player1 = players[0]  # wyświetlamy tylko dla żywego gracza czyli player1
+    waker = player1
+    kara = 0
+
     # UAGA każdy wariant ma prawdopodobnie inne licznei kruków, to kazdy musi sbie dostosować
     if variant == 2:
         player1 = players[0]
@@ -61,8 +66,6 @@ def wake_up(variant, state, players, screen, additional_points):
             print("Gracz: ", player.player_number, " punkty: ", player.crows)
             # jesteśmy hojni i jak dwaj gracze mają tylko karty z 9 krukami to niech oboje sobie nic dodają :)
     elif variant == 1:
-        player1 = players[0]
-        waker = player1
         lk = {}
         cp = {}
         max_crows = 0
@@ -93,12 +96,12 @@ def wake_up(variant, state, players, screen, additional_points):
                     player.crows += cp[player]
                     if player not in min_crows_player:
                         player.crows += 5
+                        kara = 1
             if player.crows >=100:
                 end_game = True
                 break
+
     elif variant == 3:
-        player1 = players[0]
-        waker = player1
         min_crows = float('inf')
         waker_crows = 0
         for player in players:
@@ -116,21 +119,56 @@ def wake_up(variant, state, players, screen, additional_points):
                 break
         if waker_crows > min_crows:
             waker.crows += 5
+            kara = 1
             print(f"Gracz {waker.player_number} otrzymuje 5 kruków za karę!")
 
+    elif variant == 0:
+        min_crows = float('inf')
+        waker_crows = 0
+        waker_minimum = False
 
-    else:
+        # Reset liczby kruków przed nowym obliczeniem
+        for player in players:
+            player.current_crows = 0
+
+        # Obliczanie liczby kruków dla każdego gracza zdobytyuch w tej TURZE
         for player in players:
             cur_hand = "hand" + str(player.player_number)
             hand_counting = state[cur_hand]
+
             for card in hand_counting:
-                player.crows += card.crows
+                player.current_crows += card.crows
+                if player == player1:
+                    print(card.crows)
+
+
+            # Sprawdzenie minimalnej liczby kruków
+            if player.crows < min_crows:
+                min_crows = player.crows
+
+            if player == waker:
+                waker_crows = player.crows
+
+
+        #przypisanie nowych kruków do punktacji
+        for player in players:
+            player.crows += player.current_crows
+            # Sprawdzenie warunku końca gry
             if player.crows >= 100:
                 end_game = True
-                break
 
-
-
+        # Sprawdzenie, czy gracz wzywający "POBUDKA!" ma najmniej kruków
+        if waker_crows == min_crows:
+            # Sprawdzenie, czy więcej niż jeden gracz ma minimalną liczbę kruków (remis)
+            min_count = sum(1 for player in players if player.crows == min_crows)
+            if min_count > 1:
+                waker_minimum = True  # Remis w najniższej liczbie kruków
+            else:
+                waker_minimum = True  # Tylko waker ma najmniej kruków
+        # Dodanie kary, jeśli waker nie ma najmniej kruków i nie ma remisu
+        if not waker_minimum:
+            waker.crows += 5
+            kara = 1
 
     # TUTAJ DLA WSZYSTKICH WARIANTÓW
     if end_game:
@@ -141,7 +179,6 @@ def wake_up(variant, state, players, screen, additional_points):
         return "koniec gry"
 
     # Tutaj wyśwuietlanie tabelki dla wszytskich wariantów
-    print("hello from wakey")
     screen_width, screen_height = screen.get_size()
     button_img = pygame.image.load("../assets/przycisk.png").convert_alpha()
     button_width, button_height = 800, 800
@@ -168,9 +205,12 @@ def wake_up(variant, state, players, screen, additional_points):
     # Tabelka wyników
     row_height = 150
     for i, player in enumerate(players):
-        row_text = f"Gracz {player.player_number} | {player.crows}"
         if player.player_number == 1:
             row_text = f"Twój wynik | {player.crows}"
+            if kara == 1:  # Sprawdzenie zmiennej kara
+                row_text += " | KARA +5"
+        else:
+            row_text = f"Gracz {player.player_number} | {player.crows}"
         row_surface = font.render(row_text, True, (138, 99, 58))  # White color
 
         row_x = button_x + (button_width - row_surface.get_width()) // 2

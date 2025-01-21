@@ -32,6 +32,7 @@ def idz_na_calosc(screen):
     game_renderer = GameRenderer(screen, assets, font)
     running = True
     while running:
+        pobudka = 0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -51,7 +52,10 @@ def idz_na_calosc(screen):
 
         elif game_round.round_number > 4:
             if game_round.player_type == "human":
-                if game_round.human_turn_idz_na_calosc(state, game_round, game_renderer,players, 2) == "koniec gry":
+                stan = game_round.human_turn_idz_na_calosc(state, game_round, game_renderer, players, 2)
+                if  stan == "pobudka":
+                    pobudka = True
+                elif stan == "koniec gry":
                     running = False
                     break
             else:
@@ -59,6 +63,9 @@ def idz_na_calosc(screen):
                 if game_round.bot_turn_idz_na_calosc(game_round,game_renderer,state) == "koniec gry":
                     running = False
                     break
+        if pobudka:
+            game_round.round_number = 0
+            state = game_round.create_example_state(screen, assets, card_size, "variant2")
 
         # aktualizacja rundy
         game_round.round_number += 1

@@ -9,3 +9,4 @@ class Player:
         self.isHuman = isHuman
         self.player_number = player_number
         self.crows = 0
+        self.current_crows = 0
