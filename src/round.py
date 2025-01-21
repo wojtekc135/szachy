@@ -419,35 +419,51 @@ class Round:
         game_renderer.draw_state(game_round, state, "Pobudka")
         pygame.display.flip()
 
-    def variant3_options(self, game_renderer, game_round, state, screen, running, players, variant, additional_points):
-        state["button_Wpisz wartości dwóch kart"][0].show = True
+    def variant3_options(self, game_renderer, game_round, state, screen, running, players, variant, additional_points,
+                         użyta_opcja):
+        if not użyta_opcja:
+            state["button_Wpisz wartości dwóch kart"][0].show = True
+
         state["button_Pobudka"][0].show = True
         game_renderer.draw_state(game_round, state, "Wybierz stos lub kliknij opcję")
-        object = InputHandler.choose_from(state["face_up_pile"] + state["face_down_pile"] + state["button_Pobudka"] + state["button_Wpisz wartości dwóch kart"])
+
+        object = InputHandler.choose_from(
+            state["face_up_pile"] + state["face_down_pile"] +
+            state["button_Pobudka"] + state["button_Wpisz wartości dwóch kart"]
+        )
         state["button_Pobudka"][0].show = False
-        state["button_Wpisz wartości dwóch kart"][0].show = False
+        if not użyta_opcja:
+            state["button_Wpisz wartości dwóch kart"][0].show = False
+
         object_type = object.location
+
         if object_type == "button_Pobudka":
             self.show_all_cards(state, game_renderer, game_round)
             if wake_up(variant, state, players, game_renderer.screen, additional_points) == "koniec gry":
-                return "koniec gry"  # w petli gry dodalem if basic_variant_turn == koniec gry: running = False, menu cos nie teges
-            else: return "pobudka"
+                return "koniec gry"
+            return "pobudka"
             self.hide_all_cards(state, game_renderer, game_round)
-        if object_type == "button_Wpisz wartości dwóch kart":
-            if self.player_number==1:
-                additional_points[0]+=self.check_two_cards(game_renderer, game_round, state, "hand1", screen, running)
-            elif self.player_number==2:
-                additional_points[1]+=self.check_two_cards(game_renderer, game_round, state, "hand2", screen, running)
-            elif self.player_number==3:
-                additional_points[2]+=self.check_two_cards(game_renderer, game_round, state, "hand3", screen, running)
-            elif self.player_number==4:
-                additional_points[3]+=self.check_two_cards(game_renderer, game_round, state, "hand4", screen, running)
+        if object_type == "button_Wpisz wartości dwóch kart" and not użyta_opcja:
+            if self.player_number == 1:
+                additional_points[0] += self.check_two_cards(game_renderer, game_round, state, "hand1", screen, running)
+            elif self.player_number == 2:
+                additional_points[1] += self.check_two_cards(game_renderer, game_round, state, "hand2", screen, running)
+            elif self.player_number == 3:
+                additional_points[2] += self.check_two_cards(game_renderer, game_round, state, "hand3", screen, running)
+            elif self.player_number == 4:
+                additional_points[3] += self.check_two_cards(game_renderer, game_round, state, "hand4", screen, running)
+
+            użyta_opcja = True
+            return "użyta opcja"
         chosen_stack_type = object_type
         chosen_card_from_stack = self.choose_card_from_stack_up(state, chosen_stack_type)
+
         if object_type == "face_up_pile":
             self.human_swap_chosen_pile_up_with_hand(game_renderer, game_round, state)
         if object_type == "face_down_pile":
             self.human_take_card_from_face_down_pile(game_renderer, game_round, state, chosen_card_from_stack)
+
+        return None
 
     def check_two_cards(self, game_renderer, game_round, state, player, screen, running):
         cards_values=self.show_text_bar(screen, running, game_round, state, game_renderer)
@@ -467,13 +483,13 @@ class Round:
         picked_card2.show_front = True
         picked_card2.highlighted = True
         picked_card2.known_for_player = True
-        b = picked_card1.crows
+        b = picked_card2.crows
         game_renderer.draw_state(game_round,state, "Podglądanie...")
-        if cards_values==a==b:
+        if cards_values==b and cards_values==a:
             action_text="Udało się! -3 kruki dla gracza"
             game_renderer.draw_state(game_round, state, action_text)
             new_points=-3
-        else:
+        elif cards_values!=b or cards_values!=a:
             action_text = "Nie udało się. +3 kruki dla gracza"
             game_renderer.draw_state(game_round, state, action_text)
             new_points=3
