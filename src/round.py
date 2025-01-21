@@ -410,7 +410,7 @@ class Round:
                 card.show_front = True
         game_renderer.draw_state(game_round, state, "Pobudka")
         pygame.display.flip()
-        pygame.time.wait(5000)
+        pygame.time.wait(2000)
 
     def hide_all_cards(self, state, game_renderer, game_round):
         for player in range(4):

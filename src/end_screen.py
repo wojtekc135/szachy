@@ -51,20 +51,81 @@ def wake_up(variant, state, players, screen, additional_points):
     waker = player1
     kara = 0
 
-    # UAGA każdy wariant ma prawdopodobnie inne licznei kruków, to kazdy musi sbie dostosować
     if variant == 2:
-        player1 = players[0]
-        waker = player1  # tylko gracz może budzić (najwyżej potem można zmeinic)
+        min_crows = float('inf')
+        waker_crows = 0
+        waker_minimum = False
+        count_nines_big = 0
+
+        #reset onlynines
+        for player in players:
+            player.onynines = 1
+
+        #Najpier sprawdznie czy jakiś gracz ma 9 kruków
         for player in players:
             cur_hand = "hand" + str(player.player_number)
             hand_counting = state[cur_hand]
             for card in hand_counting:
                 if card.crows != 9:
-                    player.crows += 50
-                    if player.crows >= 100: end_game = True  # warunek zakończenia gry# END GAME JEST TUTAJ!!!!
-                    break
-            print("Gracz: ", player.player_number, " punkty: ", player.crows)
-            # jesteśmy hojni i jak dwaj gracze mają tylko karty z 9 krukami to niech oboje sobie nic dodają :)
+                    player.onlynine = 0
+
+        #Jak ma to będziemy robić liczenie 50 lub 0
+        for player in players:
+            if player.onlynine == 1:
+                count_nines_big = 1
+
+        if count_nines_big:
+            for player in players:
+                cur_hand = "hand" + str(player.player_number)
+                hand_counting = state[cur_hand]
+                for card in hand_counting:
+                    if card.crows != 9:
+                        player.crows += 50
+                        if player.crows >= 100:
+                            end_game = True  # warunek zakończenia gry# END GAME JEST TUTAJ!!!!
+                            break
+                print("Gracz: ", player.player_number, " punkty: ", player.crows)
+                # jesteśmy hojni i jak dwaj gracze mają tylko karty z 9 krukami to niech oboje sobie nic dodają :)
+
+        else: #liczenie jak nie ma nikt 9 kruków
+            # Reset liczby kruków przed nowym obliczeniem
+            for player in players:
+                player.current_crows = 0
+
+            # Obliczanie liczby kruków dla każdego gracza zdobytyuch w tej TURZE
+            for player in players:
+                cur_hand = "hand" + str(player.player_number)
+                hand_counting = state[cur_hand]
+                for card in hand_counting:
+                    player.current_crows += card.crows
+                    if player == player1:
+                        print(card.crows)
+
+                # Sprawdzenie minimalnej liczby kruków
+                if player.current_crows < min_crows:
+                    min_crows = player.crows
+                if player == waker:
+                    waker_crows = player.crows
+            # przypisanie nowych kruków do punktacji
+            for player in players:
+                player.crows += player.current_crows
+                # Sprawdzenie warunku końca gry
+                if player.crows >= 100:
+                    end_game = True
+            # Sprawdzenie, czy gracz wzywający "POBUDKA!" ma najmniej kruków
+            if waker_crows == min_crows:
+                # Sprawdzenie, czy więcej niż jeden gracz ma minimalną liczbę kruków (remis)
+                min_count = sum(1 for player in players if player.crows == min_crows)
+                if min_count > 1:
+                    waker_minimum = True  # Remis w najniższej liczbie kruków
+                    kara = 1
+                else:
+                    waker_minimum = True  # Tylko waker ma najmniej kruków
+                    kara = 1
+            # Dodanie kary, jeśli waker nie ma najmniej kruków i nie ma remisu
+            if not waker_minimum:
+                waker.crows += 5
+                kara = 1
 
     elif variant == 1:
         lk = {}
@@ -135,15 +196,13 @@ def wake_up(variant, state, players, screen, additional_points):
         for player in players:
             cur_hand = "hand" + str(player.player_number)
             hand_counting = state[cur_hand]
-
             for card in hand_counting:
                 player.current_crows += card.crows
                 if player == player1:
                     print(card.crows)
 
-
             # Sprawdzenie minimalnej liczby kruków
-            if player.crows < min_crows:
+            if player.current_crows < min_crows:
                 min_crows = player.crows
 
             if player == waker:
@@ -163,8 +222,10 @@ def wake_up(variant, state, players, screen, additional_points):
             min_count = sum(1 for player in players if player.crows == min_crows)
             if min_count > 1:
                 waker_minimum = True  # Remis w najniższej liczbie kruków
+                kara = 1
             else:
                 waker_minimum = True  # Tylko waker ma najmniej kruków
+                kara = 1
         # Dodanie kary, jeśli waker nie ma najmniej kruków i nie ma remisu
         if not waker_minimum:
             waker.crows += 5
