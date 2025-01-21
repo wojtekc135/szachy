@@ -30,7 +30,7 @@ BG = pygame.image.load("../assets/menu.png")
 BG_SCALED = pygame.transform.scale(BG, (SCREEN_WIDTH, SCREEN_HEIGHT))
 OP = pygame.image.load("../assets/menu_rozmazane.png")
 OP_SCALED = pygame.transform.scale(OP, (SCREEN_WIDTH, SCREEN_HEIGHT))
-TABLE = pygame.image.load("../assets/stół.png")
+TABLE = pygame.image.load("../assets/stol.png")
 TABLE_SCALED = pygame.transform.scale(TABLE, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Ścieżki muzyczne

@@ -17,7 +17,7 @@ def idz_na_calosc(screen):
     screen_width = screen_info.current_w
     screen_height = screen_info.current_h
     card_size = get_card_size(screen_height)
-    assets = load_assets(os.path.join(os.pardir, "assets"), "karta", "stół", "rewers")
+    assets = load_assets(os.path.join(os.pardir, "assets"), "karta", "stol", "rewers")
     assets = scale_assets(assets, card_size, (screen_width, screen_height))
     state = game_round.create_example_state(screen, assets, card_size, "variant2")
     img = pygame.image.load('../assets/ikonka.png')
@@ -80,7 +80,7 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode((screen_width, screen_height))
     font = pygame.font.SysFont("arial", 24)
     card_size = get_card_size(screen_height)
-    assets = load_assets(os.path.join(os.pardir, "assets"), "karta", "stół", "rewers")
+    assets = load_assets(os.path.join(os.pardir, "assets"), "karta", "stol", "rewers")
     assets = scale_assets(assets, card_size, (screen_width, screen_height))
     state = game_round.create_example_state(screen, assets, card_size, "variant2")
     idz_na_calosc(screen)

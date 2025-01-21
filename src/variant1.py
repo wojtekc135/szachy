@@ -16,7 +16,7 @@ def variant1(screen):
     screen_width = screen_info.current_w
     screen_height = screen_info.current_h
     card_size = get_card_size(screen_height)
-    assets = load_assets(os.path.join(os.pardir, "assets"), "karta", "stół", "rewers")
+    assets = load_assets(os.path.join(os.pardir, "assets"), "karta", "stol", "rewers")
     assets = scale_assets(assets, card_size, (screen_width, screen_height))
     state = game_round.create_example_state(screen, assets, card_size, "variant2")
     img = pygame.image.load('../assets/ikonka.png')
@@ -44,7 +44,7 @@ def variant1(screen):
 
         cur_hand = "hand" + str(game_round.player_number)
 
-        if game_round.round_number <= 4:
+        if game_round.round_number >= 4:
             if game_round.player_type == "human":
                 pass
                 game_round.human_show_2_cards(state[cur_hand], game_renderer, game_round, state)
@@ -83,7 +83,7 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode((screen_width, screen_height))
     font = pygame.font.SysFont("arial", 24)
     card_size = get_card_size(screen_height)
-    assets = load_assets(os.path.join(os.pardir, "assets"), "karta", "stół", "rewers")
+    assets = load_assets(os.path.join(os.pardir, "assets"), "karta", "stol", "rewers")
     assets = scale_assets(assets, card_size, (screen_width, screen_height))
     state = game_round.create_example_state(screen, assets, card_size, "variant2")
     variant1(screen)

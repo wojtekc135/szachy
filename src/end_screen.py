@@ -13,7 +13,7 @@ def end_screen(screen, players, winner):
     screen.blit(button_img, (button_x, button_y))
 
     # Nagłówek
-    header_text = "Wygrałeś!" if winner == "player1" else "Przegrałeś"
+    header_text = "Wygrałeś!!!!" if winner == "player1" else "Przegrałeś :c"
     header_surface = font.render(header_text, True, (255, 255, 255))  # White color
 
     header_x = button_x + (button_width - header_surface.get_width()) // 2
@@ -169,6 +169,8 @@ def wake_up(variant, state, players, screen, additional_points):
     row_height = 150
     for i, player in enumerate(players):
         row_text = f"Gracz {player.player_number} | {player.crows}"
+        if player.player_number == 1:
+            row_text = f"Twój wynik | {player.crows}"
         row_surface = font.render(row_text, True, (138, 99, 58))  # White color
 
         row_x = button_x + (button_width - row_surface.get_width()) // 2
