@@ -36,7 +36,8 @@ def variant0(screen):
         #Sprawdzenie czy stos nie jest pusty
         if not state["face_down_pile"] or not state["face_up_pile"]:
             if player1.crows < 100: winner = "player1"
-            end_screen(screen, players, winner)
+            if end_screen(screen, players, winner) == -1:
+                return -1
 
         pobudka = 0
         for event in pygame.event.get():
@@ -96,4 +97,5 @@ if __name__ == "__main__":
     assets = load_assets(os.path.join(os.pardir, "assets"), "karta", "stol", "rewers")
     assets = scale_assets(assets, card_size, (screen_width, screen_height))
     state = game_round.create_example_state(screen, assets, card_size, "variant2")
-    variant0(screen)
+    if variant0(screen) == -1:
+        variant0(screen)
