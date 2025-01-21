@@ -5,6 +5,7 @@ from round import Round
 import os
 from utils import load_assets, scale_assets, get_card_size
 from player import Player
+from end_screen import *
 
 
 def variant1(screen):
@@ -34,6 +35,12 @@ def variant1(screen):
     game_renderer = GameRenderer(screen, assets, font)
     game_round.debug(state)
     while running:
+
+        #Sprawdzenie czy stos nie jest pusty
+        if not state["face_down_pile"] or not state["face_up_pile"]:
+            if player1.crows < 100: winner = "player1"
+            end_screen(screen, players, winner)
+
         pobudka = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
