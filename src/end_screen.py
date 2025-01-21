@@ -65,6 +65,7 @@ def wake_up(variant, state, players, screen, additional_points):
                     break
             print("Gracz: ", player.player_number, " punkty: ", player.crows)
             # jesteśmy hojni i jak dwaj gracze mają tylko karty z 9 krukami to niech oboje sobie nic dodają :)
+
     elif variant == 1:
         lk = {}
         cp = {}
@@ -91,13 +92,12 @@ def wake_up(variant, state, players, screen, additional_points):
                     player.crows += 5
             else:
                 if player in max_crows_players:
-                    player.crows += 0
+                    player.crows += cp[player] - (lk[player]*9)
                 else:
                     player.crows += cp[player]
                     if player not in min_crows_player:
                         player.crows += 5
-                        kara = 1
-            if player.crows >=100:
+            if player.crows >= 100:
                 end_game = True
                 break
 

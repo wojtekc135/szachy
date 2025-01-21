@@ -65,10 +65,12 @@ class Round:
             if i < 6:  # Karty 1-5
                 crows[assets["cards"][i]] = i
             elif 6 <= i <= 10:  # Karty 5s, 6s, 7s (poprawne przypisanie wartości 5, 6, 7)
-                if i % 2 == 0:
-                    v = (5 + (i - 6) // 2) * 2
+                if i == 6:
+                    v = 5
+                elif i == 7 or i == 8:
+                    v = 6
                 else:
-                    v = 5 + (i - 6)
+                    v = 7
                 crows[assets["cards"][i]] = v
             else:
                 crows[assets["cards"][i]] = i - 3
