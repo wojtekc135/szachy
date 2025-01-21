@@ -27,6 +27,7 @@ def variant3(screen):
     player4 = Player(False, 4)
     players = [player1, player2, player3, player4]
     additional_points=[0,0,0,0]
+    used_option = False
     while running:
 
         #Sprawdzenie czy stos nie jest pusty
@@ -55,8 +56,10 @@ def variant3(screen):
 
         elif game_round.round_number > 4:
             if game_round.player_type == "human":
-                stan = game_round.human_turn_idz_na_calosc(state, game_round, game_renderer, players, 3)
-                if  stan == "pobudka":
+                stan = game_round.variant3_options(game_renderer, game_round,state,screen,running, players, 3 , additional_points, used_option)
+                if stan=="użyta opcja":
+                    used_option = True
+                elif  stan == "pobudka":
                     pobudka = True
                 elif stan == "koniec gry":
                     running = False
@@ -69,6 +72,7 @@ def variant3(screen):
 
         if pobudka:
             game_round.round_number = 0
+            used_option = False
             state = game_round.create_example_state(screen, assets, card_size, "variant3")
 
         # aktualizacja rundy
