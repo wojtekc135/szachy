@@ -1,13 +1,15 @@
-#Ustawienie pozycji przycisków w zależności od screen_width, screen_height.
+#Dodanie przycisku do podstawowej wersji gry.
 
 import pygame
 import sys
 import webbrowser
 from menu_button import Button
 import os
+from variant0 import variant0
 from variant2 import idz_na_calosc
 from variant1 import  variant1
 from variant3 import variant3
+
 pygame.init()
 # Ustawienie ikony gry
 game_icon = pygame.image.load("../assets/ikonka.png")
@@ -176,12 +178,15 @@ def play():
         SCREEN.blit(PLAY_TEXT, PLAY_RECT)
 
         # Przyciski dla trybów gry:
-        MODE_1 = Button(image=None, pos=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.4),
+        MODE_0 = Button(image=None, pos=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.35),
+                        text_input="Gra podstawowa",
+                        font=get_font(play_button_font_size), base_color="White", hovering_color="#F4A460", scale=1)
+        MODE_1 = Button(image=None, pos=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.5),
                         text_input="Nie takie kruki straszne",
                         font=get_font(play_button_font_size), base_color="White", hovering_color="#F4A460", scale=1)
-        MODE_2 = Button(image=None, pos=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.5), text_input="Idź na całość",
+        MODE_2 = Button(image=None, pos=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.6), text_input="Idź na całość",
                         font=get_font(play_button_font_size), base_color="White", hovering_color="#F4A460", scale=1)
-        MODE_3 = Button(image=None, pos=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.6), text_input="Wiem, co mam",
+        MODE_3 = Button(image=None, pos=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.7), text_input="Wiem, co mam",
                         font=get_font(play_button_font_size), base_color="White", hovering_color="#F4A460", scale=1)
 
         # Przycisk powrotu:
@@ -189,7 +194,7 @@ def play():
                            font=get_font(play_button_font_size), base_color="#5b4224", hovering_color="White", scale=1)
 
         # Wyświetlenie przycisków:
-        for button in [MODE_1, MODE_2, MODE_3, PLAY_BACK]:
+        for button in [MODE_0, MODE_1, MODE_2, MODE_3, PLAY_BACK]:
             button.changeColor(PLAY_MOUSE_POS)
             button.update(SCREEN)
 
@@ -200,15 +205,18 @@ def play():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PLAY_BACK.checkForInput(PLAY_MOUSE_POS):
                     main_menu()
+                if MODE_0.checkForInput(PLAY_MOUSE_POS):
+                    #Wybrano tryb: "Gra podstawowa"
+                    variant0(SCREEN)
                 if MODE_1.checkForInput(PLAY_MOUSE_POS):
-                    print("Wybrano tryb: Nietakie kruki straszne") #
-                    variant1(SCREEN)  # Zastąp odpowiednią funkcją
+                    #Wybrano tryb: "Nie takie kruki straszne"
+                    variant1(SCREEN)
                 if MODE_2.checkForInput(PLAY_MOUSE_POS):
-                    idz_na_calosc(SCREEN)  # Zastąp odpowiednią funkcją
-                    print("Wybrano tryb: Idź na całość")  # Zastąp odpowiednią funkcją
+                    #Wybrano tryb: "Idź na całość"
+                    idz_na_calosc(SCREEN)
                 if MODE_3.checkForInput(PLAY_MOUSE_POS):
+                    #Wybrano tryb: "Wiem, co mam"
                     variant3(SCREEN)
-                    print("Wybrano tryb: Wiem, co mam")  # Zastąp odpowiednią funkcją
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_F11:  # F11 to klawisz skrótu
                     toggle_fullscreen()
